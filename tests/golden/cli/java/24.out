@@ -1,0 +1,2 @@
+Invalid boolean value for --enable_entity_groups: yes. Must be 'true' or 'false'.
+Exiting.

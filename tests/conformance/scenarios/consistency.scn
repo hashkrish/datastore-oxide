@@ -1,0 +1,102 @@
+# Eventual consistency via the emulator config: unapplied writes are invisible to global queries until rolled forward.
+PATCH /v1/config
+{"jobPolicy": {"probabilityJobPolicy": {"randomSeed": "1", "unappliedJobPercentage": 100}}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "b"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "a"}, {"kind": "C", "id": "1"}]}, "properties": {"v": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "C"}]}}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "C"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "C"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "K", "name": "a"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "C"}]}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "2"}}}}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}], "readOptions": {"readConsistency": "EVENTUAL"}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"delete": {"path": [{"kind": "K", "name": "b"}]}}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t1 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t1}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "T", "name": "x"}]}, "properties": {"v": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "T"}]}}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "T", "name": "x"}]}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "T"}]}}
+
+PATCH /v1/config
+{"jobPolicy": {"forceStrongConsistency": true}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "U", "name": "u"}]}, "properties": {"v": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "U"}]}}
+
+PATCH /v1/config
+{"jobPolicy": {"probabilityJobPolicy": {"randomSeed": "1", "unappliedJobPercentage": 0}}}
+
+PATCH /v1/config
+{"idAllocationPolicy": {"policy": "SCATTERED"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "S"}]}, "properties": {}}}]}
+
+PATCH /v1/config
+{"idAllocationPolicy": {"policy": "SEQUENTIAL"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "S"}]}, "properties": {}}}]}
+
+PATCH /v1/config
+{}
+
+PATCH /v1/config
+{"jobPolicy": {"probabilityJobPolicy": {"unappliedJobPercentage": 150}}}
+
+PATCH /v1/config
+{"jobPolicy": {"probabilityJobPolicy": {"randomSeed": "1"}}}
+
+GET /v1/config

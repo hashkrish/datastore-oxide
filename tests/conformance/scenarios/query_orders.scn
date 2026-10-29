@@ -1,0 +1,69 @@
+# Sort orders: directions, multiple orders, multi-valued properties, cross-type ordering.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "P", "name": "a"}]}, "properties": {"age": {"integerValue": "30"}, "name": {"stringValue": "Alice"}, "score": {"doubleValue": 1.5}, "tags": {"arrayValue": {"values": [{"stringValue": "x"}, {"stringValue": "y"}]}}, "active": {"booleanValue": true}, "born": {"timestampValue": "1990-01-01T00:00:00Z"}, "city": {"stringValue": "Paris"}, "unidx": {"stringValue": "u", "excludeFromIndexes": true}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "b"}]}, "properties": {"age": {"integerValue": "25"}, "name": {"stringValue": "bob"}, "score": {"doubleValue": 2.5}, "tags": {"arrayValue": {"values": [{"stringValue": "y"}, {"stringValue": "z"}]}}, "active": {"booleanValue": false}, "born": {"timestampValue": "1995-06-01T12:00:00Z"}, "city": {"stringValue": "Rome"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "c"}]}, "properties": {"age": {"integerValue": "35"}, "name": {"stringValue": "Carol"}, "score": {"doubleValue": -1.0}, "tags": {"arrayValue": {}}, "active": {"booleanValue": true}, "city": {"nullValue": null}}}}, {"upsert": {"key": {"path": [{"kind": "P", "id": "1"}]}, "properties": {"age": {"integerValue": "30"}, "name": {"stringValue": "dave"}, "score": {"doubleValue": "NaN"}, "tags": {"arrayValue": {"values": [{"stringValue": "x"}]}}, "active": {"booleanValue": true}}}}, {"upsert": {"key": {"path": [{"kind": "P", "id": "2"}]}, "properties": {"age": {"stringValue": "30"}, "name": {"stringValue": "Eve"}, "score": {"doubleValue": 0}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "d"}]}, "properties": {"name": {"stringValue": "Frank"}, "tags": {"arrayValue": {"values": [{"stringValue": "z"}, {"stringValue": "x"}]}}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "e"}]}, "properties": {"age": {"integerValue": "40"}, "name": {"stringValue": ""}, "score": {"doubleValue": 0}, "active": {"nullValue": null}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "a"}, {"kind": "C", "id": "1"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "a"}, {"kind": "C", "id": "2"}]}, "properties": {"v": {"integerValue": "2"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "b"}, {"kind": "C", "id": "3"}]}, "properties": {"v": {"integerValue": "3"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "a"}, {"kind": "C", "id": "1"}, {"kind": "G", "name": "x"}]}, "properties": {"v": {"integerValue": "4"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "a"}], "partitionId": {"namespaceId": "ns"}}, "properties": {"age": {"integerValue": "99"}}}}, {"upsert": {"key": {"path": [{"kind": "Q", "name": "z"}]}, "properties": {"age": {"integerValue": "30"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "1"}]}, "properties": {"v": {"nullValue": null}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "2"}]}, "properties": {"v": {"booleanValue": false}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "3"}]}, "properties": {"v": {"booleanValue": true}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "4"}]}, "properties": {"v": {"integerValue": "-5"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "5"}]}, "properties": {"v": {"integerValue": "5"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "6"}]}, "properties": {"v": {"timestampValue": "2020-01-01T00:00:00Z"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "7"}]}, "properties": {"v": {"doubleValue": 1.5}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "8"}]}, "properties": {"v": {"doubleValue": "NaN"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "9"}]}, "properties": {"v": {"doubleValue": -0.5}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "10"}]}, "properties": {"v": {"stringValue": "abc"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "11"}]}, "properties": {"v": {"stringValue": "B"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "12"}]}, "properties": {"v": {"blobValue": "YWJj"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "13"}]}, "properties": {"v": {"keyValue": {"path": [{"kind": "P", "name": "a"}]}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "14"}]}, "properties": {"v": {"keyValue": {"path": [{"kind": "P", "id": "1"}]}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "15"}]}, "properties": {"v": {"geoPointValue": {"latitude": 1, "longitude": 2}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "16"}]}, "properties": {"v": {"entityValue": {"properties": {"x": {"integerValue": "1"}}}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "17"}]}, "properties": {"v": {"arrayValue": {}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "18"}]}, "properties": {"v": {"arrayValue": {"values": [{"integerValue": "1"}, {"stringValue": "a"}]}}}}}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "age"}, "direction": "ASCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "age"}, "direction": "DESCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "age"}, "direction": "ASCENDING"}, {"property": {"name": "name"}, "direction": "DESCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "tags"}, "direction": "ASCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "tags"}, "direction": "DESCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "name"}, "direction": "ASCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "score"}, "direction": "ASCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "__key__"}, "direction": "DESCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "__key__"}, "direction": "ASCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"order": [{"property": {"name": "__key__"}, "direction": "DESCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "unidx"}, "direction": "ASCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "missing"}, "direction": "ASCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "M"}], "order": [{"property": {"name": "v"}, "direction": "ASCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "M"}], "order": [{"property": {"name": "v"}, "direction": "DESCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "GREATER_THAN", "value": {"integerValue": "26"}}}, "order": [{"property": {"name": "age"}, "direction": "DESCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "GREATER_THAN", "value": {"integerValue": "26"}}}, "order": [{"property": {"name": "name"}, "direction": "ASCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "tags"}, "op": "EQUAL", "value": {"stringValue": "x"}}}, "order": [{"property": {"name": "tags"}, "direction": "ASCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "tags"}, "op": "GREATER_THAN", "value": {"stringValue": "x"}}}, "order": [{"property": {"name": "tags"}, "direction": "ASCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "age"}, "direction": "ASCENDING"}, {"property": {"name": "age"}, "direction": "DESCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"property": {"name": "age"}}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "order": [{"direction": "ASCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "C"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "P", "name": "a"}]}}}}, "order": [{"property": {"name": "v"}, "direction": "DESCENDING"}]}}

@@ -1,0 +1,332 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }, {
+    "version": "3"
+  }, {
+    "version": "4"
+  }, {
+    "version": "5"
+  }, {
+    "version": "6"
+  }],
+  "indexUpdates": 13
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "name": "c1"
+          }]
+        },
+        "properties": {
+          "w": {
+            "stringValue": "x"
+          }
+        }
+      },
+      "cursor": "ChwSFmoBcHIRCxIBSyIBYQwLEgFDIgJjMQwYACAA",
+      "version": "3"
+    }],
+    "endCursor": "ChwSFmoBcHIRCxIBSyIBYQwLEgFDIgJjMQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "6"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "name": "c1"
+          }]
+        },
+        "properties": {
+          "w": {
+            "stringValue": "x"
+          }
+        }
+      },
+      "cursor": "ChwSFmoBcHIRCxIBSyIBYQwLEgFDIgJjMQwYACAA",
+      "version": "3"
+    }],
+    "endCursor": "ChwSFmoBcHIRCxIBSyIBYQwLEgFDIgJjMQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "6"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBSyIBYQwYACAA",
+      "version": "2"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBSyIBYQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBSyIBYQwYACAA",
+      "version": "2"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBSyIBYQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p",
+            "namespaceId": "n1"
+          },
+          "path": [{
+            "kind": "N",
+            "name": "q"
+          }]
+        }
+      },
+      "cursor": "ChgSEmoBcHIICxIBTiIBcQyiAQJuMRgAIAA=",
+      "version": "6"
+    }],
+    "endCursor": "ChgSEmoBcHIICxIBTiIBcQyiAQJuMRgAIAA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"HAS_PARENT requires a key value or null","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"property must be __key__","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"duplicate ancestor or parent constraint","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"duplicate ancestor or parent constraint","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "6"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "6"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "6"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "6"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "6"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "6"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "6"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END

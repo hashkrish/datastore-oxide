@@ -1,0 +1,100 @@
+# Import of an export: versions, existing entities, other projects, filters.
+ARGS --store_on_disk=false --consistency=1.0 {dir}
+SETUP afile
+not an export
+END
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "T", "name": "all"}]}, "properties": {
+ "null": {"nullValue": null}, "bool": {"booleanValue": true}, "int": {"integerValue": "-42"}, "intmax": {"integerValue": "9223372036854775807"},
+ "dbl": {"doubleValue": 1.5}, "dbl2": {"doubleValue": 1e20}, "dbl3": {"doubleValue": 0.0001}, "dbl4": {"doubleValue": 3}, "dbl5": {"doubleValue": "NaN"},
+ "dbl6": {"doubleValue": "-Infinity"}, "dbl7": {"doubleValue": 12345678.9}, "dbl8": {"doubleValue": -0.0}, "dbl9": {"doubleValue": "Infinity"},
+ "ts": {"timestampValue": "2024-01-02T03:04:05.123456Z"}, "ts2": {"timestampValue": "2024-01-02T03:04:05Z"}, "ts3": {"timestampValue": "2024-01-02T03:04:05.120Z"},
+ "ts4": {"timestampValue": "2024-01-02T03:04:05.123456789Z"}, "ts5": {"timestampValue": "2024-01-02T05:04:05+02:00"}, "ts6": {"timestampValue": "0001-01-01T00:00:00Z"},
+ "ts7": {"timestampValue": "9999-12-31T23:59:59.999999Z"}, "ts8": {"timestampValue": "1969-12-31T23:59:59.999999Z"},
+ "key": {"keyValue": {"path": [{"kind": "X", "id": "7"}]}}, "key2": {"keyValue": {"partitionId": {"namespaceId": "ns"}, "path": [{"kind": "X", "name": "n"}, {"kind": "Y", "id": "1"}]}},
+ "str": {"stringValue": "héllo\u0001\"\n<>&=/ "}, "str0": {"stringValue": ""}, "blob": {"blobValue": "AAECAw=="}, "blob0": {"blobValue": ""},
+ "geo": {"geoPointValue": {"latitude": 1.5, "longitude": -2}}, "geo0": {"geoPointValue": {}},
+ "ent": {"entityValue": {"properties": {"x": {"integerValue": "1"}, "inner": {"entityValue": {"properties": {"y": {"stringValue": "z"}}}}}}},
+ "ent0": {"entityValue": {}}, "entk": {"entityValue": {"key": {"path": [{"kind": "E", "name": "e"}]}, "properties": {"q": {"booleanValue": false}}}},
+ "arr": {"arrayValue": {"values": [{"integerValue": "1"}, {"stringValue": "a"}, {"nullValue": null}, {"entityValue": {}}]}}, "arr0": {"arrayValue": {}},
+ "unidx": {"stringValue": "u", "excludeFromIndexes": true}, "unidxe": {"entityValue": {"properties": {"x": {"integerValue": "1"}}}, "excludeFromIndexes": true}
+}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}, "s": {"stringValue": "x"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "a"}, {"kind": "C", "name": "b"}]}, "properties": {"v": {"integerValue": "2"}}}}, {"upsert": {"key": {"path": [{"kind": "L", "id": "5"}]}, "properties": {"v": {"integerValue": "3"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "n"}], "partitionId": {"namespaceId": "ns1"}}, "properties": {"v": {"integerValue": "4"}}}}, {"upsert": {"key": {"path": [{"kind": "L", "name": "m"}], "partitionId": {"namespaceId": "ns2"}}, "properties": {"v": {"integerValue": "5"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "6"}}}}]}
+
+POST /v1/projects/p:export
+{"outputUrlPrefix": "{dir}/exp"}
+
+GLOB exp/*/*.overall_export_metadata
+> meta = path
+
+GLOB exp/*
+> exdir = path
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "99"}}}}, {"delete": {"path": [{"kind": "L", "id": "5"}]}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "extra"}]}, "properties": {"v": {"integerValue": "7"}}}}]}
+
+POST /v1/projects/p:import
+{"inputUrl": "{{meta}}"}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "T", "name": "all"}]}, {"path": [{"kind": "K", "name": "a"}]}, {"path": [{"kind": "K", "name": "a"}, {"kind": "C", "name": "b"}]}, {"path": [{"kind": "L", "id": "5"}]}, {"path": [{"kind": "K", "name": "n"}], "partitionId": {"namespaceId": "ns1"}}, {"path": [{"kind": "L", "name": "m"}], "partitionId": {"namespaceId": "ns2"}}, {"path": [{"kind": "K", "name": "extra"}]}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "z"}]}, "properties": {"v": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p2:import
+{"inputUrl": "{{meta}}"}
+
+POST /v1/projects/p2:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}, {"path": [{"kind": "K", "name": "n"}], "partitionId": {"namespaceId": "ns1"}}]}
+
+POST /v1/projects/p3:import
+{"inputUrl": "{{meta}}", "entityFilter": {"kinds": ["L"]}}
+
+POST /v1/projects/p3:runQuery
+{"query": {}}
+
+POST /v1/projects/p3:runQuery
+{"query": {}, "partitionId": {"namespaceId": "ns2"}}
+
+POST /v1/projects/p4:import
+{"inputUrl": "{{meta}}", "entityFilter": {"namespaceIds": ["ns1"]}}
+
+POST /v1/projects/p4:runQuery
+{"query": {}, "partitionId": {"namespaceId": "ns1"}}
+
+POST /v1/projects/p4:runQuery
+{"query": {}}
+
+POST /v1/projects/p5:import
+{"inputUrl": "{{exdir}}"}
+
+POST /v1/projects/p5:import
+{"inputUrl": "{dir}/exp"}
+
+POST /v1/projects/p5:import
+{"inputUrl": "{dir}/nope.overall_export_metadata"}
+
+POST /v1/projects/p5:import
+{"inputUrl": ""}
+
+POST /v1/projects/p5:import
+{}
+
+POST /v1/projects/p5:import
+{"inputUrl": "gs://b/x.overall_export_metadata"}
+
+POST /v1/projects/p5:import
+{"inputUrl": "{dir}/afile"}
+
+POST /v1/projects/p6:allocateIds
+{"keys": [{"path": [{"kind": "K"}]}]}

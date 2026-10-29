@@ -1,0 +1,216 @@
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~px"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+cost {
+  index_writes: 9
+  entity_writes: 1
+}
+version: [2]
+<<< END
+>>> POST /v1/projects/px:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-29T02:24:34.335264047Z",
+      "endTime": "2026-10-29T02:24:34.440547390Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "/work/proj/exp"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/exp"
+  }
+}
+
+<<< END
+>>> ENTITIES exp/*/all_namespaces/all_kinds/output-*
+<<< 200
+20026a0e6a02707872080b12014b2201610c721b1a017020002a142b31000000000000f03f3900000000000000402c72151a017220002a0e636a027078737a01528001037464721c1a017520002a15434a036140625201649001009a010539353239394472091a017a20002a0208017a0a1a017920012a031a01728201080b12014b2201610c8a01080a016f1201642001
+<<< END
+>>> GLOB exp/*/*.overall_export_metadata
+<<< 200
+{"path":"/work/proj/exp/2026-10-29T02:24:34_394/2026-10-29T02:24:34_394.overall_export_metadata"}
+<<< END
+>>> POST /v1/projects/py:import
+<<< 200
+{
+  "name": "projects/py/operations/12048741b77d4f95a1417a71093401c1",
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ImportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-29T02:24:34.522601097Z",
+      "endTime": "2026-10-29T02:24:34.536335864Z",
+      "operationType": "IMPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "inputUrl": "/work/proj/exp/2026-10-29T02:24:34_394/2026-10-29T02:24:34_394.overall_export_metadata"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.protobuf.Empty"
+  }
+}
+
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    kind: GD_EVENT
+    key {
+      app: "s~py"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "z"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }, {
+      name: "u"
+      multiple: false
+      value {
+        UserValue {
+          email: "a@b"
+          auth_domain: "d"
+          gaiaid: 0
+          obfuscated_gaiaid: "95299"
+        }
+      }
+    }, {
+      name: "p"
+      multiple: false
+      value {
+        PointValue {
+          x: 1.0
+          y: 2.0
+        }
+      }
+    }, {
+      name: "r"
+      multiple: false
+      value {
+        ReferenceValue {
+          app: "s~py"
+          PathElement: [{
+            type: "R"
+            id: 3
+          }]
+        }
+      }
+    }]
+    raw_property: [{
+      name: "y"
+      multiple: true
+      value {
+        stringValue: "r"
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+    owner {
+      email: "o"
+      auth_domain: "d"
+      gaiaid: 1
+    }
+  }
+  version: 2
+}]
+<<< END
+>>> POST /v1/projects/py:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "py"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "p": {
+          "geoPointValue": {
+            "latitude": 1.0,
+            "longitude": 2.0
+          },
+          "meaning": 23
+        },
+        "r": {
+          "keyValue": {
+            "partitionId": {
+              "projectId": "py"
+            },
+            "path": [{
+              "kind": "R",
+              "id": "3"
+            }]
+          }
+        },
+        "u": {
+          "entityValue": {
+            "properties": {
+              "email": {
+                "stringValue": "a@b",
+                "excludeFromIndexes": true
+              },
+              "auth_domain": {
+                "stringValue": "d",
+                "excludeFromIndexes": true
+              },
+              "user_id": {
+                "stringValue": "95299",
+                "excludeFromIndexes": true
+              }
+            }
+          },
+          "meaning": 20
+        },
+        "y": {
+          "arrayValue": {
+            "values": [{
+              "stringValue": "r",
+              "excludeFromIndexes": true
+            }]
+          }
+        },
+        "z": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END

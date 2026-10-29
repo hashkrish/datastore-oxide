@@ -1,0 +1,22 @@
+# App Engine v3: export writes the stored EntityProto of v3-written entities; import reads it back.
+ARGS --store_on_disk=false --consistency=1.0 {dir}
+
+V3 Put
+entity { key { app: "s~px" path { Element { type: "K" name: "a" } } } entity_group { Element { type: "K" name: "a" } } property { name: "z" multiple: false value { int64Value: 1 } } property { name: "u" multiple: false value { UserValue { email: "a@b" auth_domain: "d" gaiaid: 0 } } } raw_property { name: "y" multiple: true value { stringValue: "r" } } property { name: "p" multiple: false value { PointValue { x: 1 y: 2 } } } property { name: "r" multiple: false value { ReferenceValue { app: "s~px" PathElement { type: "R" id: 3 } } } } owner { email: "o" auth_domain: "d" gaiaid: 1 } kind: GD_EVENT }
+
+POST /v1/projects/px:export
+{"outputUrlPrefix": "{dir}/exp"}
+
+ENTITIES exp/*/all_namespaces/all_kinds/output-*
+
+GLOB exp/*/*.overall_export_metadata
+> meta = path
+
+POST /v1/projects/py:import
+{"inputUrl": "{{meta}}"}
+
+V3 Get
+key { app: "s~py" path { Element { type: "K" name: "a" } } }
+
+POST /v1/projects/py:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}

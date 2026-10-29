@@ -1,0 +1,1 @@
+start --testing --index_file=$TMP/missing/x.yaml

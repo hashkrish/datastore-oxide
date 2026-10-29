@@ -1,0 +1,67 @@
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Illegal string \"é<>&'=\\\/\" in namespace id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Illegal string \"a\nb\tc\u0001\u2028\" in namespace id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Illegal string \"日本\" in namespace id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Illegal string \"😀\" in namespace id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The kind \"__é<>&'=\\\/__\" is reserved.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The kind \"__a\nb\tc\u0001\u2028__\" is reserved.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The kind \"__日本__\" is reserved.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The kind \"__😀__\" is reserved.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "s": {
+          "stringValue": "é日本😀\u2028<>"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END

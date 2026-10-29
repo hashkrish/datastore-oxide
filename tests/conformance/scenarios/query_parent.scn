@@ -1,0 +1,66 @@
+# HAS_PARENT (shallow ancestor) queries, and the Firestore-mode __collection__ / __document__ pseudo-kinds.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "a"}, {"kind": "C", "name": "c1"}]}, "properties": {"w": {"stringValue": "x"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "a"}, {"kind": "C", "name": "c1"}, {"kind": "G", "name": "g"}]}, "properties": {}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "x"}, {"kind": "C", "id": "7"}]}, "properties": {}}}, {"upsert": {"key": {"partitionId": {"namespaceId": "n1"}, "path": [{"kind": "N", "name": "q"}]}, "properties": {}}}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"keyValue": {"path": [{"kind": "K", "name": "a"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "C"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"keyValue": {"path": [{"kind": "K", "name": "a"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"nullValue": null}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"nullValue": null}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"nullValue": null}}}}, "partitionId": {"namespaceId": "n1"}}
+
+POST /v1/projects/p:runQuery
+{"query": {"filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"stringValue": "x"}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "HAS_PARENT", "value": {"nullValue": null}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"nullValue": null}}}, {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"nullValue": null}}}]}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"nullValue": null}}}, {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "K", "name": "a"}]}}}}]}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__collection__"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"nullValue": null}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__collection__"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"keyValue": {"path": [{"kind": "K", "name": "a"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__collection__"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"keyValue": {"path": [{"kind": "K", "name": "x"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__collection__"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__collection__"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "K", "name": "a"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__collection__"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"nullValue": null}}}}, "partitionId": {"namespaceId": "n1"}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__document__"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"keyValue": {"path": [{"kind": "__collection__", "name": "K"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__document__"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"keyValue": {"path": [{"kind": "K", "name": "a"}, {"kind": "__collection__", "name": "C"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__document__"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"keyValue": {"path": [{"kind": "K", "name": "a"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__document__"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"keyValue": {"path": [{"kind": "__collection__", "id": "5"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__document__"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_PARENT", "value": {"nullValue": null}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__document__"}]}}

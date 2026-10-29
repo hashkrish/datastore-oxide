@@ -1,0 +1,39 @@
+# XML with a manual datastore-indexes.xml (autoGenerate=true).
+ARGS --store_on_disk=false --consistency=1.0 {dir}
+SETUP WEB-INF/datastore-indexes.xml
+<?xml version="1.0" encoding="utf-8"?>
+<datastore-indexes autoGenerate="true">
+  <datastore-index kind="K" ancestor="false">
+    <property name="a" direction="asc"/>
+    <property name="b" direction="desc"/>
+  </datastore-index>
+  <datastore-index kind="K" ancestor="false" source="manual">
+    <property name="x" direction="asc"/>
+    <property name="c" direction="asc"/>
+  </datastore-index>
+  <datastore-index kind="K" ancestor="false">
+    <property name="y" direction="asc"/>
+    <property name="c" direction="asc"/>
+  </datastore-index>
+  <datastore-index kind="K" ancestor="false" source="auto">
+    <property name="old" direction="asc"/>
+    <property name="older" direction="desc"/>
+  </datastore-index>
+  <datastore-index kind="N">
+    <property name="a"/>
+    <property name="b"/>
+  </datastore-index>
+</datastore-indexes>
+END
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}, "direction": "DESCENDING"}]}}
+
+FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "c"}}, {"property": {"name": "d"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "N"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}}]}}
+
+FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml

@@ -1,0 +1,609 @@
+>>> LS WEB-INF
+<<< 404
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+<<< 200
+<!-- Indices written at Tue, 27 Oct 2026 09:21:45 UTC -->
+
+<datastore-indexes autoGenerate="true"/>
+
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+<<< 200
+<!-- Indices written at Tue, 27 Oct 2026 09:21:45 UTC -->
+
+<datastore-indexes autoGenerate="true">
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="K" ancestor="false" source="auto">
+        <property name="a" direction="asc"/>
+        <property name="b" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+<<< 200
+<!-- Indices written at Tue, 27 Oct 2026 09:21:45 UTC -->
+
+<datastore-indexes autoGenerate="true">
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="K" ancestor="false" source="auto">
+        <property name="a" direction="asc"/>
+        <property name="b" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+<<< 200
+<!-- Indices written at Tue, 27 Oct 2026 09:21:45 UTC -->
+
+<datastore-indexes autoGenerate="true">
+
+    <!-- Used 3 times in query history -->
+    <datastore-index kind="K" ancestor="false" source="auto">
+        <property name="a" direction="asc"/>
+        <property name="b" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "1"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "1"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "1"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "1"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "PROJECTION",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "PROJECTION",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "PROJECTION",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "KEY_ONLY",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "PROJECTION",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Only ascending order on __key__ supported","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p2:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "KEY_ONLY",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "G"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "x"
+        },
+        "op": "EQUAL",
+        "value": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "order": [{
+      "property": {
+        "name": "y"
+      },
+      "direction": "DESCENDING"
+    }]
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "G"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "x"
+        },
+        "op": "EQUAL",
+        "value": {
+          "integerValue": "2"
+        }
+      }
+    },
+    "order": [{
+      "property": {
+        "name": "y"
+      },
+      "direction": "DESCENDING"
+    }]
+  }
+}
+
+<<< END
+>>> FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+<<< 200
+<!-- Indices written at Tue, 27 Oct 2026 09:21:45 UTC -->
+
+<datastore-indexes autoGenerate="true">
+
+    <!-- Used 6 times in query history -->
+    <datastore-index kind="K" ancestor="false" source="auto">
+        <property name="a" direction="asc"/>
+        <property name="b" direction="desc"/>
+    </datastore-index>
+
+    <!-- Used 4 times in query history -->
+    <datastore-index kind="K" ancestor="false" source="auto">
+        <property name="x" direction="asc"/>
+        <property name="a" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="K" ancestor="false" source="auto">
+        <property name="x" direction="asc"/>
+        <property name="y" direction="asc"/>
+        <property name="a" direction="desc"/>
+    </datastore-index>
+
+    <!-- Used 3 times in query history -->
+    <datastore-index kind="K" ancestor="false" source="auto">
+        <property name="a" direction="asc"/>
+        <property name="b" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="K" ancestor="false" source="auto">
+        <property name="a" direction="asc"/>
+        <property name="__key__" direction="desc"/>
+    </datastore-index>
+
+    <!-- Used 2 times in query history -->
+    <datastore-index kind="K" ancestor="false" source="auto">
+        <property name="__key__" direction="desc"/>
+    </datastore-index>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="K" ancestor="true" source="auto">
+        <property name="a" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="K2" ancestor="false" source="auto">
+        <property name="c" direction="asc"/>
+        <property name="d" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 2 times in query history -->
+    <datastore-index kind="G" ancestor="false" source="auto">
+        <property name="x" direction="asc"/>
+        <property name="y" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>
+
+<<< END
+>>> POST /reset
+<<< 200
+Resetting...
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+<<< 200
+<!-- Indices written at Tue, 27 Oct 2026 09:21:45 UTC -->
+
+<datastore-indexes autoGenerate="true">
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="K3" ancestor="false" source="auto">
+        <property name="a" direction="asc"/>
+        <property name="b" direction="asc"/>
+    </datastore-index>
+
+</datastore-indexes>
+
+<<< END

@@ -1,0 +1,506 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }, {
+    "version": "3"
+  }],
+  "indexUpdates": 6
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ESkAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Cannot modify entities in a read-only transaction.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ESoAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:rollback
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ESsAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 400
+{"error":{"code":400,"message":"Cannot retry a read-only transaction.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ESwAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }],
+  "indexUpdates": 99,
+  "commitVersion": "4"
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ES0AAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"operating on too many entity groups in a single transaction.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ES4AAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 400
+{"error":{"code":400,"message":"operating on too many entity groups in a single transaction.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ES8AAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Only ancestor queries are allowed inside transactions.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIBSyIBYQwLEgFDGAEMGAAgAA==",
+      "version": "3"
+    }],
+    "endCursor": "ChoSFGoBcHIPCxIBSyIBYQwLEgFDGAEMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "4"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBSyIBYQwYACAA",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIBSyIBYQwLEgFDGAEMGAAgAA==",
+      "version": "3"
+    }],
+    "endCursor": "ChoSFGoBcHIPCxIBSyIBYQwLEgFDGAEMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "4"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }],
+  "transaction": "ETAAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "5"
+  }],
+  "indexUpdates": 4,
+  "commitVersion": "5"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "5"
+        }
+      }
+    },
+    "version": "5"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "5"
+        }
+      }
+    },
+    "version": "5"
+  }],
+  "transaction": "ETEAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Cannot modify entities in a read-only transaction.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIBSyIBYQwLEgFDGAEMGAAgAA==",
+      "version": "3"
+    }],
+    "endCursor": "ChoSFGoBcHIPCxIBSyIBYQwLEgFDGAEMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "5"
+  },
+  "transaction": "ETIAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "6"
+  }],
+  "indexUpdates": 4,
+  "commitVersion": "6"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "7"
+        }
+      }
+    },
+    "version": "6"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"single_use_transaction in a commit request must be READ_WRITE.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"non-transaction commit cannot specify a transaction","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "7"
+        }
+      }
+    },
+    "version": "6"
+  }]
+}
+
+<<< END

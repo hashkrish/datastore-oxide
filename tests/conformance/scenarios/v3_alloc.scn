@@ -1,0 +1,50 @@
+# v3 AllocateIds: the sequential counter shared with auto ids
+V3 AllocateIds
+model_key { app: "s~alloc" path { Element { type: "K" } } } size: 5
+
+V3 Put
+entity { key { app: "s~alloc" path { Element { type: "K" } } } entity_group {  } }
+
+V3 AllocateIds
+size: 3
+
+V3 AllocateIds
+max: 100
+
+V3 AllocateIds
+max: 50
+
+V3 AllocateIds
+model_key { app: "s~alloc" path { Element { type: "K" name: "a" } Element { type: "C" id: 3 } } } size: 1
+
+V3 AllocateIds
+size: 0
+
+V3 AllocateIds
+size: -1
+
+V3 AllocateIds
+size: 1
+
+V3 AllocateIds
+size: 1000000000
+
+V3 AllocateIds
+size: 1000000001
+
+V3 AllocateIds
+max: 0
+
+V3 AllocateIds
+size: 2 max: 5000
+
+V3 AllocateIds
+model_key { app: "s~alloc" path { Element { type: "K" } } } reserve { app: "s~alloc" path { Element { type: "K" id: 9 } } } trusted: true size: 1
+
+V3 AllocateIds
+
+POST /v1/projects/alloc:allocateIds
+{"keys": [{"path": [{"kind": "K"}]}]}
+
+V3 Put
+entity { key { app: "s~alloc" path { Element { type: "K" } } } entity_group {  } }

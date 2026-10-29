@@ -1,0 +1,6 @@
+#!/bin/bash
+# jreq METHOD PATH [BODY] -- request against $BASE (default java 18100), prints status + body
+BASE=${BASE:-localhost:18100}
+m=$1; p=$2; b=${3:-}
+if [ -n "$b" ]; then out=$(curl -s -w '\n%{http_code}' -X $m -H 'content-type: application/json' --data-binary "$b" "http://$BASE$p"); else out=$(curl -s -w '\n%{http_code}' -X $m -H 'content-type: application/json' "http://$BASE$p"); fi
+echo "<< $(echo "$out" | tail -1)"; echo "$out" | sed '$d'

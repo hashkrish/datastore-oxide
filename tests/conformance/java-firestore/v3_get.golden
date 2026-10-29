@@ -1,0 +1,711 @@
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~get"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}, {
+  app: "s~get"
+  path {
+    Element: [{
+      type: "K"
+      name: "b"
+    }, {
+      type: "C"
+      id: 2
+    }]
+  }
+}]
+cost {
+  index_writes: 6
+  entity_writes: 2
+}
+version: [2, 3]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~get"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 2
+}, {
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "K"
+        name: "missing"
+      }]
+    }
+  }
+}, {
+  entity {
+    key {
+      app: "s~get"
+      path {
+        Element: [{
+          type: "K"
+          name: "b"
+        }, {
+          type: "C"
+          id: 2
+        }]
+      }
+    }
+    property: [{
+      name: "y"
+      multiple: false
+      value {
+        stringValue: "s"
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "b"
+      }]
+    }
+  }
+  version: 3
+}, {
+  entity {
+    key {
+      app: "s~get"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 2
+}]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~get"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 2
+}]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "K"
+        name: "missing"
+      }]
+    }
+  }
+}]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "K"
+        name: "missing"
+      }]
+    }
+  }
+}]
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "A OnestoreEntity.Reference must set app."
+}
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "A OnestoreEntity.Path must have at least one Element."
+}
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "Incomplete key.path.element: type: \"K\"\n"
+}
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "Incomplete key.path.element: type: \"K\"\n"
+}
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "Incomplete key.path.element: type: \"C\"\n"
+}
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "A OnestoreEntity.Path.Element must not set both id and name."
+}
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "When OnestoreEntity.Path.Element has name set it must not be empty."
+}
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "The namespace is the empty string."
+}
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "The namespace is the empty string."
+}
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: ""
+        name: "a"
+      }]
+    }
+  }
+}, {
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "__foo__"
+        name: "a"
+      }]
+    }
+  }
+}, {
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "K"
+        name: "__a__"
+      }]
+    }
+  }
+}, {
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+    name_space: "a b"
+  }
+}, {
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+    name_space: "__x__"
+  }
+}, {
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+    database_id: "bad db"
+  }
+}, {
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "K"
+        id: -5
+      }]
+    }
+  }
+}, {
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+        name: "a"
+      }]
+    }
+  }
+}, {
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "K"
+        name: "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn"
+      }]
+    }
+  }
+}]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }, {
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+}]
+<<< END
+>>> V3 Get
+<<< 2
+
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "__entity_group__"
+        id: 1
+      }]
+    }
+  }
+}]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  version: 3
+  key {
+    app: "s~get"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }, {
+        type: "__entity_group__"
+        id: 1
+      }]
+    }
+  }
+}]
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "transaction has expired or is invalid"
+}
+<<< END

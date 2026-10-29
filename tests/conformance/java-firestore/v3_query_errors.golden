@@ -1,0 +1,378 @@
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e00"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e01"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e02"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e03"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e04"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e05"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e06"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e07"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e08"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e09"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e10"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e11"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e12"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e13"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e14"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e15"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e16"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e17"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e18"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e19"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e20"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e21"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e22"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e23"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e24"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "K"
+      name: "e00"
+    }, {
+      type: "C"
+      name: "c1"
+    }]
+  }
+}, {
+  app: "s~qry"
+  path {
+    Element: [{
+      type: "Z"
+      name: "z"
+    }]
+  }
+}]
+cost {
+  index_writes: 311
+  entity_writes: 27
+}
+version: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 2, 27]
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "Only one inequality filter per query is supported.  Encountered both x and y"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "Filter has 2 properties, expected 1"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "Filter has 0 properties, expected 1"
+}
+<<< END
+>>> V3 RunQuery
+<<< 2
+
+<<< END
+>>> V3 RunQuery
+<<< 2
+
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "full-text search unsupported"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "kind is required for non-__key__ filters"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "kind is required for all orders except __key__ ascending"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "kind is required for all orders except __key__ ascending"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+more_results: false
+keys_only: false
+index_only: false
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "__key__ filter value must be a Key"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "__key__ filter value must be a Key"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "projection and keys_only cannot both be set"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "The query app is qry but ancestor app is zzz"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "The query namespace is  but ancestor namespace is n1"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "The query kind is Z but cursor.postfix_position.key kind is K."
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "cursor does not match query"
+}
+<<< END
+>>> V3 RunQuery
+<<< 2
+
+<<< END
+>>> V3 RunQuery
+<<< 2
+
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 32
+app: "s~qry"
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "cross-group transaction need to be explicitly specified, see TransactionOptions.Builder.withXGfound both Element {\n  type: \"K\"\n  name: \"e16\"\n}\n and Element {\n  type: \"K\"\n  name: \"e15\"\n}\n"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 3
+  detail: "Can\'t query app zzin a transaction on app qry"
+}
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "cross-group transaction need to be explicitly specified, see TransactionOptions.Builder.withXGfound both Element {\n  type: \"K\"\n  name: \"e16\"\n}\n and Element {\n  type: \"K\"\n  name: \"e01\"\n}\n"
+}
+<<< END
+>>> V3 Rollback
+<<< 0
+
+<<< END

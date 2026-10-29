@@ -1,0 +1,2 @@
+Invalid boolean value for --regenerate_indexes: x. Must be 'true' or 'false'.
+Exiting.

@@ -1,0 +1,73 @@
+# One argv per line (shell-split, $TMP expands to a scratch dir containing fixtures).
+# Only cases that exit without starting a server belong here.
+# Fixtures: $TMP/proj (created project), $TMP/nonempty (dir with a file).
+
+help
+help start
+help create
+help license
+help help
+help bogus
+help start extra
+bogus
+start
+start --port=0
+start --store_on_disk=true
+start --no_store_on_disk
+start --port=bad --testing
+start --port 9999x --testing
+start -p bad --testing
+start -p=5 --testing
+start -p5 --testing
+start --consistency=2 --testing
+start --consistency=-0.5 --testing
+start --consistency=abc --testing
+start --store_on_disk=maybe --testing
+start --auto_id_policy=foo --testing
+start --auto_id_policy=sequential --testing
+start --enable_entity_groups=yes --testing
+start --regenerate_indexes=x --testing
+start --bogus_flag --testing
+start --testing extra1 extra2
+start --testing=true
+start --TESTING
+start --testing --store_on_disk=true
+start --testing --no_testing
+start --host
+start --testing --project_id=foo
+start -- --testing
+start --testing relative/dir
+start --testing $TMP/missing-parent/dir
+start $TMP/missing-parent/dir
+start --port=bad extra1 extra2
+start --consistency=2 --port=bad --testing
+start --port=bad --consistency=2 --testing
+start --testing --port=-1
+start --testing --port=70000
+create
+create --project_id=x
+create --bogus $TMP/x
+create $TMP/a $TMP/b
+create $TMP/proj
+create $TMP/nonempty
+create --project_id=p $TMP/newproj
+create $TMP/newproj2
+create relative
+license extra
+# Value-acceptance probes: a later --port=bad error means the earlier value was accepted.
+start --consistency=NaN --port=bad --testing
+start --consistency=0.5f --port=bad --testing
+start --consistency=1e-1 --port=bad --testing
+start --port=+5 --consistency=2 --testing
+start --store_on_disk=FALSE --port=bad
+start --host= --port=bad --testing
+start -p 1 -p bad --testing
+start --port=99999999999 --testing
+start --consistency=Infinity --testing
+start --consistency=inf --testing
+start --consistency=nan --port=bad --testing
+# Start-time file checks (storage file before index file).
+start --testing --storage_file=$TMP/missing/x.bin
+start --storage_file=$TMP/missing/x.bin $TMP/proj
+start --testing --index_file=$TMP/missing/x.yaml
+start --testing --index_file=$TMP/missing/x.yaml --storage_file=$TMP/missing/x.bin

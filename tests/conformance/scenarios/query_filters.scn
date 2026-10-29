@@ -1,0 +1,261 @@
+# Filter operators per value type, multi-valued and unindexed properties, IN/NOT_IN, AND/OR.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "P", "name": "a"}]}, "properties": {"age": {"integerValue": "30"}, "name": {"stringValue": "Alice"}, "score": {"doubleValue": 1.5}, "tags": {"arrayValue": {"values": [{"stringValue": "x"}, {"stringValue": "y"}]}}, "active": {"booleanValue": true}, "born": {"timestampValue": "1990-01-01T00:00:00Z"}, "city": {"stringValue": "Paris"}, "unidx": {"stringValue": "u", "excludeFromIndexes": true}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "b"}]}, "properties": {"age": {"integerValue": "25"}, "name": {"stringValue": "bob"}, "score": {"doubleValue": 2.5}, "tags": {"arrayValue": {"values": [{"stringValue": "y"}, {"stringValue": "z"}]}}, "active": {"booleanValue": false}, "born": {"timestampValue": "1995-06-01T12:00:00Z"}, "city": {"stringValue": "Rome"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "c"}]}, "properties": {"age": {"integerValue": "35"}, "name": {"stringValue": "Carol"}, "score": {"doubleValue": -1.0}, "tags": {"arrayValue": {}}, "active": {"booleanValue": true}, "city": {"nullValue": null}}}}, {"upsert": {"key": {"path": [{"kind": "P", "id": "1"}]}, "properties": {"age": {"integerValue": "30"}, "name": {"stringValue": "dave"}, "score": {"doubleValue": "NaN"}, "tags": {"arrayValue": {"values": [{"stringValue": "x"}]}}, "active": {"booleanValue": true}}}}, {"upsert": {"key": {"path": [{"kind": "P", "id": "2"}]}, "properties": {"age": {"stringValue": "30"}, "name": {"stringValue": "Eve"}, "score": {"doubleValue": 0}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "d"}]}, "properties": {"name": {"stringValue": "Frank"}, "tags": {"arrayValue": {"values": [{"stringValue": "z"}, {"stringValue": "x"}]}}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "e"}]}, "properties": {"age": {"integerValue": "40"}, "name": {"stringValue": ""}, "score": {"doubleValue": 0}, "active": {"nullValue": null}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "a"}, {"kind": "C", "id": "1"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "a"}, {"kind": "C", "id": "2"}]}, "properties": {"v": {"integerValue": "2"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "b"}, {"kind": "C", "id": "3"}]}, "properties": {"v": {"integerValue": "3"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "a"}, {"kind": "C", "id": "1"}, {"kind": "G", "name": "x"}]}, "properties": {"v": {"integerValue": "4"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "a"}], "partitionId": {"namespaceId": "ns"}}, "properties": {"age": {"integerValue": "99"}}}}, {"upsert": {"key": {"path": [{"kind": "Q", "name": "z"}]}, "properties": {"age": {"integerValue": "30"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "1"}]}, "properties": {"v": {"nullValue": null}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "2"}]}, "properties": {"v": {"booleanValue": false}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "3"}]}, "properties": {"v": {"booleanValue": true}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "4"}]}, "properties": {"v": {"integerValue": "-5"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "5"}]}, "properties": {"v": {"integerValue": "5"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "6"}]}, "properties": {"v": {"timestampValue": "2020-01-01T00:00:00Z"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "7"}]}, "properties": {"v": {"doubleValue": 1.5}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "8"}]}, "properties": {"v": {"doubleValue": "NaN"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "9"}]}, "properties": {"v": {"doubleValue": -0.5}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "10"}]}, "properties": {"v": {"stringValue": "abc"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "11"}]}, "properties": {"v": {"stringValue": "B"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "12"}]}, "properties": {"v": {"blobValue": "YWJj"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "13"}]}, "properties": {"v": {"keyValue": {"path": [{"kind": "P", "name": "a"}]}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "14"}]}, "properties": {"v": {"keyValue": {"path": [{"kind": "P", "id": "1"}]}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "15"}]}, "properties": {"v": {"geoPointValue": {"latitude": 1, "longitude": 2}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "16"}]}, "properties": {"v": {"entityValue": {"properties": {"x": {"integerValue": "1"}}}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "17"}]}, "properties": {"v": {"arrayValue": {}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "18"}]}, "properties": {"v": {"arrayValue": {"values": [{"integerValue": "1"}, {"stringValue": "a"}]}}}}}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "EQUAL", "value": {"integerValue": "30"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "LESS_THAN", "value": {"integerValue": "30"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "LESS_THAN_OR_EQUAL", "value": {"integerValue": "30"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "GREATER_THAN", "value": {"integerValue": "30"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "GREATER_THAN_OR_EQUAL", "value": {"integerValue": "30"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "NOT_EQUAL", "value": {"integerValue": "30"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "name"}, "op": "EQUAL", "value": {"stringValue": "bob"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "name"}, "op": "LESS_THAN", "value": {"stringValue": "bob"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "name"}, "op": "LESS_THAN_OR_EQUAL", "value": {"stringValue": "bob"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "name"}, "op": "GREATER_THAN", "value": {"stringValue": "bob"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "name"}, "op": "GREATER_THAN_OR_EQUAL", "value": {"stringValue": "bob"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "name"}, "op": "NOT_EQUAL", "value": {"stringValue": "bob"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "score"}, "op": "EQUAL", "value": {"doubleValue": 1.5}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "score"}, "op": "LESS_THAN", "value": {"doubleValue": 1.5}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "score"}, "op": "LESS_THAN_OR_EQUAL", "value": {"doubleValue": 1.5}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "score"}, "op": "GREATER_THAN", "value": {"doubleValue": 1.5}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "score"}, "op": "GREATER_THAN_OR_EQUAL", "value": {"doubleValue": 1.5}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "score"}, "op": "NOT_EQUAL", "value": {"doubleValue": 1.5}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "active"}, "op": "EQUAL", "value": {"booleanValue": true}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "active"}, "op": "LESS_THAN", "value": {"booleanValue": true}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "active"}, "op": "LESS_THAN_OR_EQUAL", "value": {"booleanValue": true}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "active"}, "op": "GREATER_THAN", "value": {"booleanValue": true}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "active"}, "op": "GREATER_THAN_OR_EQUAL", "value": {"booleanValue": true}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "active"}, "op": "NOT_EQUAL", "value": {"booleanValue": true}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "born"}, "op": "EQUAL", "value": {"timestampValue": "1993-01-01T00:00:00Z"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "born"}, "op": "LESS_THAN", "value": {"timestampValue": "1993-01-01T00:00:00Z"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "born"}, "op": "LESS_THAN_OR_EQUAL", "value": {"timestampValue": "1993-01-01T00:00:00Z"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "born"}, "op": "GREATER_THAN", "value": {"timestampValue": "1993-01-01T00:00:00Z"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "born"}, "op": "GREATER_THAN_OR_EQUAL", "value": {"timestampValue": "1993-01-01T00:00:00Z"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "born"}, "op": "NOT_EQUAL", "value": {"timestampValue": "1993-01-01T00:00:00Z"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "tags"}, "op": "EQUAL", "value": {"stringValue": "y"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "tags"}, "op": "LESS_THAN", "value": {"stringValue": "y"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "tags"}, "op": "LESS_THAN_OR_EQUAL", "value": {"stringValue": "y"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "tags"}, "op": "GREATER_THAN", "value": {"stringValue": "y"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "tags"}, "op": "GREATER_THAN_OR_EQUAL", "value": {"stringValue": "y"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "tags"}, "op": "NOT_EQUAL", "value": {"stringValue": "y"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "city"}, "op": "EQUAL", "value": {"nullValue": null}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "city"}, "op": "LESS_THAN", "value": {"nullValue": null}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "city"}, "op": "LESS_THAN_OR_EQUAL", "value": {"nullValue": null}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "city"}, "op": "GREATER_THAN", "value": {"nullValue": null}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "city"}, "op": "GREATER_THAN_OR_EQUAL", "value": {"nullValue": null}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "city"}, "op": "NOT_EQUAL", "value": {"nullValue": null}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "unidx"}, "op": "EQUAL", "value": {"stringValue": "u"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "unidx"}, "op": "LESS_THAN", "value": {"stringValue": "u"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "unidx"}, "op": "LESS_THAN_OR_EQUAL", "value": {"stringValue": "u"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "unidx"}, "op": "GREATER_THAN", "value": {"stringValue": "u"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "unidx"}, "op": "GREATER_THAN_OR_EQUAL", "value": {"stringValue": "u"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "unidx"}, "op": "NOT_EQUAL", "value": {"stringValue": "u"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "missing"}, "op": "EQUAL", "value": {"integerValue": "1"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "missing"}, "op": "LESS_THAN", "value": {"integerValue": "1"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "missing"}, "op": "LESS_THAN_OR_EQUAL", "value": {"integerValue": "1"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "missing"}, "op": "GREATER_THAN", "value": {"integerValue": "1"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "missing"}, "op": "GREATER_THAN_OR_EQUAL", "value": {"integerValue": "1"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "missing"}, "op": "NOT_EQUAL", "value": {"integerValue": "1"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "EQUAL", "value": {"stringValue": "30"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "score"}, "op": "EQUAL", "value": {"doubleValue": "NaN"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "score"}, "op": "EQUAL", "value": {"integerValue": "0"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "EQUAL", "value": {"keyValue": {"path": [{"kind": "P", "name": "b"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "GREATER_THAN", "value": {"keyValue": {"path": [{"kind": "P", "name": "b"}]}}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "LESS_THAN", "value": {"keyValue": {"path": [{"kind": "P", "name": "b"}]}}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "GREATER_THAN", "value": {"keyValue": {"path": [{"kind": "Q", "name": "a"}]}}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "EQUAL", "value": {"stringValue": "b"}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "IN", "value": {"arrayValue": {"values": [{"integerValue": "25"}, {"integerValue": "35"}, {"stringValue": "30"}]}}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "NOT_IN", "value": {"arrayValue": {"values": [{"integerValue": "25"}, {"integerValue": "35"}]}}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "tags"}, "op": "IN", "value": {"arrayValue": {"values": [{"stringValue": "x"}, {"stringValue": "z"}]}}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "tags"}, "op": "NOT_IN", "value": {"arrayValue": {"values": [{"stringValue": "x"}]}}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "IN", "value": {"arrayValue": {}}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "IN", "value": {"integerValue": "1"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "age"}, "op": "EQUAL", "value": {"integerValue": "30"}}}, {"propertyFilter": {"property": {"name": "active"}, "op": "EQUAL", "value": {"booleanValue": true}}}]}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "age"}, "op": "GREATER_THAN", "value": {"integerValue": "20"}}}, {"propertyFilter": {"property": {"name": "age"}, "op": "LESS_THAN", "value": {"integerValue": "35"}}}]}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"compositeFilter": {"op": "OR", "filters": [{"propertyFilter": {"property": {"name": "age"}, "op": "EQUAL", "value": {"integerValue": "25"}}}, {"propertyFilter": {"property": {"name": "name"}, "op": "EQUAL", "value": {"stringValue": "Frank"}}}]}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"compositeFilter": {"op": "OR", "filters": [{"propertyFilter": {"property": {"name": "age"}, "op": "EQUAL", "value": {"integerValue": "30"}}}, {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "tags"}, "op": "EQUAL", "value": {"stringValue": "z"}}}, {"propertyFilter": {"property": {"name": "name"}, "op": "EQUAL", "value": {"stringValue": "Frank"}}}]}}]}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"compositeFilter": {"op": "AND", "filters": []}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "tags"}, "op": "EQUAL", "value": {"stringValue": "x"}}}, {"propertyFilter": {"property": {"name": "tags"}, "op": "EQUAL", "value": {"stringValue": "y"}}}]}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "tags"}, "op": "EQUAL", "value": {"arrayValue": {}}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "op": "EQUAL", "value": {}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {"propertyFilter": {"property": {"name": "age"}, "value": {"integerValue": "1"}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "P"}], "filter": {}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "M"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "GREATER_THAN", "value": {"nullValue": null}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "M"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "LESS_THAN", "value": {"stringValue": "b"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "M"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "GREATER_THAN_OR_EQUAL", "value": {"keyValue": {"path": [{"kind": "P", "name": "a"}]}}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "M"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "EQUAL", "value": {"entityValue": {"properties": {"x": {"integerValue": "1"}}}}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "M"}], "filter": {"propertyFilter": {"property": {"name": "v.x"}, "op": "EQUAL", "value": {"integerValue": "1"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "M"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "EQUAL", "value": {"blobValue": "YWJj"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "M"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "EQUAL", "value": {"timestampValue": "2020-01-01T00:00:00Z"}}}, "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "M"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "EQUAL", "value": {"integerValue": "1577836800000000"}}}, "projection": [{"property": {"name": "__key__"}}]}}

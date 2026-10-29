@@ -1,0 +1,387 @@
+>>> V3 GetIndices
+<<< 0
+
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~idx"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+cost {
+  index_writes: 5
+  entity_writes: 1
+}
+version: [2]
+<<< END
+>>> V3 RunQuery
+<<< 0
+result: [{
+  key {
+    app: "s~idx"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  property: [{
+    name: "x"
+    multiple: false
+    value {
+      int64Value: 1
+    }
+  }, {
+    name: "y"
+    multiple: false
+    value {
+      int64Value: 2
+    }
+  }]
+  entity_group {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+more_results: false
+keys_only: false
+index: [{
+  app_id: "s~idx"
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "x"
+      direction: ASCENDING
+    }, {
+      name: "y"
+      direction: ASCENDING
+    }]
+    ancestor: false
+  }
+  state: READ_WRITE
+}]
+index_only: false
+version: [2]
+<<< END
+>>> V3 RunQuery
+<<< 0
+result: [{
+  key {
+    app: "s~idx"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  property: [{
+    name: "x"
+    multiple: false
+    value {
+      int64Value: 1
+    }
+  }, {
+    name: "y"
+    multiple: false
+    value {
+      int64Value: 2
+    }
+  }]
+  entity_group {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+more_results: false
+keys_only: false
+index: [{
+  app_id: "s~idx"
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "x"
+      direction: ASCENDING
+    }, {
+      name: "y"
+      direction: DESCENDING
+    }]
+    ancestor: false
+  }
+  state: READ_WRITE
+}]
+index_only: false
+version: [2]
+<<< END
+>>> V3 RunQuery
+<<< 0
+result: [{
+  key {
+    app: "s~idx"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  property: [{
+    name: "x"
+    multiple: false
+    value {
+      int64Value: 1
+    }
+  }, {
+    name: "y"
+    multiple: false
+    value {
+      int64Value: 2
+    }
+  }]
+  entity_group {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+more_results: false
+keys_only: false
+index: [{
+  app_id: "s~idx"
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "y"
+      direction: ASCENDING
+    }]
+    ancestor: true
+  }
+  state: READ_WRITE
+}]
+index_only: false
+version: [2]
+<<< END
+>>> V3 GetIndices
+<<< 0
+index: [{
+  app_id: "s~idx"
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "x"
+      direction: ASCENDING
+    }, {
+      name: "y"
+      direction: ASCENDING
+    }]
+    ancestor: false
+  }
+  state: READ_WRITE
+}, {
+  app_id: "s~idx"
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "x"
+      direction: ASCENDING
+    }, {
+      name: "y"
+      direction: DESCENDING
+    }]
+    ancestor: false
+  }
+  state: READ_WRITE
+}, {
+  app_id: "s~idx"
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "y"
+      direction: ASCENDING
+    }]
+    ancestor: true
+  }
+  state: READ_WRITE
+}]
+<<< END
+>>> V3 GetIndices
+<<< 0
+index: [{
+  app_id: "s~nobody"
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "x"
+      direction: ASCENDING
+    }, {
+      name: "y"
+      direction: ASCENDING
+    }]
+    ancestor: false
+  }
+  state: READ_WRITE
+}, {
+  app_id: "s~nobody"
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "x"
+      direction: ASCENDING
+    }, {
+      name: "y"
+      direction: DESCENDING
+    }]
+    ancestor: false
+  }
+  state: READ_WRITE
+}, {
+  app_id: "s~nobody"
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "y"
+      direction: ASCENDING
+    }]
+    ancestor: true
+  }
+  state: READ_WRITE
+}]
+<<< END
+>>> V3 GetIndices
+<<< 0
+index: [{
+  app_id: ""
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "x"
+      direction: ASCENDING
+    }, {
+      name: "y"
+      direction: ASCENDING
+    }]
+    ancestor: false
+  }
+  state: READ_WRITE
+}, {
+  app_id: ""
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "x"
+      direction: ASCENDING
+    }, {
+      name: "y"
+      direction: DESCENDING
+    }]
+    ancestor: false
+  }
+  state: READ_WRITE
+}, {
+  app_id: ""
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "y"
+      direction: ASCENDING
+    }]
+    ancestor: true
+  }
+  state: READ_WRITE
+}]
+<<< END
+>>> POST /v1/projects/idx:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> V3 GetIndices
+<<< 0
+index: [{
+  app_id: "e~idx"
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "x"
+      direction: ASCENDING
+    }, {
+      name: "y"
+      direction: ASCENDING
+    }]
+    ancestor: false
+  }
+  state: READ_WRITE
+}, {
+  app_id: "e~idx"
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "x"
+      direction: ASCENDING
+    }, {
+      name: "y"
+      direction: DESCENDING
+    }]
+    ancestor: false
+  }
+  state: READ_WRITE
+}, {
+  app_id: "e~idx"
+  id: 0
+  definition {
+    entity_type: "K"
+    Property: [{
+      name: "y"
+      direction: ASCENDING
+    }]
+    ancestor: true
+  }
+  state: READ_WRITE
+}, {
+  app_id: "e~idx"
+  id: 0
+  definition {
+    entity_type: "J"
+    Property: [{
+      name: "a"
+      direction: ASCENDING
+    }, {
+      name: "b"
+      direction: ASCENDING
+    }]
+    ancestor: false
+  }
+  state: READ_WRITE
+}]
+<<< END

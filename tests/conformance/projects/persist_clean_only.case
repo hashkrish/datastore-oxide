@@ -1,0 +1,21 @@
+# Only applied writes mark the store dirty: allocated ids alone are not saved.
+ARGS --consistency=1.0 {dir}
+
+POST /v1/projects/p:allocateIds
+{"keys": [{"path": [{"kind": "K"}]}, {"path": [{"kind": "K"}]}, {"path": [{"kind": "K"}]}]}
+
+RESTART
+
+POST /v1/projects/p:allocateIds
+{"keys": [{"path": [{"kind": "K"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "K"}]}, "properties": {}}}]}
+
+RESTART
+
+POST /v1/projects/p:allocateIds
+{"keys": [{"path": [{"kind": "K"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "K"}]}, "properties": {}}}]}

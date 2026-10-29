@@ -1,0 +1,165 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "key": {
+      "partitionId": {
+        "projectId": "p"
+      },
+      "path": [{
+        "kind": "A",
+        "id": "1"
+      }]
+    },
+    "version": "2"
+  }, {
+    "key": {
+      "partitionId": {
+        "projectId": "p"
+      },
+      "path": [{
+        "kind": "B",
+        "id": "2"
+      }]
+    },
+    "version": "3"
+  }, {
+    "key": {
+      "partitionId": {
+        "projectId": "p",
+        "namespaceId": "n"
+      },
+      "path": [{
+        "kind": "A",
+        "id": "3"
+      }]
+    },
+    "version": "4"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/q:commit
+<<< 200
+{
+  "mutationResults": [{
+    "key": {
+      "partitionId": {
+        "projectId": "q"
+      },
+      "path": [{
+        "kind": "A",
+        "id": "4"
+      }]
+    },
+    "version": "2"
+  }],
+  "indexUpdates": 1
+}
+
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 200
+{
+  "keys": [{
+    "partitionId": {
+      "projectId": "p"
+    },
+    "path": [{
+      "kind": "A",
+      "id": "5910974510923776"
+    }]
+  }, {
+    "partitionId": {
+      "projectId": "p"
+    },
+    "path": [{
+      "kind": "A",
+      "id": "5348024557502464"
+    }]
+  }, {
+    "partitionId": {
+      "projectId": "p"
+    },
+    "path": [{
+      "kind": "P",
+      "name": "x"
+    }, {
+      "kind": "C",
+      "id": "6473924464345088"
+    }]
+  }, {
+    "partitionId": {
+      "projectId": "p",
+      "namespaceId": "n"
+    },
+    "path": [{
+      "kind": "Z",
+      "id": "4644337115725824"
+    }]
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:reserveIds
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:reserveIds
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "key": {
+      "partitionId": {
+        "projectId": "p"
+      },
+      "path": [{
+        "kind": "A",
+        "id": "9"
+      }]
+    },
+    "version": "5"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 400
+{"error":{"code":400,"message":"Key path element must not be complete: [A: 5]","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 400
+{"error":{"code":400,"message":"Key path element must not be complete: [A: n]","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:reserveIds
+<<< 400
+{"error":{"code":400,"message":"Key path element must not be incomplete: [A: ]","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:reserveIds
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:reserveIds
+<<< 200
+{
+}
+
+<<< END

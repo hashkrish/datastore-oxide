@@ -1,0 +1,230 @@
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The kind \"__K__\" is reserved.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The value of property \"s\" is longer than 1500 bytes.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 404
+{"error":{"code":404,"message":"no entity to update","status":"NOT_FOUND"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Key path id is invalid. Must not be zero.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "id": "1"
+        }]
+      }
+    },
+    "version": "2"
+  }],
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "2"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "c"
+        }]
+      }
+    },
+    "version": "2"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "id": "2"
+        }]
+      }
+    },
+    "version": "2"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "id": "3"
+        }]
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "3"
+  }],
+  "indexUpdates": 1
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Invalid base version, it is greater than the stored version","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Invalid base version, it is greater than the stored version","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Invalid base version, it is greater than the stored version","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "4"
+  }],
+  "indexUpdates": 1
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Cannot insert an entity with a base version greater than zero","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "conflictDetected": true
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "conflictDetected": true
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "3",
+    "conflictDetected": true
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Invalid base_version: -1, it should be >= 0","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "e"
+        }]
+      }
+    },
+    "version": "3"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "new1"
+        }]
+      }
+    },
+    "version": "4"
+  }],
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "new2"
+        }]
+      }
+    },
+    "version": "4"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "new3"
+        }]
+      }
+    },
+    "version": "4"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "f"
+        }]
+      }
+    },
+    "version": "4"
+  }]
+}
+
+<<< END

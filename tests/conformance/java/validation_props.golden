@@ -1,0 +1,285 @@
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The property.name is the empty string.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The property.name \"__x__\" is reserved.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "3"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The property.name is longer than 1500 bytes.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "4"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The value \"x\" does not contain a value.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The value \"x\" does not contain a value.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The value of property \"s\" is longer than 1500 bytes.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "5"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The value of property \"s\" is longer than 1500 bytes.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "6"
+  }],
+  "indexUpdates": 2
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The value of property \"b\" is longer than 1500 bytes.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The value of property \"b\" is longer than 1500 bytes.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "7"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "8"
+  }],
+  "indexUpdates": 2
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Exclude from indexes cannot be set on a list value","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"A Value containing a list_value cannot specify a meaning.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The value of property \"a\" is longer than 1500 bytes.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "9"
+  }],
+  "indexUpdates": 2
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The value of property \"s\" is longer than 1500 bytes.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The value of property \"s\" is longer than 1500 bytes.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The property.name \"__x__\" is reserved.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"The property.name is the empty string.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "10"
+  }],
+  "indexUpdates": 2
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "11"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Key path element must not be incomplete: [K: ]","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Key path is empty.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "12"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "13"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Geo point latitude outside permitted range -90.0 to 90.0.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Geo point longitude outside permitted range -180.0 to 180.0.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Geo point latitude is not a number.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "14"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "15"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "16"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "17"
+  }],
+  "indexUpdates": 2
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "18"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "19"
+  }]
+}
+
+<<< END

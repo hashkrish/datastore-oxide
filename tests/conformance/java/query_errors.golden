@@ -1,0 +1,240 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }, {
+    "version": "3"
+  }, {
+    "version": "4"
+  }, {
+    "version": "5"
+  }, {
+    "version": "6"
+  }, {
+    "version": "7"
+  }, {
+    "version": "8"
+  }, {
+    "version": "9"
+  }, {
+    "version": "10"
+  }, {
+    "version": "11"
+  }, {
+    "version": "12"
+  }, {
+    "version": "13"
+  }, {
+    "version": "14"
+  }, {
+    "version": "15"
+  }, {
+    "version": "16"
+  }, {
+    "version": "17"
+  }, {
+    "version": "18"
+  }, {
+    "version": "19"
+  }, {
+    "version": "20"
+  }, {
+    "version": "21"
+  }, {
+    "version": "22"
+  }, {
+    "version": "23"
+  }, {
+    "version": "24"
+  }, {
+    "version": "25"
+  }, {
+    "version": "26"
+  }, {
+    "version": "27"
+  }, {
+    "version": "28"
+  }, {
+    "version": "29"
+  }, {
+    "version": "30"
+  }, {
+    "version": "31"
+  }, {
+    "version": "32"
+  }],
+  "indexUpdates": 177
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Only one inequality filter per query is supported.  Encountered both age and score","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"The first sort property must be the same as the property to which the inequality filter is applied.  In your query the first sort property is name but the inequality filter is on age","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"The first sort property must be the same as the property to which the inequality filter is applied.  In your query the first sort property is name but the inequality filter is on age","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Only a single 'NOT_EQUAL' or 'NOT_IN' is allowed per query.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Only a single 'IN' or 'NOT_IN' filter allowed per query.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Filter has 31 properties, expected 1","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Unrecognized PropertyFilter.op: NOT_IN","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"HAS_ANCESTOR requires a key value","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"property must be __key__","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"All disjunctions must have a common and unique ancestor constraint.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Key path is empty.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"The query namespace is  but ancestor namespace is ns","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"kind is required for non-__key__ filters","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"kind is required for all orders except __key__ ascending","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Key path is empty.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"The property.name is the empty string.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"A list value is not allowed","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"The value of property \"age\" is longer than 1500 bytes.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Filter has 2 properties, expected 1","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"unsupported composite property operator","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"A composite filter must have at least one sub-filter.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"a composite filter must specify an operator","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Error parsing protocol message","status":"INVALID_ARGUMENT"}}
+<<< END

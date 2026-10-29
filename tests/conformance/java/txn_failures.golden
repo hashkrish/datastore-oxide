@@ -1,0 +1,547 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }, {
+    "version": "3"
+  }],
+  "indexUpdates": 8
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EXoAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "4"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 409
+{"error":{"code":409,"message":"too much contention on these datastore entities. please try again.","status":"ABORTED"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"transaction closed","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 400
+{"error":{"code":400,"message":"transaction closed","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"transaction closed","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:rollback
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:rollback
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EXwAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "2"
+        }
+      }
+    },
+    "version": "4"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "5"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 409
+{"error":{"code":409,"message":"too much contention on these datastore entities. please try again.","status":"ABORTED"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "2"
+        }
+      }
+    },
+    "version": "4"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:rollback
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EX4AAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "4"
+        }
+      }
+    },
+    "version": "5"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "6"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EYAAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "5"
+        }
+      }
+    },
+    "version": "6"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "7"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 409
+{"error":{"code":409,"message":"too much contention on these datastore entities. please try again.","status":"ABORTED"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EYIAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "6"
+        }
+      }
+    },
+    "version": "7"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "8"
+  }],
+  "indexUpdates": 4,
+  "commitVersion": "8"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "8"
+        }
+      }
+    },
+    "version": "8"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EYMAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 500
+{"error":{"code":500,"message":"Invalid transaction.","status":"INTERNAL"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EYQAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "8"
+        }
+      }
+    },
+    "version": "8"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "9"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "8"
+        }
+      }
+    },
+    "version": "8"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EYYAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "key": {
+      "partitionId": {
+        "projectId": "p"
+      },
+      "path": [{
+        "kind": "K",
+        "id": "1"
+      }]
+    },
+    "version": "10"
+  }, {
+    "key": {
+      "partitionId": {
+        "projectId": "p"
+      },
+      "path": [{
+        "kind": "K",
+        "id": "2"
+      }]
+    },
+    "version": "10"
+  }],
+  "indexUpdates": 2,
+  "commitVersion": "10"
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EYcAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 409
+{"error":{"code":409,"message":"entity already exists","status":"ALREADY_EXISTS"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }, {
+          "kind": "C",
+          "id": "1"
+        }]
+      }
+    },
+    "version": "10"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EYgAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 404
+{"error":{"code":404,"message":"no entity to update","status":"NOT_FOUND"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }, {
+          "kind": "C",
+          "id": "1"
+        }]
+      }
+    },
+    "version": "10"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EYkAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }, {
+          "kind": "__entity_group__",
+          "id": "1"
+        }]
+      },
+      "properties": {
+        "__version__": {
+          "integerValue": "1793075492104007"
+        }
+      }
+    }
+  }]
+}
+
+<<< END

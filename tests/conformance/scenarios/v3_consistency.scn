@@ -1,0 +1,27 @@
+# v3 reads under the eventual-consistency job policy
+PATCH /v1/config
+{"jobPolicy": {"probabilityJobPolicy": {"randomSeed": "7", "unappliedJobPercentage": 100}}}
+
+V3 Put
+entity { key { app: "s~cons" path { Element { type: "K" name: "a" } } } property { name: "x" multiple: false value { int64Value: 1 } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 RunQuery
+app: "s~cons" kind: "K"
+
+V3 Get
+key { app: "s~cons" path { Element { type: "K" name: "a" } } } strong: false
+
+V3 Get
+key { app: "s~cons" path { Element { type: "K" name: "missing" } } } strong: false
+
+V3 RunQuery
+app: "s~cons" kind: "K"
+
+V3 Get
+key { app: "s~cons" path { Element { type: "K" name: "a" } } }
+
+V3 RunQuery
+app: "s~cons" kind: "K"
+
+PATCH /v1/config
+{"jobPolicy": {"probabilityJobPolicy": {"randomSeed": "0", "unappliedJobPercentage": 0}}}

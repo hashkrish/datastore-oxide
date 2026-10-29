@@ -1,0 +1,56 @@
+// The Cloud Datastore emulator's configuration service, as datastore-oxide serves it. Written for
+// datastore-oxide from the service's observable interface (gRPC and `/v1/config` over REST).
+// Licensed under the Apache License, Version 2.0 (see LICENSE at the repository root).
+
+syntax = "proto3";
+
+package google.datastore.emulator.config.v1;
+
+import "google/api/annotations.proto";
+
+service EmulatorConfig {
+  rpc UpdateConfig(UpdateConfigRequest) returns (Config) {
+    option (google.api.http) = {
+      patch: "/v1/config"
+      body: "config"
+    };
+  }
+  rpc GetConfig(GetConfigRequest) returns (Config) {
+    option (google.api.http) = {
+      get: "/v1/config"
+    };
+  }
+}
+
+message Config {
+  JobPolicy job_policy = 1;
+  IdAllocationPolicy id_allocation_policy = 2;
+}
+
+// How writes are applied: probabilistically (eventual consistency) or always at once.
+message JobPolicy {
+  oneof policy {
+    ProbabilityJobPolicy probability_job_policy = 1;
+    bool force_strong_consistency = 2;
+  }
+}
+
+message ProbabilityJobPolicy {
+  int64 random_seed = 1;
+  float unapplied_job_percentage = 2;
+}
+
+message IdAllocationPolicy {
+  enum Policy {
+    POLICY_UNSPECIFIED = 0;
+    SEQUENTIAL = 1;
+    SCATTERED = 2;
+  }
+  Policy policy = 1;
+}
+
+message UpdateConfigRequest {
+  Config config = 1;
+}
+
+message GetConfigRequest {}

@@ -1,0 +1,30 @@
+# Insert/upsert/update/delete round trips and lookup ordering.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [
+  {"insert": {"key": {"path": [{"kind": "K"}]}, "properties": {"s": {"stringValue": "hi"}, "n": {"integerValue": "5"}}}},
+  {"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}}}
+]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}, {"path": [{"kind": "K", "name": "zz"}]}, {"path": [{"kind": "K", "id": "1"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"update": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"x": {"booleanValue": false}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"delete": {"path": [{"kind": "K", "name": "a"}]}}, {"delete": {"path": [{"kind": "K", "name": "never"}]}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}, {"path": [{"kind": "K", "id": "1"}]}]}
+
+POST /v1/projects/p:lookup
+{}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "id": "1"}]}, {"path": [{"kind": "K", "id": "1"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL"}

@@ -1,0 +1,8 @@
+./nonempty
+./nonempty/f
+./proj
+./proj/WEB-INF
+./proj/WEB-INF/index.yaml
+./relative
+./relative/WEB-INF
+./relative/WEB-INF/index.yaml

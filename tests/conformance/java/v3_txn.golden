@@ -1,0 +1,730 @@
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~txn"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}, {
+  app: "s~txn"
+  path {
+    Element: [{
+      type: "K"
+      name: "b"
+    }]
+  }
+}]
+cost {
+  index_writes: 8
+  entity_writes: 2
+}
+version: [2, 3]
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 40
+app: "s~txn"
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~txn"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 2
+}]
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "cross-group transaction need to be explicitly specified, see TransactionOptions.Builder.withXGfound both Element {\n  type: \"K\"\n  name: \"a\"\n}\n and Element {\n  type: \"K\"\n  name: \"b\"\n}\n"
+}
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  version: 3
+  key {
+    app: "s~txn"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }, {
+        type: "C"
+        id: 1
+      }]
+    }
+  }
+}]
+<<< END
+>>> V3 Put
+<<< 0
+application_error {
+  code: 1
+  detail: "cross-group transaction need to be explicitly specified, see TransactionOptions.Builder.withXGfound both Element {\n  type: \"K\"\n  name: \"a\"\n}\n and Element {\n  type: \"K\"\n  name: \"b\"\n}\n"
+}
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~txn"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }, {
+      type: "C"
+      id: 2
+    }]
+  }
+}]
+cost {}
+<<< END
+>>> V3 Commit
+<<< 0
+cost {
+  index_writes: 1
+  entity_writes: 1
+}
+Version: [{
+  root_entity_key {
+    app: "s~txn"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }, {
+        type: "C"
+        id: 2
+      }]
+    }
+  }
+  version: 4
+}]
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 41
+app: "s~txn"
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~txn"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 2
+}, {
+  entity {
+    key {
+      app: "s~txn"
+      path {
+        Element: [{
+          type: "K"
+          name: "b"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "b"
+      }]
+    }
+  }
+  version: 3
+}, {
+  version: 4
+  key {
+    app: "s~txn"
+    path {
+      Element: [{
+        type: "K"
+        name: "c"
+      }]
+    }
+  }
+}]
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~txn"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}, {
+  app: "s~txn"
+  path {
+    Element: [{
+      type: "K"
+      name: "c"
+    }]
+  }
+}]
+cost {}
+<<< END
+>>> V3 Delete
+<<< 0
+cost {}
+<<< END
+>>> V3 Commit
+<<< 0
+cost {
+  index_writes: 10
+  entity_writes: 3
+}
+Version: [{
+  root_entity_key {
+    app: "s~txn"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 5
+}, {
+  root_entity_key {
+    app: "s~txn"
+    path {
+      Element: [{
+        type: "K"
+        name: "b"
+      }]
+    }
+  }
+  version: 5
+}, {
+  root_entity_key {
+    app: "s~txn"
+    path {
+      Element: [{
+        type: "K"
+        name: "c"
+      }]
+    }
+  }
+  version: 5
+}, {
+  root_entity_key {
+    app: "s~txn"
+    path {
+      Element: [{
+        type: "K"
+        name: "gone"
+      }]
+    }
+  }
+  version: 5
+}]
+<<< END
+>>> V3 Commit
+<<< 0
+application_error {
+  code: 1
+  detail: "transaction has expired or is invalid"
+}
+<<< END
+>>> V3 Rollback
+<<< 0
+application_error {
+  code: 1
+  detail: "transaction has expired or is invalid"
+}
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~txn"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 2
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 5
+}, {
+  version: 5
+  key {
+    app: "s~txn"
+    path {
+      Element: [{
+        type: "K"
+        name: "b"
+      }]
+    }
+  }
+}, {
+  entity {
+    key {
+      app: "s~txn"
+      path {
+        Element: [{
+          type: "K"
+          name: "c"
+        }]
+      }
+    }
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "c"
+      }]
+    }
+  }
+  version: 5
+}]
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 42
+app: "s~txn"
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "operating on too many entity groups in a single transaction."
+}
+<<< END
+>>> V3 Rollback
+<<< 0
+
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 43
+app: "s~txn"
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~txn"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 2
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 5
+}]
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~txn"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+cost {
+  index_writes: 4
+  entity_writes: 1
+}
+version: [6]
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~txn"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+cost {}
+<<< END
+>>> V3 Commit
+<<< 0
+application_error {
+  code: 2
+  detail: "too much contention on these datastore entities. please try again."
+}
+<<< END
+>>> V3 Rollback
+<<< 0
+
+<<< END
+>>> V3 Rollback
+<<< 0
+application_error {
+  code: 1
+  detail: "transaction has expired or is invalid"
+}
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 44
+app: "s~txn"
+<<< END
+>>> V3 RunQuery
+<<< 0
+result: [{
+  key {
+    app: "s~txn"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  property: [{
+    name: "x"
+    multiple: false
+    value {
+      int64Value: 3
+    }
+  }]
+  entity_group {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+more_results: false
+keys_only: false
+index_only: false
+version: [6]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~txn"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 3
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 6
+}]
+<<< END
+>>> V3 Get
+<<< 0
+application_error {
+  code: 1
+  detail: "cross-group transaction need to be explicitly specified, see TransactionOptions.Builder.withXGfound both Element {\n  type: \"K\"\n  name: \"a\"\n}\n and Element {\n  type: \"K\"\n  name: \"b\"\n}\n"
+}
+<<< END
+>>> V3 Rollback
+<<< 0
+
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 45
+app: "s~txn"
+<<< END
+>>> V3 RunQuery
+<<< 0
+result: [{
+  key {
+    app: "s~txn"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  property: [{
+    name: "x"
+    multiple: false
+    value {
+      int64Value: 3
+    }
+  }]
+  entity_group {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+more_results: false
+keys_only: false
+index_only: false
+version: [6]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  version: 6
+  key {
+    app: "s~txn"
+    path {
+      Element: [{
+        type: "K"
+        name: "b"
+      }]
+    }
+  }
+}]
+<<< END
+>>> V3 RunQuery
+<<< 0
+application_error {
+  code: 1
+  detail: "Only ancestor queries are allowed inside transactions."
+}
+<<< END
+>>> V3 Rollback
+<<< 0
+
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 46
+app: "s~txn"
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~txn"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 3
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 6
+}]
+<<< END
+>>> V3 Commit
+<<< 0
+cost {
+  index_writes: 0
+  entity_writes: 0
+}
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 47
+app: "s~txn"
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+application_error {
+  code: 1
+  detail: "Cannot retry a read-only transaction."
+}
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+application_error {
+  code: 1
+  detail: "specifying a previous transaction handle on a read-only transaction is not allowed"
+}
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 48
+app: "s~txn"
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+application_error {
+  code: 1
+  detail: "Transaction options should be the same as specified previous transaction."
+}
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 49
+app: "s~txn"
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 50
+app: "s~txn"
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 51
+app: "s~txn"
+<<< END
+>>> V3 Commit
+<<< 2
+
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~txn-other"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+cost {
+  index_writes: 1
+  entity_writes: 1
+}
+version: [2]
+<<< END
+>>> V3 Commit
+<<< 0
+application_error {
+  code: 1
+  detail: "transaction has expired or is invalid"
+}
+<<< END
+>>> V3 Rollback
+<<< 0
+
+<<< END
+>>> V3 Rollback
+<<< 0
+application_error {
+  code: 1
+  detail: "transaction has expired or is invalid"
+}
+<<< END
+>>> V3 Rollback
+<<< 2
+
+<<< END
+>>> V3 Commit
+<<< 2
+
+<<< END
+>>> V3 BeginTransaction
+<<< 2
+
+<<< END

@@ -1,0 +1,99 @@
+# Steps where datastore-oxide deliberately differs from the Java emulator.
+# Format: <scenario> <step number> <reason>
+rest_routing 12 Java never answers when the body's projectId conflicts with the URL; we use the URL's.
+query_pseudo 15 __entity_group__ __version__ is the group write count plus the emulator start time in micros.
+txn_failures 46 __entity_group__ __version__ is the group write count plus the emulator start time in micros.
+export_errors 2 An empty outputUrlPrefix writes at the filesystem root; Java runs as root in its container, we get a permission error (500).
+export_errors 3 Same as step 2 (empty prefix).
+export_errors 4 Relative prefixes resolve against the process working directory, which differs (Java's container runs in /).
+export_errors 5 gs:// prefixes are relative paths ("gs:/bucket/x"); same working-directory difference.
+export_errors 6 file:// prefixes are relative paths ("file:/..."); same working-directory difference.
+entity_groups_off 29 __entity_group__ __version__ is the group write count plus the emulator start time in micros.
+entity_groups_off 31 __entity_group__ __version__ is the group write count plus the emulator start time in micros.
+v3_get 19 __entity_group__ __version__ is the group write count plus the emulator start time in micros.
+v3_put 20 A v3 key with an explicitly empty name_space is a different entity in Java (proto has-bits) and is echoed with name_space: ""; oxide treats it as the default namespace.
+v3_put_storage 6 App Engine-internal computed/stashed properties: Java counts different index rows.
+v3_put_storage 9 v1-written entity read through v3: Java lists properties in v1 request order, oxide in name order (known gap: property order).
+v3_put_storage 10 Same as step 9 (property order).
+v3_put_storage 12 Java indexes only the first of several non-multiple values with one name; oxide indexes the v1 view (an array).
+v3_put_storage 13 Java indexes computed properties (hidden on read); oxide drops them.
+query_gql_aggregate 1 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 2 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 3 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 5 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 6 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 7 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 8 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 9 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 10 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 12 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 14 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 15 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 16 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 17 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 18 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 19 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 20 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 21 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 22 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 23 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 24 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 25 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 26 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 27 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 28 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 29 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 30 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 31 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 32 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 33 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 34 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 35 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 36 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 37 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 38 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 39 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 40 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 41 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 42 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 43 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 44 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 45 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 46 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 47 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 48 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 49 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 50 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 51 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 52 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 53 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 54 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 55 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 56 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 57 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 58 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 59 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 60 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 61 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 62 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 63 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 64 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 65 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 66 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 67 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 68 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 69 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 71 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 72 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 73 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 75 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 76 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 77 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 78 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 79 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 80 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+query_gql_aggregate 81 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+unsupported 7 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+unsupported 8 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+unsupported 9 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).
+unsupported 10 GQL aggregation syntax is not parsed exactly like Java (docs/reference-behavior.md, GQL).

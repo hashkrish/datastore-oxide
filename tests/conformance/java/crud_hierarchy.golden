@@ -1,0 +1,146 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "key": {
+      "partitionId": {
+        "projectId": "p"
+      },
+      "path": [{
+        "kind": "P",
+        "name": "root"
+      }, {
+        "kind": "C",
+        "id": "1"
+      }]
+    },
+    "version": "2"
+  }, {
+    "key": {
+      "partitionId": {
+        "projectId": "p"
+      },
+      "path": [{
+        "kind": "P",
+        "id": "9"
+      }, {
+        "kind": "C",
+        "name": "x"
+      }, {
+        "kind": "G",
+        "id": "2"
+      }]
+    },
+    "version": "3"
+  }, {
+    "version": "4"
+  }, {
+    "version": "5"
+  }],
+  "indexUpdates": 8
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "P",
+          "name": "root"
+        }, {
+          "kind": "C",
+          "id": "1"
+        }]
+      }
+    },
+    "version": "2"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "P",
+          "id": "9"
+        }, {
+          "kind": "C",
+          "name": "x"
+        }, {
+          "kind": "G",
+          "id": "2"
+        }]
+      }
+    },
+    "version": "3"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p",
+          "namespaceId": "ns1"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "4"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "b"
+        }]
+      }
+    },
+    "version": "5"
+  }],
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "5"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/other:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "other"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "b"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END

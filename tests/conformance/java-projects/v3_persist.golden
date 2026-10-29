@@ -1,0 +1,375 @@
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~pv"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+cost {
+  index_writes: 7
+  entity_writes: 1
+}
+version: [2]
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~pv"
+  path {
+    Element: [{
+      type: "K"
+      id: 1
+    }]
+  }
+}]
+cost {
+  index_writes: 3
+  entity_writes: 1
+}
+version: [3]
+<<< END
+>>> V3 RunQuery
+<<< 0
+cursor {
+  cursor: 0
+  app: "s~pv"
+}
+result: [{
+  key {
+    app: "s~pv"
+    path {
+      Element: [{
+        type: "K"
+        id: 1
+      }]
+    }
+  }
+  property: [{
+    name: "r"
+    multiple: false
+    value {
+      ReferenceValue {
+        app: "e~other"
+        PathElement: [{
+          type: "R"
+          id: 3
+        }]
+      }
+    }
+  }]
+  entity_group {
+    Element: [{
+      type: "K"
+      id: 1
+    }]
+  }
+}]
+more_results: true
+keys_only: false
+index_only: false
+version: [3]
+<<< END
+>>> POST /v1/projects/pv:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "pv"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "p": {
+          "geoPointValue": {
+            "latitude": 1.0,
+            "longitude": 2.0
+          },
+          "meaning": 23
+        },
+        "u": {
+          "entityValue": {
+            "properties": {
+              "email": {
+                "stringValue": "a@b",
+                "excludeFromIndexes": true
+              },
+              "auth_domain": {
+                "stringValue": "d",
+                "excludeFromIndexes": true
+              },
+              "user_id": {
+                "stringValue": "95299",
+                "excludeFromIndexes": true
+              }
+            }
+          },
+          "meaning": 20
+        },
+        "y": {
+          "arrayValue": {
+            "values": [{
+              "stringValue": "r",
+              "excludeFromIndexes": true
+            }]
+          }
+        },
+        "z": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /persist
+<<< 200
+Persisting...
+
+<<< END
+>>> RESTART 
+<<< 200
+
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    kind: GD_EVENT
+    key {
+      app: "dev~pv"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "z"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }, {
+      name: "u"
+      multiple: false
+      value {
+        UserValue {
+          email: "a@b"
+          auth_domain: "d"
+          gaiaid: 0
+          obfuscated_gaiaid: "95299"
+        }
+      }
+    }, {
+      name: "p"
+      multiple: false
+      value {
+        PointValue {
+          x: 1.0
+          y: 2.0
+        }
+      }
+    }]
+    raw_property: [{
+      name: "y"
+      multiple: true
+      value {
+        stringValue: "r"
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "zzz"
+      }]
+    }
+    owner {
+      email: "o"
+      auth_domain: "d"
+      gaiaid: 1
+    }
+  }
+  version: 2
+}, {
+  entity {
+    key {
+      app: "dev~pv"
+      path {
+        Element: [{
+          type: "K"
+          id: 1
+        }]
+      }
+    }
+    property: [{
+      name: "r"
+      multiple: false
+      value {
+        ReferenceValue {
+          app: "other"
+          PathElement: [{
+            type: "R"
+            id: 3
+          }]
+        }
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        id: 1
+      }]
+    }
+  }
+  version: 3
+}]
+<<< END
+>>> V3 Next
+<<< 0
+application_error {
+  code: 1
+  detail: "query has expired or is invalid. Please restart it with the last cursor to read more results."
+}
+<<< END
+>>> POST /v1/projects/pv:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "pv"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "p": {
+          "geoPointValue": {
+            "latitude": 1.0,
+            "longitude": 2.0
+          },
+          "meaning": 23
+        },
+        "u": {
+          "entityValue": {
+            "properties": {
+              "email": {
+                "stringValue": "a@b",
+                "excludeFromIndexes": true
+              },
+              "auth_domain": {
+                "stringValue": "d",
+                "excludeFromIndexes": true
+              },
+              "user_id": {
+                "stringValue": "95299",
+                "excludeFromIndexes": true
+              }
+            }
+          },
+          "meaning": 20
+        },
+        "y": {
+          "arrayValue": {
+            "values": [{
+              "stringValue": "r",
+              "excludeFromIndexes": true
+            }]
+          }
+        },
+        "z": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> V3 RunQuery
+<<< 0
+result: [{
+  kind: GD_EVENT
+  key {
+    app: "s~pv"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  property: [{
+    name: "z"
+    multiple: false
+    value {
+      int64Value: 1
+    }
+  }, {
+    name: "u"
+    multiple: false
+    value {
+      UserValue {
+        email: "a@b"
+        auth_domain: "d"
+        gaiaid: 0
+        obfuscated_gaiaid: "95299"
+      }
+    }
+  }, {
+    name: "p"
+    multiple: false
+    value {
+      PointValue {
+        x: 1.0
+        y: 2.0
+      }
+    }
+  }]
+  raw_property: [{
+    name: "y"
+    multiple: true
+    value {
+      stringValue: "r"
+    }
+  }]
+  entity_group {
+    Element: [{
+      type: "K"
+      name: "zzz"
+    }]
+  }
+  owner {
+    email: "o"
+    auth_domain: "d"
+    gaiaid: 1
+  }
+}]
+more_results: false
+keys_only: false
+index_only: false
+version: [2]
+<<< END
+>>> V3 Next
+<<< 0
+application_error {
+  code: 1
+  detail: "query has expired or is invalid. Please restart it with the last cursor to read more results."
+}
+<<< END

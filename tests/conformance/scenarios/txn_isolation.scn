@@ -1,0 +1,139 @@
+# Transaction isolation granularity: same group, different entities; queries inside transactions.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "P", "name": "r"}, {"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}, "w": {"integerValue": "10"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "r"}, {"kind": "K", "name": "b"}]}, "properties": {"v": {"integerValue": "2"}, "w": {"integerValue": "20"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "c"}]}, "properties": {"v": {"integerValue": "3"}, "w": {"integerValue": "30"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "d"}]}, "properties": {"v": {"integerValue": "4"}, "w": {"integerValue": "40"}}}}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t1 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "P", "name": "r"}, {"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{t1}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "P", "name": "r"}, {"kind": "K", "name": "b"}]}, "properties": {"v": {"integerValue": "20"}, "w": {"integerValue": "200"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "P", "name": "r"}, {"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "10"}, "w": {"integerValue": "100"}}}}], "transaction": "{{t1}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t2 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "P", "name": "r"}, {"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{t2}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "P", "name": "r"}, {"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "11"}, "w": {"integerValue": "110"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "P", "name": "r"}, {"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "12"}, "w": {"integerValue": "120"}}}}], "transaction": "{{t2}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t3 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "c"}]}, "properties": {"v": {"integerValue": "30"}, "w": {"integerValue": "300"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "c"}]}], "readOptions": {"transaction": "{{t3}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "c"}]}, "properties": {"v": {"integerValue": "31"}, "w": {"integerValue": "310"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "c"}]}], "readOptions": {"transaction": "{{t3}}"}}
+
+POST /v1/projects/p:rollback
+{"transaction": "{{t3}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t4 = transaction
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "GREATER_THAN", "value": {"integerValue": "2"}}}}, "readOptions": {"transaction": "{{t4}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "d"}]}, "properties": {"v": {"integerValue": "40"}, "w": {"integerValue": "400"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "e"}]}, "properties": {"v": {"integerValue": "5"}, "w": {"integerValue": "50"}}}}], "transaction": "{{t4}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t5 = transaction
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "GREATER_THAN", "value": {"integerValue": "100"}}}}, "readOptions": {"transaction": "{{t5}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "f"}]}, "properties": {"v": {"integerValue": "500"}, "w": {"integerValue": "5000"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "g"}]}, "properties": {"v": {"integerValue": "6"}, "w": {"integerValue": "60"}}}}], "transaction": "{{t5}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t6 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "h"}]}, "properties": {"v": {"integerValue": "7"}, "w": {"integerValue": "70"}}}}], "transaction": "{{t6}}"}
+
+POST /v1/projects/p:beginTransaction
+{"transactionOptions": {"readOnly": {}}}
+> t7 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "c"}]}], "readOptions": {"transaction": "{{t7}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "i"}]}, "properties": {"v": {"integerValue": "8"}, "w": {"integerValue": "80"}}}}], "transaction": "{{t7}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t8 = transaction
+
+POST /v1/projects/p:beginTransaction
+{}
+> t9 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "j"}]}, "properties": {"v": {"integerValue": "9"}, "w": {"integerValue": "90"}}}}], "transaction": "{{t8}}"}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "j"}]}, "properties": {"v": {"integerValue": "90"}, "w": {"integerValue": "900"}}}}], "transaction": "{{t9}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t10 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "G", "name": "0"}]}, {"path": [{"kind": "G", "name": "1"}]}, {"path": [{"kind": "G", "name": "2"}]}, {"path": [{"kind": "G", "name": "3"}]}, {"path": [{"kind": "G", "name": "4"}]}, {"path": [{"kind": "G", "name": "5"}]}, {"path": [{"kind": "G", "name": "6"}]}, {"path": [{"kind": "G", "name": "7"}]}, {"path": [{"kind": "G", "name": "8"}]}, {"path": [{"kind": "G", "name": "9"}]}, {"path": [{"kind": "G", "name": "10"}]}, {"path": [{"kind": "G", "name": "11"}]}, {"path": [{"kind": "G", "name": "12"}]}, {"path": [{"kind": "G", "name": "13"}]}, {"path": [{"kind": "G", "name": "14"}]}, {"path": [{"kind": "G", "name": "15"}]}, {"path": [{"kind": "G", "name": "16"}]}, {"path": [{"kind": "G", "name": "17"}]}, {"path": [{"kind": "G", "name": "18"}]}, {"path": [{"kind": "G", "name": "19"}]}, {"path": [{"kind": "G", "name": "20"}]}, {"path": [{"kind": "G", "name": "21"}]}, {"path": [{"kind": "G", "name": "22"}]}, {"path": [{"kind": "G", "name": "23"}]}, {"path": [{"kind": "G", "name": "24"}]}, {"path": [{"kind": "G", "name": "25"}]}, {"path": [{"kind": "G", "name": "26"}]}, {"path": [{"kind": "G", "name": "27"}]}, {"path": [{"kind": "G", "name": "28"}]}, {"path": [{"kind": "G", "name": "29"}]}], "readOptions": {"transaction": "{{t10}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "G", "name": "0"}]}, "properties": {"v": {"integerValue": "0"}, "w": {"integerValue": "0"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "1"}]}, "properties": {"v": {"integerValue": "1"}, "w": {"integerValue": "10"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "2"}]}, "properties": {"v": {"integerValue": "2"}, "w": {"integerValue": "20"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "3"}]}, "properties": {"v": {"integerValue": "3"}, "w": {"integerValue": "30"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "4"}]}, "properties": {"v": {"integerValue": "4"}, "w": {"integerValue": "40"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "5"}]}, "properties": {"v": {"integerValue": "5"}, "w": {"integerValue": "50"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "6"}]}, "properties": {"v": {"integerValue": "6"}, "w": {"integerValue": "60"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "7"}]}, "properties": {"v": {"integerValue": "7"}, "w": {"integerValue": "70"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "8"}]}, "properties": {"v": {"integerValue": "8"}, "w": {"integerValue": "80"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "9"}]}, "properties": {"v": {"integerValue": "9"}, "w": {"integerValue": "90"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "10"}]}, "properties": {"v": {"integerValue": "10"}, "w": {"integerValue": "100"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "11"}]}, "properties": {"v": {"integerValue": "11"}, "w": {"integerValue": "110"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "12"}]}, "properties": {"v": {"integerValue": "12"}, "w": {"integerValue": "120"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "13"}]}, "properties": {"v": {"integerValue": "13"}, "w": {"integerValue": "130"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "14"}]}, "properties": {"v": {"integerValue": "14"}, "w": {"integerValue": "140"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "15"}]}, "properties": {"v": {"integerValue": "15"}, "w": {"integerValue": "150"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "16"}]}, "properties": {"v": {"integerValue": "16"}, "w": {"integerValue": "160"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "17"}]}, "properties": {"v": {"integerValue": "17"}, "w": {"integerValue": "170"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "18"}]}, "properties": {"v": {"integerValue": "18"}, "w": {"integerValue": "180"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "19"}]}, "properties": {"v": {"integerValue": "19"}, "w": {"integerValue": "190"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "20"}]}, "properties": {"v": {"integerValue": "20"}, "w": {"integerValue": "200"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "21"}]}, "properties": {"v": {"integerValue": "21"}, "w": {"integerValue": "210"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "22"}]}, "properties": {"v": {"integerValue": "22"}, "w": {"integerValue": "220"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "23"}]}, "properties": {"v": {"integerValue": "23"}, "w": {"integerValue": "230"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "24"}]}, "properties": {"v": {"integerValue": "24"}, "w": {"integerValue": "240"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "25"}]}, "properties": {"v": {"integerValue": "25"}, "w": {"integerValue": "250"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "26"}]}, "properties": {"v": {"integerValue": "26"}, "w": {"integerValue": "260"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "27"}]}, "properties": {"v": {"integerValue": "27"}, "w": {"integerValue": "270"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "28"}]}, "properties": {"v": {"integerValue": "28"}, "w": {"integerValue": "280"}}}}, {"upsert": {"key": {"path": [{"kind": "G", "name": "29"}]}, "properties": {"v": {"integerValue": "29"}, "w": {"integerValue": "290"}}}}], "transaction": "{{t10}}"}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"compositeFilter": {"op": "OR", "filters": [{"propertyFilter": {"property": {"name": "v"}, "op": "EQUAL", "value": {"integerValue": "1"}}}, {"propertyFilter": {"property": {"name": "v"}, "op": "EQUAL", "value": {"integerValue": "3"}}}]}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "v"}, "op": "GREATER_THAN", "value": {"integerValue": "1"}}}, {"propertyFilter": {"property": {"name": "w"}, "op": "LESS_THAN", "value": {"integerValue": "500"}}}]}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "IN", "value": {"arrayValue": {"values": [{"integerValue": "1"}, {"integerValue": "3"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "NOT_IN", "value": {"arrayValue": {"values": [{"integerValue": "1"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "NOT_EQUAL", "value": {"integerValue": "1"}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "w"}}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "GREATER_THAN", "value": {"integerValue": "1"}}}}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM K WHERE v > 1 AND w < 500", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM K WHERE v = 1 OR v = 3", "allowLiterals": true}}

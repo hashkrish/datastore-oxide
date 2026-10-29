@@ -1,0 +1,181 @@
+# GQL: syntax, literals, bindings, functions and errors.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "P", "name": "a"}]}, "properties": {"age": {"integerValue": "30"}, "name": {"stringValue": "Alice"}, "score": {"doubleValue": 1.5}, "tags": {"arrayValue": {"values": [{"stringValue": "x"}, {"stringValue": "y"}]}}, "active": {"booleanValue": true}, "born": {"timestampValue": "1990-01-01T00:00:00Z"}, "city": {"stringValue": "Paris"}, "unidx": {"stringValue": "u", "excludeFromIndexes": true}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "b"}]}, "properties": {"age": {"integerValue": "25"}, "name": {"stringValue": "bob"}, "score": {"doubleValue": 2.5}, "tags": {"arrayValue": {"values": [{"stringValue": "y"}, {"stringValue": "z"}]}}, "active": {"booleanValue": false}, "born": {"timestampValue": "1995-06-01T12:00:00Z"}, "city": {"stringValue": "Rome"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "c"}]}, "properties": {"age": {"integerValue": "35"}, "name": {"stringValue": "Carol"}, "score": {"doubleValue": -1.0}, "tags": {"arrayValue": {}}, "active": {"booleanValue": true}, "city": {"nullValue": null}}}}, {"upsert": {"key": {"path": [{"kind": "P", "id": "1"}]}, "properties": {"age": {"integerValue": "30"}, "name": {"stringValue": "dave"}, "score": {"doubleValue": "NaN"}, "tags": {"arrayValue": {"values": [{"stringValue": "x"}]}}, "active": {"booleanValue": true}}}}, {"upsert": {"key": {"path": [{"kind": "P", "id": "2"}]}, "properties": {"age": {"stringValue": "30"}, "name": {"stringValue": "Eve"}, "score": {"doubleValue": 0}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "d"}]}, "properties": {"name": {"stringValue": "Frank"}, "tags": {"arrayValue": {"values": [{"stringValue": "z"}, {"stringValue": "x"}]}}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "e"}]}, "properties": {"age": {"integerValue": "40"}, "name": {"stringValue": ""}, "score": {"doubleValue": 0}, "active": {"nullValue": null}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "a"}, {"kind": "C", "id": "1"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "a"}, {"kind": "C", "id": "2"}]}, "properties": {"v": {"integerValue": "2"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "b"}, {"kind": "C", "id": "3"}]}, "properties": {"v": {"integerValue": "3"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "a"}, {"kind": "C", "id": "1"}, {"kind": "G", "name": "x"}]}, "properties": {"v": {"integerValue": "4"}}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "a"}], "partitionId": {"namespaceId": "ns"}}, "properties": {"age": {"integerValue": "99"}}}}, {"upsert": {"key": {"path": [{"kind": "Q", "name": "z"}]}, "properties": {"age": {"integerValue": "30"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "1"}]}, "properties": {"v": {"nullValue": null}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "2"}]}, "properties": {"v": {"booleanValue": false}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "3"}]}, "properties": {"v": {"booleanValue": true}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "4"}]}, "properties": {"v": {"integerValue": "-5"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "5"}]}, "properties": {"v": {"integerValue": "5"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "6"}]}, "properties": {"v": {"timestampValue": "2020-01-01T00:00:00Z"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "7"}]}, "properties": {"v": {"doubleValue": 1.5}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "8"}]}, "properties": {"v": {"doubleValue": "NaN"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "9"}]}, "properties": {"v": {"doubleValue": -0.5}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "10"}]}, "properties": {"v": {"stringValue": "abc"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "11"}]}, "properties": {"v": {"stringValue": "B"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "12"}]}, "properties": {"v": {"blobValue": "YWJj"}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "13"}]}, "properties": {"v": {"keyValue": {"path": [{"kind": "P", "name": "a"}]}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "14"}]}, "properties": {"v": {"keyValue": {"path": [{"kind": "P", "id": "1"}]}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "15"}]}, "properties": {"v": {"geoPointValue": {"latitude": 1, "longitude": 2}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "16"}]}, "properties": {"v": {"entityValue": {"properties": {"x": {"integerValue": "1"}}}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "17"}]}, "properties": {"v": {"arrayValue": {}}}}}, {"upsert": {"key": {"path": [{"kind": "M", "id": "18"}]}, "properties": {"v": {"arrayValue": {"values": [{"integerValue": "1"}, {"stringValue": "a"}]}}}}}]}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "select * from P"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM `P`"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT __key__ FROM P"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT age, name FROM P"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT DISTINCT age FROM P"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT DISTINCT ON (age) age, name FROM P"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P LIMIT 2"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P LIMIT 2 OFFSET 1"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P OFFSET 5"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P ORDER BY age DESC"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P ORDER BY age ASC, name DESC"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age = 30"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age = 30", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE name = 'bob'", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE name = \"bob\"", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE active = TRUE", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE city = NULL", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE score > 1.0", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age >= 30 AND age < 40", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age = 30 OR age = 25", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age IN ARRAY(25, 35)", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age NOT IN ARRAY(25, 35)", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age != 30", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE tags CONTAINS 'x'", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE tags HAS 'x'", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE __key__ = KEY(P, 'a')", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM C WHERE __key__ HAS ANCESTOR KEY(P, 'a')", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE KEY(P, 'a') HAS DESCENDANT __key__", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE __key__ = KEY('P', 1)", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE born > DATETIME('1991-01-01T00:00:00Z')", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE born > DATETIME('1991-01-01 00:00:00')", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM M WHERE v = BLOB('abc')", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age = @a", "namedBindings": {"a": {"value": {"integerValue": "30"}}}}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age = @1 AND name = @2", "positionalBindings": [{"value": {"integerValue": "30"}}, {"value": {"stringValue": "Alice"}}]}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age = @missing"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age = @1"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age = @a", "namedBindings": {"a": {"value": {"integerValue": "30"}}, "b": {"value": {"integerValue": "1"}}}}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P LIMIT @lim", "namedBindings": {"lim": {"value": {"integerValue": "1"}}}}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P LIMIT 2", "allowLiterals": true}}
+> g1 = batch.endCursor
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P LIMIT 2 OFFSET @c", "namedBindings": {"c": {"cursor": "{{g1}}"}}}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age > 30 AND name = 'x'", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM `__kind__`"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * WHERE __key__ HAS ANCESTOR KEY(P, 'a')", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": ""}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELEC * FROM P"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age = 'unterminated", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P ORDER BY"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P LIMIT -1", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age == 30", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age = 30 extra", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE `my prop` = 1", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE age = -30", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE score = 1e3", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM P WHERE name = 'it''s'", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"partitionId": {"namespaceId": "ns"}, "gqlQuery": {"queryString": "SELECT * FROM P"}}

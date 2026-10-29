@@ -1,0 +1,79 @@
+# v3 AddActions (taskqueue bulk add requests in a transaction)
+V3 BeginTransaction
+app: "s~act"
+> t = handle
+
+V3HEX AddActions
+0a(0a0764656661756c7412027431187b22052f776f726b4a04626f647952(09{{t:fixed64}}1205737e616374))
+
+V3HEX AddActions
+0a(0a0764656661756c7412027430187b22052f776f726b4a04626f647952(09{{t:fixed64}}1205737e616374))0a(0a0764656661756c7412027431187b22052f776f726b4a04626f647952(09{{t:fixed64}}1205737e616374))0a(0a0764656661756c7412027432187b22052f776f726b4a04626f647952(09{{t:fixed64}}1205737e616374))0a(0a0764656661756c7412027433187b22052f776f726b4a04626f647952(09{{t:fixed64}}1205737e616374))
+
+V3HEX AddActions
+0a(0a0764656661756c7412027431187b22052f776f726b4a04626f647952(09{{t:fixed64}}1205737e616374))
+
+V3HEX AddActions
+0a(0a0764656661756c7412027431187b22052f776f726b4a04626f6479)
+
+V3HEX AddActions
+0a(0a0764656661756c7412027431187b22052f776f726b4a04626f6479aa01(09{{t:fixed64}}1205737e616374))
+
+V3HEX AddActions
+0a(0a0764656661756c7412027431187b22052f776f726b4a04626f6479aa01(ffff))
+
+V3HEX AddActions
+0a(0a0764656661756c7412027431187b22052f776f726b4a04626f647952(099f860100000000001205737e616374))
+
+V3HEX AddActions
+0a(0a0764656661756c7412027431187b22052f776f726b4a04626f647952(09{{t:fixed64}}120a737e6163742d6e6f7065))
+
+V3HEX AddActions
+0a030a0171
+
+V3 Put
+entity { key { app: "s~act" path { Element { type: "K" name: "a" } } } property { name: "x" multiple: false value { int64Value: 1 } } entity_group { Element { type: "K" name: "a" } } } transaction { handle: {{t}} app: "s~act" }
+
+V3 Commit
+handle: {{t}} app: "s~act"
+
+V3 Get
+key { app: "s~act" path { Element { type: "K" name: "a" } } }
+
+V3 BeginTransaction
+app: "s~act"
+> t2 = handle
+
+V3HEX AddActions
+0a(0a0764656661756c7412027431187b22052f776f726b4a04626f647952(09{{t2:fixed64}}1205737e616374)5a05737e616374)
+
+V3 Commit hostport=-
+handle: {{t2}} app: "s~act"
+
+V3 BeginTransaction
+app: "s~act"
+> t3 = handle
+
+V3HEX AddActions
+0a(0a0764656661756c7412027431187b22052f776f726b4a04626f647952(09{{t3:fixed64}}1205737e616374))
+
+V3 Put
+entity { key { app: "s~act" path { Element { type: "K" name: "b" } } } property { name: "x" multiple: false value { int64Value: 1 } } entity_group { Element { type: "K" name: "b" } } } transaction { handle: {{t3}} app: "s~act" }
+
+V3 Commit hostport=127.0.0.1:1
+handle: {{t3}} app: "s~act"
+
+V3 Get
+key { app: "s~act" path { Element { type: "K" name: "b" } } }
+
+V3 Rollback
+handle: {{t3}} app: "s~act"
+
+V3 BeginTransaction
+app: "s~act"
+> t4 = handle
+
+V3HEX AddActions
+0a(0a0764656661756c7412027431187b22052f776f726b4a04626f647952(09{{t4:fixed64}}1205737e616374))
+
+V3 Rollback
+handle: {{t4}} app: "s~act"

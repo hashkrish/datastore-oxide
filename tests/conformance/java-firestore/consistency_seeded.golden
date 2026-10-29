@@ -1,0 +1,1110 @@
+>>> PATCH /v1/config
+<<< 200
+{
+  "jobPolicy": {
+    "forceStrongConsistency": true
+  },
+  "idAllocationPolicy": {
+    "policy": "SEQUENTIAL"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }, {
+    "version": "3"
+  }, {
+    "version": "4"
+  }, {
+    "version": "5"
+  }, {
+    "version": "6"
+  }, {
+    "version": "7"
+  }, {
+    "version": "8"
+  }, {
+    "version": "9"
+  }, {
+    "version": "10"
+  }, {
+    "version": "11"
+  }, {
+    "version": "12"
+  }, {
+    "version": "13"
+  }, {
+    "version": "14"
+  }, {
+    "version": "15"
+  }, {
+    "version": "16"
+  }, {
+    "version": "17"
+  }, {
+    "version": "18"
+  }, {
+    "version": "19"
+  }, {
+    "version": "20"
+  }, {
+    "version": "21"
+  }],
+  "indexUpdates": 80
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "KEY_ONLY",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "4"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgEDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "5"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgFDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "6"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgGDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "8"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgIDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "9"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgJDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "10"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgKDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "11"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgLDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "12"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgMDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "13"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgNDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "16"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgQDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "17"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgRDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "18"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgSDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "19"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUhgTDBgAIAA="
+    }],
+    "endCursor": "ChISDGoBcHIHCxIBUhgTDBgAIAA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "22"
+  }, {
+    "version": "23"
+  }, {
+    "version": "24"
+  }, {
+    "version": "25"
+  }, {
+    "version": "26"
+  }, {
+    "version": "27"
+  }, {
+    "version": "28"
+  }, {
+    "version": "29"
+  }, {
+    "version": "30"
+  }, {
+    "version": "31"
+  }, {
+    "version": "32"
+  }, {
+    "version": "33"
+  }, {
+    "version": "34"
+  }, {
+    "version": "35"
+  }, {
+    "version": "36"
+  }, {
+    "version": "37"
+  }, {
+    "version": "38"
+  }, {
+    "version": "39"
+  }, {
+    "version": "40"
+  }, {
+    "version": "41"
+  }],
+  "indexUpdates": 80
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "PROJECTION",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "4"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "4",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCAQSDGoBcHIHCxIBUhgEDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "5"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "5",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCAUSDGoBcHIHCxIBUhgFDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "6"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "6",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCAYSDGoBcHIHCxIBUhgGDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "10"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "10",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCAoSDGoBcHIHCxIBUhgKDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "11"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "11",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCAsSDGoBcHIHCxIBUhgLDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "12"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "12",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCAwSDGoBcHIHCxIBUhgMDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "14"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "14",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCA4SDGoBcHIHCxIBUhgODBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "15"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "15",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCA8SDGoBcHIHCxIBUhgPDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "16"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "16",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCBASDGoBcHIHCxIBUhgQDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "17"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "17",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCBESDGoBcHIHCxIBUhgRDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "19"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "19",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCBMSDGoBcHIHCxIBUhgTDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "101",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCGUSDGoBcHIHCxIBUhgBDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "102",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCGYSDGoBcHIHCxIBUhgCDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "3"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "103",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCGcSDGoBcHIHCxIBUhgDDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "7"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "107",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCGsSDGoBcHIHCxIBUhgHDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "8"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "108",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCGwSDGoBcHIHCxIBUhgIDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "9"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "109",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCG0SDGoBcHIHCxIBUhgJDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "13"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "113",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCHESDGoBcHIHCxIBUhgNDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "18"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "118",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCHYSDGoBcHIHCxIBUhgSDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "20"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "120",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCHgSDGoBcHIHCxIBUhgUDBgAIAA="
+    }],
+    "endCursor": "ChsKBwoBdhICCHgSDGoBcHIHCxIBUhgUDBgAIAA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "R",
+          "id": "3"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "103"
+        }
+      }
+    },
+    "version": "24"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "PROJECTION",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "4"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "4",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCAQSDGoBcHIHCxIBUhgEDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "101",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCGUSDGoBcHIHCxIBUhgBDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "102",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCGYSDGoBcHIHCxIBUhgCDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "3"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "103",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCGcSDGoBcHIHCxIBUhgDDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "5"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "105",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCGkSDGoBcHIHCxIBUhgFDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "6"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "106",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCGoSDGoBcHIHCxIBUhgGDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "7"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "107",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCGsSDGoBcHIHCxIBUhgHDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "8"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "108",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCGwSDGoBcHIHCxIBUhgIDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "9"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "109",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCG0SDGoBcHIHCxIBUhgJDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "10"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "110",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCG4SDGoBcHIHCxIBUhgKDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "11"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "111",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCG8SDGoBcHIHCxIBUhgLDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "12"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "112",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCHASDGoBcHIHCxIBUhgMDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "13"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "113",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCHESDGoBcHIHCxIBUhgNDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "14"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "114",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCHISDGoBcHIHCxIBUhgODBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "15"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "115",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCHMSDGoBcHIHCxIBUhgPDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "16"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "116",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCHQSDGoBcHIHCxIBUhgQDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "17"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "117",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCHUSDGoBcHIHCxIBUhgRDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "18"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "118",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCHYSDGoBcHIHCxIBUhgSDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "19"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "119",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCHcSDGoBcHIHCxIBUhgTDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "R",
+            "id": "20"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "120",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "ChsKBwoBdhICCHgSDGoBcHIHCxIBUhgUDBgAIAA="
+    }],
+    "endCursor": "ChsKBwoBdhICCHgSDGoBcHIHCxIBUhgUDBgAIAA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> PATCH /v1/config
+<<< 200
+{
+  "jobPolicy": {
+    "forceStrongConsistency": true
+  },
+  "idAllocationPolicy": {
+    "policy": "SEQUENTIAL"
+  }
+}
+
+<<< END

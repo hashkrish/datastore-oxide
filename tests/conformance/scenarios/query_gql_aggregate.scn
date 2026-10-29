@@ -1,0 +1,243 @@
+# GQL aggregation syntax: Java parses it, then fails (bare 500) since runQuery cannot run aggregations.
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "AGGREGATE"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "aggregate"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": " AGGREGATE"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "AGGREGATEX"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "AGGREGATE x"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "AGGREGATE("}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "AGGREGATE 'x"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "AGGREGATE COUNT(*) OVER (SELECT * FROM A)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "AGGREGATE COUNT(*) AS c OVER (SELECT * FROM A WHERE n > 1)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "AGGREGATE SUM(n) OVER (SELECT * FROM A)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "`AGGREGATE`"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "OVER"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "COUNT(*)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT count(*) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) FROM"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) FROM A WHERE"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) FROM A WHERE x = 'a"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) FROM A LIMIT 1"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) FROM A ORDER BY"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) FROM A garbage"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) GROUP BY x"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) x"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) AS c x"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) AS c, SUM(n) AS s FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT AVG(n), COUNT(*) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT AVG(n) GARBAGE"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT SUM(n) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT SUM(a.b) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT SUM(`n`) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT SUM(n) FROM A WHERE x"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(x) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(x"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*),"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) AS c,"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) AS"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) AS FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) AS 1 FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*), __key__ FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*), foo("}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*), foo(x)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*), COUNT(x)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(x), COUNT(*)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(DISTINCT x) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT SUM("}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT SUM(n"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT SUM(*)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT_UP_TO(3) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT_UP_TO(x) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT_UP_TO(-1) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT_UP_TO(@a)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT_UP_TO(@1)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT_UP_TO("}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT DISTINCT COUNT(*) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT DISTINCT ON (a) COUNT(*) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT DISTINCT x, COUNT(*) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT DISTINCT 1"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT x, COUNT(*) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT x, 1 FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT x, FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT x COUNT"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT AGGREGATE FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM AGGREGATE"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM OVER"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM A WHERE COUNT = 1"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM A WHERE x = COUNT"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT __key__, COUNT(*) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM A GROUP BY x"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT x FROM A GROUP BY x"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM A LIMIT 1 AGGREGATE"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT_UP_TO(3) FROM A", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT_UP_TO(3", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT_UP_TO(-1)", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT_UP_TO(0)", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT_UP_TO(99999999999999999999)", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT_UP_TO(1.5)", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM A LIMIT 1 AGGREGATE", "allowLiterals": true}}

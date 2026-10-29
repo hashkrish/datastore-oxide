@@ -1,0 +1,12 @@
+# A malformed datastore-indexes.xml.
+ARGS --store_on_disk=false --consistency=1.0 {dir}
+SETUP WEB-INF/datastore-indexes.xml
+<datastore-indexes>
+  <datastore-index kind="K">
+END
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}}]}}

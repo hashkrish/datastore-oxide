@@ -1,0 +1,49 @@
+# Production features the Java emulator lacks: aggregations (gRPC + GQL) and read_time (ignored).
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "A", "name": "a"}]}, "properties": {"n": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "A", "name": "b"}]}, "properties": {"n": {"integerValue": "2"}}}}]}
+
+POST /v1/projects/p:runAggregationQuery
+{"aggregationQuery": {"nestedQuery": {"kind": [{"name": "A"}]}, "aggregations": [{"count": {}, "alias": "c"}]}}
+
+POST /v1/projects/p:runAggregationQuery
+{"aggregationQuery": {"nestedQuery": {"kind": [{"name": "A"}]}, "aggregations": [{"count": {"upTo": "1"}}, {"sum": {"property": {"name": "n"}}}, {"avg": {"property": {"name": "n"}}}]}}
+
+POST /v1/projects/p:runAggregationQuery
+{"gqlQuery": {"queryString": "AGGREGATE COUNT(*) OVER (SELECT * FROM A)"}}
+
+POST /v1/projects/p:runAggregationQuery
+{}
+
+POST /v1/projects/p:runAggregationQuery
+{"bogus": 1}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "AGGREGATE COUNT(*) OVER (SELECT * FROM A)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "AGGREGATE COUNT(*) AS c OVER (SELECT * FROM A WHERE n > 1)"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT COUNT(*) FROM A"}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "AGGREGATE"}}
+
+POST /v1/projects/p:lookup
+{"readOptions": {"readTime": "2020-01-01T00:00:00Z"}, "keys": [{"path": [{"kind": "A", "name": "a"}]}]}
+
+POST /v1/projects/p:runQuery
+{"readOptions": {"readTime": "2020-01-01T00:00:00Z"}, "query": {"kind": [{"name": "A"}]}}
+
+POST /v1/projects/p:runQuery
+{"readOptions": {"readTime": "not-a-time"}, "query": {"kind": [{"name": "A"}]}}
+
+POST /v1/projects/p:beginTransaction
+{"transactionOptions": {"readOnly": {"readTime": "2020-01-01T00:00:00Z"}}}
+> t = transaction
+
+POST /v1/projects/p:lookup
+{"readOptions": {"transaction": "{{t}}"}, "keys": [{"path": [{"kind": "A", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"readOptions": {"newTransaction": {"readOnly": {"readTime": "2020-01-01T00:00:00Z"}}}, "keys": [{"path": [{"kind": "A", "name": "b"}]}]}

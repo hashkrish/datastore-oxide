@@ -1,0 +1,324 @@
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <UNQUOTED_NAME> \"AGGREGATEX \"\" at line 1, column 1.\nWas expecting:\n    \"select\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <QUOTED_NAME> \"`AGGREGATE` \"\" at line 1, column 1.\nWas expecting:\n    \"select\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"over\" \"OVER \"\" at line 1, column 1.\nWas expecting:\n    \"select\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"count\" \"COUNT \"\" at line 1, column 1.\nWas expecting:\n    \"select\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 12.\nWas expecting:\n    \"(\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"from\" \"FROM \"\" at line 1, column 14.\nWas expecting:\n    \"(\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Cloud Datastore only supports counts over the entire result set (i.e. `COUNT(*)`)","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Cloud Datastore only supports counts over the entire result set (i.e. `COUNT(*)`)","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 14.\nWas expecting:\n    \")\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 16.\nWas expecting one of:\n    \"avg\" ...\n    \"count\" ...\n    \"count_up_to\" ...\n    \"sum\" ...\n    <UNQUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 21.\nWas expecting one of:\n    \"avg\" ...\n    \"count\" ...\n    \"count_up_to\" ...\n    \"sum\" ...\n    <UNQUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 18.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"from\" \"FROM \"\" at line 1, column 20.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <INTEGER> \"1 \"\" at line 1, column 20.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"from\" \"FROM \"\" at line 1, column 26.\nWas expecting:\n    \"(\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Unexpected aggregation function: foo","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Unexpected aggregation function: foo","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Cloud Datastore only supports counts over the entire result set (i.e. `COUNT(*)`)","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Cloud Datastore only supports counts over the entire result set (i.e. `COUNT(*)`)","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"distinct\" \"DISTINCT \"\" at line 1, column 14.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    \"*\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 11.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 12.\nWas expecting one of:\n    \")\" ...\n    \".\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"*\" \"* \"\" at line 1, column 12.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Disallowed literal: 3.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <UNQUOTED_NAME> \"x \"\" at line 1, column 20.\nWas expecting:\n    <INTEGER> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Disallowed literal: -1.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <NAME_BINDING_SITE> \"@a \"\" at line 1, column 20.\nWas expecting:\n    <INTEGER> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <POSITION_BINDING_SITE> \"@1 \"\" at line 1, column 20.\nWas expecting:\n    <INTEGER> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 19.\nWas expecting:\n    <INTEGER> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"count\" \"COUNT \"\" at line 1, column 20.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <INTEGER> \"1 \"\" at line 1, column 17.\nWas expecting one of:\n    \"avg\" ...\n    \"count\" ...\n    \"count_up_to\" ...\n    \"on\" ...\n    \"sum\" ...\n    <UNQUOTED_NAME> ...\n    \"*\" ...\n    <UNQUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"count\" \"COUNT \"\" at line 1, column 11.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <INTEGER> \"1 \"\" at line 1, column 11.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"from\" \"FROM \"\" at line 1, column 11.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"count\" \"COUNT \"\" at line 1, column 10.\nWas expecting one of:\n    <EOF> \n    \"from\" ...\n    \"group\" ...\n    \"limit\" ...\n    \"offset\" ...\n    \"order\" ...\n    \"where\" ...\n    \",\" ...\n    \".\" ...\n    \".\" ...\n    \",\" ...\n    \",\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"aggregate\" \"AGGREGATE \"\" at line 1, column 8.\nWas expecting one of:\n    \"avg\" ...\n    \"count\" ...\n    \"count_up_to\" ...\n    \"distinct\" ...\n    \"sum\" ...\n    <UNQUOTED_NAME> ...\n    \"*\" ...\n    <UNQUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"aggregate\" \"AGGREGATE \"\" at line 1, column 15.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"over\" \"OVER \"\" at line 1, column 15.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"count\" \"COUNT \"\" at line 1, column 23.\nWas expecting:\n    \"(\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"count\" \"COUNT \"\" at line 1, column 27.\nWas expecting one of:\n    \"false\" ...\n    \"null\" ...\n    \"true\" ...\n    <INTEGER> ...\n    <DOUBLE> ...\n    <SINGLE_QUOTE_STRING> ...\n    <DOUBLE_QUOTE_STRING> ...\n    <UNQUOTED_NAME> ...\n    <NAME_BINDING_SITE> ...\n    <POSITION_BINDING_SITE> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"count\" \"COUNT \"\" at line 1, column 17.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"GROUP BY not supported.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"GROUP BY not supported.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Disallowed literal: 1.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 20.\nWas expecting:\n    \")\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Invalid integer literal: For input string: \"99999999999999999999\"","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <DOUBLE> \"1.5 \"\" at line 1, column 20.\nWas expecting:\n    <INTEGER> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"aggregate\" \"AGGREGATE \"\" at line 1, column 25.\nWas expecting one of:\n    <EOF> \n    \"offset\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END

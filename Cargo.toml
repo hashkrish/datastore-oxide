@@ -1,0 +1,52 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "tools/conformance", "tools/bench"]
+default-members = ["crates/*", "tools/conformance"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+rust-version = "1.88"
+
+[workspace.dependencies]
+oxide-api = { path = "crates/oxide-api" }
+oxide-engine = { path = "crates/oxide-engine" }
+oxide-json = { path = "crates/oxide-json" }
+oxide-model = { path = "crates/oxide-model" }
+oxide-proto = { path = "crates/oxide-proto" }
+conformance = { path = "tools/conformance" }
+
+anyhow = "1"
+base64 = "0.22"
+indexmap = "2"
+jiff = "0.2"
+md-5 = "0.10"
+roxmltree = "0.21"
+prost-reflect = { version = "0.16", features = ["serde"] }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+thiserror = "2"
+yaml-rust2 = "0.13"
+ureq = "3"
+bytes = "1"
+http = "1"
+http-body = "1"
+http-body-util = "0.1"
+hyper = { version = "1", features = ["server", "http1", "http2"] }
+hyper-util = { version = "0.1", features = ["tokio", "server", "server-auto", "server-graceful", "service"] }
+prost = "0.14"
+prost-build = "0.14"
+prost-types = "0.14"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "signal", "sync", "time", "fs", "io-util"] }
+tonic = "0.14"
+tonic-prost = "0.14"
+tonic-prost-build = "0.14"
+tower = { version = "0.5", features = ["util"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+zip = { version = "9", default-features = false, features = ["deflate"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

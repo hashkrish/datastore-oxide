@@ -1,0 +1,68 @@
+# Export entity filters: one file set per kind/namespace selection (several specs write several directories; the last is complete).
+ARGS --store_on_disk=false --consistency=1.0 {dir}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "T", "name": "all"}]}, "properties": {
+ "null": {"nullValue": null}, "bool": {"booleanValue": true}, "int": {"integerValue": "-42"}, "intmax": {"integerValue": "9223372036854775807"},
+ "dbl": {"doubleValue": 1.5}, "dbl2": {"doubleValue": 1e20}, "dbl3": {"doubleValue": 0.0001}, "dbl4": {"doubleValue": 3}, "dbl5": {"doubleValue": "NaN"},
+ "dbl6": {"doubleValue": "-Infinity"}, "dbl7": {"doubleValue": 12345678.9}, "dbl8": {"doubleValue": -0.0}, "dbl9": {"doubleValue": "Infinity"},
+ "ts": {"timestampValue": "2024-01-02T03:04:05.123456Z"}, "ts2": {"timestampValue": "2024-01-02T03:04:05Z"}, "ts3": {"timestampValue": "2024-01-02T03:04:05.120Z"},
+ "ts4": {"timestampValue": "2024-01-02T03:04:05.123456789Z"}, "ts5": {"timestampValue": "2024-01-02T05:04:05+02:00"}, "ts6": {"timestampValue": "0001-01-01T00:00:00Z"},
+ "ts7": {"timestampValue": "9999-12-31T23:59:59.999999Z"}, "ts8": {"timestampValue": "1969-12-31T23:59:59.999999Z"},
+ "key": {"keyValue": {"path": [{"kind": "X", "id": "7"}]}}, "key2": {"keyValue": {"partitionId": {"namespaceId": "ns"}, "path": [{"kind": "X", "name": "n"}, {"kind": "Y", "id": "1"}]}},
+ "str": {"stringValue": "héllo\u0001\"\n<>&=/ "}, "str0": {"stringValue": ""}, "blob": {"blobValue": "AAECAw=="}, "blob0": {"blobValue": ""},
+ "geo": {"geoPointValue": {"latitude": 1.5, "longitude": -2}}, "geo0": {"geoPointValue": {}},
+ "ent": {"entityValue": {"properties": {"x": {"integerValue": "1"}, "inner": {"entityValue": {"properties": {"y": {"stringValue": "z"}}}}}}},
+ "ent0": {"entityValue": {}}, "entk": {"entityValue": {"key": {"path": [{"kind": "E", "name": "e"}]}, "properties": {"q": {"booleanValue": false}}}},
+ "arr": {"arrayValue": {"values": [{"integerValue": "1"}, {"stringValue": "a"}, {"nullValue": null}, {"entityValue": {}}]}}, "arr0": {"arrayValue": {}},
+ "unidx": {"stringValue": "u", "excludeFromIndexes": true}, "unidxe": {"entityValue": {"properties": {"x": {"integerValue": "1"}}}, "excludeFromIndexes": true}
+}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}, "s": {"stringValue": "x"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "a"}, {"kind": "C", "name": "b"}]}, "properties": {"v": {"integerValue": "2"}}}}, {"upsert": {"key": {"path": [{"kind": "L", "id": "5"}]}, "properties": {"v": {"integerValue": "3"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "n"}], "partitionId": {"namespaceId": "ns1"}}, "properties": {"v": {"integerValue": "4"}}}}, {"upsert": {"key": {"path": [{"kind": "L", "name": "m"}], "partitionId": {"namespaceId": "ns2"}}, "properties": {"v": {"integerValue": "5"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "6"}}}}]}
+
+POST /v1/projects/p:export
+{"outputUrlPrefix": "{dir}/k1", "entityFilter": {"kinds": ["K"]}}
+
+LS k1/<last>
+PROTO k1/<last>/*.overall_export_metadata#1
+POST /v1/projects/p:export
+{"outputUrlPrefix": "{dir}/k2", "entityFilter": {"kinds": ["L", "K"]}}
+
+LS k2/<last>
+PROTO k2/<last>/*.overall_export_metadata#1
+POST /v1/projects/p:export
+{"outputUrlPrefix": "{dir}/n0", "entityFilter": {"namespaceIds": [""]}}
+
+LS n0/<last>
+PROTO n0/<last>/*.overall_export_metadata#1
+POST /v1/projects/p:export
+{"outputUrlPrefix": "{dir}/n1", "entityFilter": {"namespaceIds": ["ns1"]}}
+
+LS n1/<last>
+PROTO n1/<last>/*.overall_export_metadata#1
+POST /v1/projects/p:export
+{"outputUrlPrefix": "{dir}/n2", "entityFilter": {"namespaceIds": ["", "ns2"]}}
+
+LS n2/<last>
+PROTO n2/<last>/*.overall_export_metadata#1
+POST /v1/projects/p:export
+{"outputUrlPrefix": "{dir}/kn", "entityFilter": {"kinds": ["K"], "namespaceIds": ["ns1"]}}
+
+LS kn/<last>
+PROTO kn/<last>/*.overall_export_metadata#1
+POST /v1/projects/p:export
+{"outputUrlPrefix": "{dir}/kn2", "entityFilter": {"kinds": ["K", "L"], "namespaceIds": ["", "ns1"]}}
+
+LS kn2/<last>
+PROTO kn2/<last>/*.overall_export_metadata#1
+POST /v1/projects/p:export
+{"outputUrlPrefix": "{dir}/missing", "entityFilter": {"kinds": ["Nope"]}}
+
+LS missing/<last>
+PROTO missing/<last>/*.overall_export_metadata#1
+ENTITIES kn2/<last>/default_namespace/kind_K/output-0
+ENTITIES kn2/<last>/namespace_ns1/kind_K/output-0

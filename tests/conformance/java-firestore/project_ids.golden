@@ -1,0 +1,295 @@
+>>> POST /v1/projects/P:lookup
+<<< 400
+{"error":{"code":400,"message":"\"P\" is an invalid project id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p_q:lookup
+<<< 400
+{"error":{"code":400,"message":"\"p_q\" is an invalid project id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p-q:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p-q"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/1p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "1p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p1:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p1"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/a.b:lookup
+<<< 400
+{"error":{"code":400,"message":"\"a.b\" is an invalid project id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/example.com:proj:lookup
+<<< 404
+Not Found
+
+<<< END
+>>> POST /v1/projects/a:b:c:lookup
+<<< 404
+Not Found
+
+<<< END
+>>> POST /v1/projects/ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp:lookup
+<<< 400
+{"error":{"code":400,"message":"\"ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp\" is an invalid project id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/pppppppppppppppppppppppppppppp:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "pppppppppppppppppppppppppppppp"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/%7E:lookup
+<<< 400
+{"error":{"code":400,"message":"\"~\" is an invalid project id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/s~p:lookup
+<<< 400
+{"error":{"code":400,"message":"\"s~p\" is an invalid project id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/e~p:lookup
+<<< 400
+{"error":{"code":400,"message":"\"e~p\" is an invalid project id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/x:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "x"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/-p:lookup
+<<< 400
+{"error":{"code":400,"message":"\"-p\" is an invalid project id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p",
+          "databaseId": "Db"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p",
+          "databaseId": "d_b"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p",
+          "databaseId": "d-b"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p",
+          "databaseId": "1db"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p",
+          "databaseId": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 400
+{"error":{"code":400,"message":"\"(default)\" is an invalid database id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 400
+{"error":{"code":400,"message":"\"a b\" is an invalid database id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"mismatched databases within request: <unknown!>~p#x vs. <unknown!>~#x","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 200
+{
+  "keys": [{
+    "partitionId": {
+      "projectId": "p",
+      "databaseId": "x"
+    },
+    "path": [{
+      "kind": "K",
+      "id": "5629499534213120"
+    }]
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 400
+{"error":{"code":400,"message":"mismatched databases within request: <unknown!>~p vs. <unknown!>~q","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 400
+{"error":{"code":400,"message":"The kind \"__K__\" is reserved.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 400
+{"error":{"code":400,"message":"Key path element must not be incomplete: [K: , C: ]","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:reserveIds
+<<< 400
+{"error":{"code":400,"message":"The kind \"__K__\" is reserved.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:reserveIds
+<<< 400
+{"error":{"code":400,"message":"The namespace id \"__x__\" is reserved.","status":"INVALID_ARGUMENT"}}
+<<< END

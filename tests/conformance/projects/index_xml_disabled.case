@@ -1,0 +1,59 @@
+# XML autoGenerate=false: missing indexes fail on a query's first run only.
+ARGS --store_on_disk=false --consistency=1.0 {dir}
+SETUP WEB-INF/datastore-indexes.xml
+<?xml version="1.0" encoding="utf-8"?>
+<datastore-indexes autoGenerate="false">
+  <datastore-index kind="K" ancestor="false">
+    <property name="a" direction="asc"/>
+    <property name="b" direction="desc"/>
+  </datastore-index>
+  <datastore-index kind="K" ancestor="false" source="manual">
+    <property name="x" direction="asc"/>
+    <property name="c" direction="asc"/>
+  </datastore-index>
+  <datastore-index kind="K" ancestor="false">
+    <property name="y" direction="asc"/>
+    <property name="c" direction="asc"/>
+  </datastore-index>
+  <datastore-index kind="K" ancestor="false" source="auto">
+    <property name="old" direction="asc"/>
+    <property name="older" direction="desc"/>
+  </datastore-index>
+  <datastore-index kind="N">
+    <property name="a"/>
+    <property name="b"/>
+  </datastore-index>
+</datastore-indexes>
+END
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}, "direction": "DESCENDING"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "c"}}, {"property": {"name": "d"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "c"}}, {"property": {"name": "d"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "c"}}, {"property": {"name": "d"}}], "limit": 1}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "x"}, "op": "EQUAL", "value": {"integerValue": "1"}}}, {"propertyFilter": {"property": {"name": "y"}, "op": "EQUAL", "value": {"integerValue": "1"}}}]}}, "order": [{"property": {"name": "c"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "x"}, "op": "EQUAL", "value": {"integerValue": "1"}}}, {"propertyFilter": {"property": {"name": "z"}, "op": "EQUAL", "value": {"integerValue": "1"}}}]}}, "order": [{"property": {"name": "c"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "z"}, "op": "EQUAL", "value": {"integerValue": "1"}}}, {"propertyFilter": {"property": {"name": "w"}, "op": "EQUAL", "value": {"integerValue": "1"}}}]}}, "order": [{"property": {"name": "c"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "P", "name": "a"}]}}}}, "order": [{"property": {"name": "c"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "old"}}, {"property": {"name": "older"}, "direction": "DESCENDING"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "N"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}}]}}
+
+LS WEB-INF

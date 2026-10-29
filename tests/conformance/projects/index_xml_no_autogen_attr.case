@@ -1,0 +1,9 @@
+# datastore-indexes.xml without autoGenerate.
+ARGS --store_on_disk=false --consistency=1.0 {dir}
+SETUP WEB-INF/datastore-indexes.xml
+<datastore-indexes>
+</datastore-indexes>
+END
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}}]}}

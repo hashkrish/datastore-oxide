@@ -1,0 +1,14 @@
+# --storage_file names the backing store.
+ARGS --storage_file={dir}/custom.bin --consistency=1.0 {dir}
+
+LS .
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}}}}]}
+
+RESTART
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+LS .
+LS WEB-INF

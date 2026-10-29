@@ -1,0 +1,123 @@
+# --enable_entity_groups=false in Datastore mode.
+ARGS --testing --enable_entity_groups=false
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "b"}]}, "properties": {"v": {"integerValue": "2"}}}}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t1 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "a"}]}], "readOptions": {"transaction": "{{t1}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "b"}]}, "properties": {"v": {"integerValue": "3"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t1}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "a"}]}, "properties": {"v": {"integerValue": "4"}}}}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t2 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "a"}]}], "readOptions": {"transaction": "{{t2}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "a"}]}, "properties": {"v": {"integerValue": "5"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t2}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "a"}]}, "properties": {"v": {"integerValue": "99"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "a"}]}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t3 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "b"}]}], "readOptions": {"transaction": "{{t3}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"delete": {"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "b"}]}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t3}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "b"}]}, "properties": {"v": {"integerValue": "6"}}}}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t4 = transaction
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "C"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "R", "name": "r"}]}}}}}, "readOptions": {"transaction": "{{t4}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "a"}]}, "properties": {"v": {"integerValue": "7"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t4}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "z"}]}, "properties": {"v": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t5 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "R", "name": "r"}]}], "readOptions": {"transaction": "{{t5}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "a"}]}, "properties": {"v": {"integerValue": "8"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "R", "name": "r"}, {"kind": "C", "name": "a"}]}], "readOptions": {"transaction": "{{t5}}"}}
+
+POST /v1/projects/p:rollback
+{"transaction": "{{t5}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t6 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t6}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "0"}]}, "properties": {"v": {"integerValue": "0"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "1"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "2"}]}, "properties": {"v": {"integerValue": "2"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "3"}]}, "properties": {"v": {"integerValue": "3"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "4"}]}, "properties": {"v": {"integerValue": "4"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "5"}]}, "properties": {"v": {"integerValue": "5"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "6"}]}, "properties": {"v": {"integerValue": "6"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "7"}]}, "properties": {"v": {"integerValue": "7"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "8"}]}, "properties": {"v": {"integerValue": "8"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "9"}]}, "properties": {"v": {"integerValue": "9"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "10"}]}, "properties": {"v": {"integerValue": "10"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "11"}]}, "properties": {"v": {"integerValue": "11"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "12"}]}, "properties": {"v": {"integerValue": "12"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "13"}]}, "properties": {"v": {"integerValue": "13"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "14"}]}, "properties": {"v": {"integerValue": "14"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "15"}]}, "properties": {"v": {"integerValue": "15"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "16"}]}, "properties": {"v": {"integerValue": "16"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "17"}]}, "properties": {"v": {"integerValue": "17"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "18"}]}, "properties": {"v": {"integerValue": "18"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "19"}]}, "properties": {"v": {"integerValue": "19"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "20"}]}, "properties": {"v": {"integerValue": "20"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "21"}]}, "properties": {"v": {"integerValue": "21"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "22"}]}, "properties": {"v": {"integerValue": "22"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "23"}]}, "properties": {"v": {"integerValue": "23"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "24"}]}, "properties": {"v": {"integerValue": "24"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "25"}]}, "properties": {"v": {"integerValue": "25"}}}}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t7 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "0"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "1"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "2"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "3"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "4"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "5"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "6"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "7"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "8"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "9"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "10"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "11"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "12"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "13"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "14"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "15"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "16"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "17"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "18"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "19"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "20"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "21"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "22"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "23"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "24"}]}, {"path": [{"kind": "R", "name": "m"}, {"kind": "C", "name": "25"}]}], "readOptions": {"transaction": "{{t7}}"}}
+
+POST /v1/projects/p:rollback
+{"transaction": "{{t7}}"}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "R", "name": "r"}, {"kind": "__entity_group__", "id": "1"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "r"}]}, "properties": {"v": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "R", "name": "r"}, {"kind": "__entity_group__", "id": "1"}]}]}
+
+PATCH /v1/config
+{"jobPolicy": {"probabilityJobPolicy": {"randomSeed": "1", "unappliedJobPercentage": 100}}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "e"}, {"kind": "C", "name": "x"}]}, "properties": {"v": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "R", "name": "e"}, {"kind": "C", "name": "x"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"delete": {"path": [{"kind": "R", "name": "e"}, {"kind": "C", "name": "x"}]}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "R", "name": "e"}, {"kind": "C", "name": "x"}]}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "C"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "R", "name": "e"}]}}}}}}
+
+PATCH /v1/config
+{"jobPolicy": {"forceStrongConsistency": true}}

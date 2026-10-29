@@ -1,0 +1,1981 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 75
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "3"
+  }, {
+    "version": "4"
+  }, {
+    "version": "5"
+  }],
+  "indexUpdates": 11
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "6"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "key": {
+      "partitionId": {
+        "projectId": "p"
+      },
+      "path": [{
+        "kind": "K",
+        "id": "1"
+      }]
+    },
+    "version": "7"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p2:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 5
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "8"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "9"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 200
+{
+  "keys": [{
+    "partitionId": {
+      "projectId": "p"
+    },
+    "path": [{
+      "kind": "K",
+      "id": "5066549580791808"
+    }]
+  }, {
+    "partitionId": {
+      "projectId": "p"
+    },
+    "path": [{
+      "kind": "K",
+      "id": "6192449487634432"
+    }]
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EQoAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "T",
+          "name": "all"
+        }]
+      },
+      "properties": {
+        "key2": {
+          "keyValue": {
+            "partitionId": {
+              "projectId": "p",
+              "namespaceId": "ns"
+            },
+            "path": [{
+              "kind": "X",
+              "name": "n"
+            }, {
+              "kind": "Y",
+              "id": "1"
+            }]
+          }
+        },
+        "arr0": {
+          "arrayValue": {
+          }
+        },
+        "bool": {
+          "booleanValue": true
+        },
+        "unidxe": {
+          "entityValue": {
+            "properties": {
+              "x": {
+                "integerValue": "1"
+              }
+            }
+          },
+          "excludeFromIndexes": true
+        },
+        "ent0": {
+          "entityValue": {
+          }
+        },
+        "geo0": {
+          "geoPointValue": {
+          }
+        },
+        "entk": {
+          "entityValue": {
+            "key": {
+              "partitionId": {
+                "projectId": "p"
+              },
+              "path": [{
+                "kind": "E",
+                "name": "e"
+              }]
+            },
+            "properties": {
+              "q": {
+                "booleanValue": false
+              }
+            }
+          }
+        },
+        "geo": {
+          "geoPointValue": {
+            "latitude": 1.5,
+            "longitude": -2.0
+          }
+        },
+        "ts2": {
+          "timestampValue": "2024-01-02T03:04:05Z"
+        },
+        "ts4": {
+          "timestampValue": "2024-01-02T03:04:05.123456Z"
+        },
+        "ts3": {
+          "timestampValue": "2024-01-02T03:04:05.120Z"
+        },
+        "ts6": {
+          "timestampValue": "0001-01-01T00:00:00Z"
+        },
+        "ts5": {
+          "timestampValue": "2024-01-02T03:04:05Z"
+        },
+        "ts8": {
+          "timestampValue": "1969-12-31T23:59:59.999999Z"
+        },
+        "ts7": {
+          "timestampValue": "9999-12-31T23:59:59.999999Z"
+        },
+        "key": {
+          "keyValue": {
+            "partitionId": {
+              "projectId": "p"
+            },
+            "path": [{
+              "kind": "X",
+              "id": "7"
+            }]
+          }
+        },
+        "arr": {
+          "arrayValue": {
+            "values": [{
+              "integerValue": "1"
+            }, {
+              "stringValue": "a"
+            }, {
+              "nullValue": null
+            }, {
+              "entityValue": {
+              }
+            }]
+          }
+        },
+        "unidx": {
+          "stringValue": "u",
+          "excludeFromIndexes": true
+        },
+        "intmax": {
+          "integerValue": "9223372036854775807"
+        },
+        "dbl8": {
+          "doubleValue": 0.0
+        },
+        "blob0": {
+          "blobValue": ""
+        },
+        "dbl9": {
+          "doubleValue": "Infinity"
+        },
+        "dbl6": {
+          "doubleValue": "-Infinity"
+        },
+        "dbl7": {
+          "doubleValue": 1.23456789E7
+        },
+        "dbl4": {
+          "doubleValue": 3.0
+        },
+        "dbl5": {
+          "doubleValue": "NaN"
+        },
+        "str0": {
+          "stringValue": ""
+        },
+        "dbl2": {
+          "doubleValue": 1.0E20
+        },
+        "ent": {
+          "entityValue": {
+            "properties": {
+              "x": {
+                "integerValue": "1"
+              },
+              "inner": {
+                "entityValue": {
+                  "properties": {
+                    "y": {
+                      "stringValue": "z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "dbl3": {
+          "doubleValue": 1.0E-4
+        },
+        "int": {
+          "integerValue": "-42"
+        },
+        "dbl": {
+          "doubleValue": 1.5
+        },
+        "str": {
+          "stringValue": "héllo\u0001\"\n<>&=/\u2028"
+        },
+        "blob": {
+          "blobValue": "AAECAw=="
+        },
+        "null": {
+          "nullValue": null
+        },
+        "ts": {
+          "timestampValue": "2024-01-02T03:04:05.123456Z"
+        }
+      }
+    },
+    "version": "2"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "4"
+        }
+      }
+    },
+    "version": "6"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }, {
+          "kind": "C",
+          "name": "b"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "2"
+        }
+      }
+    },
+    "version": "4"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p",
+          "namespaceId": "ns1"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "n"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "3"
+        }
+      }
+    },
+    "version": "5"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "5"
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBSxgBDBgAIAA=",
+      "version": "7"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "4"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBSyIBYQwYACAA",
+      "version": "6"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p",
+            "databaseId": "db1"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "d"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "7"
+          }
+        }
+      },
+      "cursor": "ChkSE2oBcHIICxIBSyIBZAy6AQNkYjEYACAA",
+      "version": "8"
+    }],
+    "endCursor": "ChkSE2oBcHIICxIBSyIBZAy6AQNkYjEYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "d"
+        }]
+      }
+    },
+    "version": "9"
+  }]
+}
+
+<<< END
+>>> POST /persist
+<<< 200
+Persisting...
+
+<<< END
+>>> RESTART 
+<<< 200
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "T",
+          "name": "all"
+        }]
+      },
+      "properties": {
+        "key2": {
+          "keyValue": {
+            "partitionId": {
+              "projectId": "p",
+              "namespaceId": "ns"
+            },
+            "path": [{
+              "kind": "X",
+              "name": "n"
+            }, {
+              "kind": "Y",
+              "id": "1"
+            }]
+          }
+        },
+        "arr0": {
+          "arrayValue": {
+          }
+        },
+        "bool": {
+          "booleanValue": true
+        },
+        "unidxe": {
+          "entityValue": {
+            "properties": {
+              "x": {
+                "integerValue": "1"
+              }
+            }
+          },
+          "excludeFromIndexes": true
+        },
+        "ent0": {
+          "entityValue": {
+          }
+        },
+        "geo0": {
+          "geoPointValue": {
+          }
+        },
+        "entk": {
+          "entityValue": {
+            "key": {
+              "partitionId": {
+                "projectId": "p"
+              },
+              "path": [{
+                "kind": "E",
+                "name": "e"
+              }]
+            },
+            "properties": {
+              "q": {
+                "booleanValue": false
+              }
+            }
+          }
+        },
+        "geo": {
+          "geoPointValue": {
+            "latitude": 1.5,
+            "longitude": -2.0
+          }
+        },
+        "ts2": {
+          "timestampValue": "2024-01-02T03:04:05Z"
+        },
+        "ts4": {
+          "timestampValue": "2024-01-02T03:04:05.123456Z"
+        },
+        "ts3": {
+          "timestampValue": "2024-01-02T03:04:05.120Z"
+        },
+        "ts6": {
+          "timestampValue": "0001-01-01T00:00:00Z"
+        },
+        "ts5": {
+          "timestampValue": "2024-01-02T03:04:05Z"
+        },
+        "ts8": {
+          "timestampValue": "1969-12-31T23:59:59.999999Z"
+        },
+        "ts7": {
+          "timestampValue": "9999-12-31T23:59:59.999999Z"
+        },
+        "key": {
+          "keyValue": {
+            "partitionId": {
+              "projectId": "p"
+            },
+            "path": [{
+              "kind": "X",
+              "id": "7"
+            }]
+          }
+        },
+        "arr": {
+          "arrayValue": {
+            "values": [{
+              "integerValue": "1"
+            }, {
+              "stringValue": "a"
+            }, {
+              "nullValue": null
+            }, {
+              "entityValue": {
+              }
+            }]
+          }
+        },
+        "unidx": {
+          "stringValue": "u",
+          "excludeFromIndexes": true
+        },
+        "intmax": {
+          "integerValue": "9223372036854775807"
+        },
+        "dbl8": {
+          "doubleValue": 0.0
+        },
+        "blob0": {
+          "blobValue": ""
+        },
+        "dbl9": {
+          "doubleValue": "Infinity"
+        },
+        "dbl6": {
+          "doubleValue": "-Infinity"
+        },
+        "dbl7": {
+          "doubleValue": 1.23456789E7
+        },
+        "dbl4": {
+          "doubleValue": 3.0
+        },
+        "dbl5": {
+          "doubleValue": "NaN"
+        },
+        "str0": {
+          "stringValue": ""
+        },
+        "dbl2": {
+          "doubleValue": 1.0E20
+        },
+        "ent": {
+          "entityValue": {
+            "properties": {
+              "x": {
+                "integerValue": "1"
+              },
+              "inner": {
+                "entityValue": {
+                  "properties": {
+                    "y": {
+                      "stringValue": "z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "dbl3": {
+          "doubleValue": 1.0E-4
+        },
+        "int": {
+          "integerValue": "-42"
+        },
+        "dbl": {
+          "doubleValue": 1.5
+        },
+        "str": {
+          "stringValue": "héllo\u0001\"\n<>&=/\u2028"
+        },
+        "blob": {
+          "blobValue": "AAECAw=="
+        },
+        "null": {
+          "nullValue": null
+        },
+        "ts": {
+          "timestampValue": "2024-01-02T03:04:05.123456Z"
+        }
+      }
+    },
+    "version": "2"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "4"
+        }
+      }
+    },
+    "version": "6"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }, {
+          "kind": "C",
+          "name": "b"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "2"
+        }
+      }
+    },
+    "version": "4"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p",
+          "namespaceId": "ns1"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "n"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "3"
+        }
+      }
+    },
+    "version": "5"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p2:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p2"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "q"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "6"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p",
+          "databaseId": "db1"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "d"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "7"
+        }
+      }
+    },
+    "version": "8"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "5"
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBSxgBDBgAIAA=",
+      "version": "7"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "4"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBSyIBYQwYACAA",
+      "version": "6"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p",
+            "databaseId": "db1"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "d"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "7"
+          }
+        }
+      },
+      "cursor": "ChkSE2oBcHIICxIBSyIBZAy6AQNkYjEYACAA",
+      "version": "8"
+    }],
+    "endCursor": "ChkSE2oBcHIICxIBSyIBZAy6AQNkYjEYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p",
+            "namespaceId": "ns1"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "n"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "3"
+          }
+        }
+      },
+      "cursor": "ChkSE2oBcHIICxIBSyIBbgyiAQNuczEYACAA",
+      "version": "5"
+    }],
+    "endCursor": "ChkSE2oBcHIICxIBSyIBbgyiAQNuczEYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__namespace__",
+            "id": "1"
+          }]
+        }
+      },
+      "cursor": "Ch4SGGoBcHITCxINX19uYW1lc3BhY2VfXxgBDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__namespace__",
+            "name": "ns1"
+          }]
+        }
+      },
+      "cursor": "CiESG2oBcHIWCxINX19uYW1lc3BhY2VfXyIDbnMxDBgAIAA="
+    }],
+    "endCursor": "CiESG2oBcHIWCxINX19uYW1lc3BhY2VfXyIDbnMxDBgAIAA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "C"
+          }]
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIIX19raW5kX18iAUMMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "K"
+          }]
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIIX19raW5kX18iAUsMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }]
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIIX19raW5kX18iAVQMGAAgAA=="
+    }],
+    "endCursor": "ChoSFGoBcHIPCxIIX19raW5kX18iAVQMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "C"
+          }, {
+            "kind": "__property__",
+            "name": "v"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci0SJ2oBcHIiCxIIX19raW5kX18iAUMMCxIMX19wcm9wZXJ0eV9fIgF2DBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "K"
+          }, {
+            "kind": "__property__",
+            "name": "v"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci0SJ2oBcHIiCxIIX19raW5kX18iAUsMCxIMX19wcm9wZXJ0eV9fIgF2DBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "arr"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }, {
+                "stringValue": "NULL"
+              }, {
+                "stringValue": "STRING"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgNhcnIMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "arr0"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "NULL"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRhcnIwDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "blob"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "STRING"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRibG9iDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "blob0"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "STRING"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjESK2oBcHImCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgVibG9iMAwYACAA"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "bool"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "BOOLEAN"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRib29sDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "dbl"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "DOUBLE"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgNkYmwMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "dbl2"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "DOUBLE"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRkYmwyDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "dbl3"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "DOUBLE"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRkYmwzDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "dbl4"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "DOUBLE"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRkYmw0DBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "dbl5"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "DOUBLE"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRkYmw1DBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "dbl6"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "DOUBLE"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRkYmw2DBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "dbl7"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "DOUBLE"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRkYmw3DBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "dbl8"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "DOUBLE"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRkYmw4DBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "dbl9"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "DOUBLE"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRkYmw5DBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "ent.inner.y"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "STRING"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjcSMWoBcHIsCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgtlbnQuaW5uZXIueQwYACAA"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "ent.x"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjESK2oBcHImCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgVlbnQueAwYACAA"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "entk.__key__"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "REFERENCE"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjgSMmoBcHItCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgxlbnRrLl9fa2V5X18MGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "entk.q"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "BOOLEAN"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjISLGoBcHInCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgZlbnRrLnEMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "geo"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "POINT"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgNnZW8MGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "geo0"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "POINT"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRnZW8wDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "int"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgNpbnQMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "intmax"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjISLGoBcHInCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgZpbnRtYXgMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "key"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "REFERENCE"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgNrZXkMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "key2"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "REFERENCE"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRrZXkyDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "null"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "NULL"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRudWxsDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "str"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "STRING"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgNzdHIMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "str0"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "STRING"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CjASKmoBcHIlCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgRzdHIwDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "ts"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci4SKGoBcHIjCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgJ0cwwYACAA"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "ts2"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgN0czIMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "ts3"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgN0czMMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "ts4"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgN0czQMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "ts5"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgN0czUMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "ts6"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgN0czYMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "ts7"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgN0czcMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "T"
+          }, {
+            "kind": "__property__",
+            "name": "ts8"
+          }]
+        },
+        "properties": {
+          "property_representation": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "INT64"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgN0czgMGAAgAA=="
+    }],
+    "endCursor": "Ci8SKWoBcHIkCxIIX19raW5kX18iAVQMCxIMX19wcm9wZXJ0eV9fIgN0czgMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 4
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "key": {
+      "partitionId": {
+        "projectId": "p"
+      },
+      "path": [{
+        "kind": "K",
+        "id": "4"
+      }]
+    },
+    "version": "3"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 200
+{
+  "keys": [{
+    "partitionId": {
+      "projectId": "p"
+    },
+    "path": [{
+      "kind": "K",
+      "id": "5910974510923776"
+    }]
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:rollback
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /reset
+<<< 500
+reset failed
+<<< END
+>>> POST /persist
+<<< 200
+Persisting...
+
+<<< END

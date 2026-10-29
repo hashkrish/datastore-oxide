@@ -1,0 +1,30 @@
+# v3 GetIndices and the composite indexes queries report
+V3 GetIndices
+app_id: "s~idx"
+
+V3 Put
+entity { key { app: "s~idx" path { Element { type: "K" name: "a" } } } property { name: "x" multiple: false value { int64Value: 1 } } property { name: "y" multiple: false value { int64Value: 2 } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 RunQuery
+app: "s~idx" kind: "K" Filter { op: 5 property { name: "x" multiple: false value { int64Value: 1 } } } Order { property: "y" }
+
+V3 RunQuery
+app: "s~idx" kind: "K" Order { property: "x" } Order { property: "y" direction: 2 }
+
+V3 RunQuery
+app: "s~idx" kind: "K" ancestor { app: "s~idx" path { Element { type: "K" name: "a" } } } Order { property: "y" }
+
+V3 GetIndices
+app_id: "s~idx"
+
+V3 GetIndices
+app_id: "s~nobody" database_id: "x"
+
+V3 GetIndices
+app_id: ""
+
+POST /v1/projects/idx:runQuery
+{"query": {"kind": [{"name": "J"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}}]}}
+
+V3 GetIndices
+app_id: "e~idx"

@@ -1,0 +1,35 @@
+# App Engine v3: entities written through v3 keep their stored EntityProto across a restart;
+# query handles and the app-id memory do not survive it.
+ARGS --consistency=1.0 {dir}
+
+V3 Put
+entity { key { app: "s~pv" path { Element { type: "K" name: "a" } } } entity_group { Element { type: "K" name: "zzz" } } property { name: "z" multiple: false value { int64Value: 1 } } property { name: "u" multiple: false value { UserValue { email: "a@b" auth_domain: "d" gaiaid: 0 } } } raw_property { name: "y" multiple: true value { stringValue: "r" } } property { name: "p" multiple: false value { PointValue { x: 1 y: 2 } } } owner { email: "o" auth_domain: "d" gaiaid: 1 } kind: GD_EVENT }
+
+V3 Put
+entity { key { app: "s~pv" path { Element { type: "K" } } } entity_group { } property { name: "r" multiple: false value { ReferenceValue { app: "e~other" PathElement { type: "R" id: 3 } } } } }
+
+V3 RunQuery
+app: "s~pv" kind: "K" count: 1
+> c = cursor.cursor
+
+POST /v1/projects/pv:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /persist
+
+RESTART
+
+V3 Get
+key { app: "dev~pv" path { Element { type: "K" name: "a" } } } key { app: "dev~pv" path { Element { type: "K" id: 1 } } }
+
+V3 Next
+cursor { cursor: {{c}} app: "s~pv" }
+
+POST /v1/projects/pv:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+V3 RunQuery
+app: "s~pv" kind: "K" Filter { op: 5 property { name: "z" multiple: false value { int64Value: 1 } } }
+
+V3 Next
+cursor { cursor: {{c}} app: "s~pv" }

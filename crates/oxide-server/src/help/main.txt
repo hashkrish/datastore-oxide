@@ -1,0 +1,10 @@
+Command line tool for interacting with Google Cloud Datastore.
+
+Usage: cloud_datastore_emulator <action> [options] <directory>
+
+<action> must be one of: 
+  create
+  start
+  license
+
+Use 'help <action>' for a detailed description of an action.

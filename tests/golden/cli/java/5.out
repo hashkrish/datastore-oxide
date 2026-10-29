@@ -1,0 +1,6 @@
+help
+
+Prints detailed usage for an action.
+
+Usage: cloud_datastore_emulator help <action>
+

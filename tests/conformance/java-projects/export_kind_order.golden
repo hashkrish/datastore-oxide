@@ -1,0 +1,197 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "3"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "4"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "5"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "6"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "7"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "8"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "9"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:40:32.388594571Z",
+      "endTime": "2026-10-27T16:40:32.432082559Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "/work/proj/one"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/one"
+  }
+}
+
+<<< END
+>>> ENTITIES one/*/all_namespaces/all_kinds/output-0
+<<< 200
+6a0d6a017072080b1201612201780c72091a017620002a0208018201080b1201612201780c
+6a0d6a017072080b1201512201780c72091a017620002a0208018201080b1201512201780c
+6a0d6a017072080b1201412201780c72091a017620002a0208018201080b1201412201780c
+6a0d6a017072080b1201722201780c72091a017620002a0208018201080b1201722201780c
+6a0d6a017072080b1201622201780c72091a017620002a0208018201080b1201622201780c
+6a0d6a017072080b1201422201780c72091a017620002a0208018201080b1201422201780c
+6a0d6a017072080b1201432201780c72091a017620002a0208018201080b1201432201780c
+6a0d6a017072080b1201442201780c72091a017620002a0208018201080b1201442201780c
+<<< END
+>>> RESTART 
+<<< 200
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:40:34.526242535Z",
+      "endTime": "2026-10-27T16:40:34.572072366Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "/work/proj/two"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/two"
+  }
+}
+
+<<< END
+>>> ENTITIES two/*/all_namespaces/all_kinds/output-0
+<<< 200
+6a0d6a017072080b1201612201780c72091a017620002a0208018201080b1201612201780c
+6a0d6a017072080b1201512201780c72091a017620002a0208018201080b1201512201780c
+6a0d6a017072080b1201412201780c72091a017620002a0208018201080b1201412201780c
+6a0d6a017072080b1201722201780c72091a017620002a0208018201080b1201722201780c
+6a0d6a017072080b1201622201780c72091a017620002a0208018201080b1201622201780c
+6a0d6a017072080b1201422201780c72091a017620002a0208018201080b1201422201780c
+6a0d6a017072080b1201432201780c72091a017620002a0208018201080b1201432201780c
+6a0d6a017072080b1201442201780c72091a017620002a0208018201080b1201442201780c
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:40:34.695002433Z",
+      "endTime": "2026-10-27T16:40:34.695999739Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "/work/proj/three"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/three"
+  }
+}
+
+<<< END
+>>> ENTITIES three/*/all_namespaces/all_kinds/output-0
+<<< 200
+6a0d6a017072080b1201712201780c72091a017620002a0208018201080b1201712201780c
+6a0d6a017072080b1201612201780c72091a017620002a0208018201080b1201612201780c
+6a0d6a017072080b1201512201780c72091a017620002a0208018201080b1201512201780c
+6a0d6a017072080b1201412201780c72091a017620002a0208018201080b1201412201780c
+6a0d6a017072080b1201722201780c72091a017620002a0208018201080b1201722201780c
+6a0d6a017072080b1201622201780c72091a017620002a0208018201080b1201622201780c
+6a0d6a017072080b1201422201780c72091a017620002a0208018201080b1201422201780c
+6a0d6a017072080b1201432201780c72091a017620002a0208018201080b1201432201780c
+6a0d6a017072080b1201442201780c72091a017620002a0208018201080b1201442201780c
+<<< END

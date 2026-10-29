@@ -1,0 +1,57 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /persist
+<<< 500
+The local datastore does not store on disk, persist is not supported.
+<<< END
+>>> RESTART 
+<<< 200
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 200
+{
+  "keys": [{
+    "partitionId": {
+      "projectId": "p"
+    },
+    "path": [{
+      "kind": "K",
+      "id": "5629499534213120"
+    }]
+  }]
+}
+
+<<< END
+>>> LS WEB-INF
+<<< 404
+
+<<< END

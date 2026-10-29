@@ -1,0 +1,34 @@
+# indexUpdates = write cost: 1 for a new entity + 2 per changed unique indexed value
+# (+2 when the hidden __scatter__ property is set, which depends on a hash of the key).
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "b"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "id": "7"}]}}}, {"upsert": {"key": {"path": [{"kind": "K", "id": "8"}]}}}, {"upsert": {"key": {"path": [{"kind": "P", "name": "b"}, {"kind": "C", "id": "3"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "c"}]}, "properties": {
+  "a": {"integerValue": "1"}, "b": {"stringValue": "x"}, "u": {"stringValue": "y", "excludeFromIndexes": true},
+  "arr": {"arrayValue": {"values": [{"integerValue": "1"}, {"integerValue": "1"}, {"integerValue": "2"}]}},
+  "arru": {"arrayValue": {"values": [{"integerValue": "1", "excludeFromIndexes": true}, {"integerValue": "2"}]}},
+  "empty": {"arrayValue": {}},
+  "ent": {"entityValue": {"properties": {"x": {"integerValue": "1"}, "y": {"integerValue": "2"}}}},
+  "entu": {"entityValue": {"properties": {"x": {"integerValue": "1"}}}, "excludeFromIndexes": true},
+  "nul": {"nullValue": null}
+}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "c"}]}, "properties": {
+  "a": {"integerValue": "2"}, "b": {"stringValue": "x"}, "u": {"stringValue": "y", "excludeFromIndexes": true},
+  "arr": {"arrayValue": {"values": [{"integerValue": "1"}, {"integerValue": "3"}]}},
+  "new": {"doubleValue": 1}
+}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"update": {"key": {"path": [{"kind": "K", "name": "c"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"delete": {"path": [{"kind": "K", "name": "c"}]}}, {"delete": {"path": [{"kind": "K", "name": "b"}]}}]}

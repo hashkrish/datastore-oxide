@@ -1,0 +1,48 @@
+# Non-transactional commits apply mutations in order; which failures leave earlier writes behind?
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}}}, {"upsert": {"key": {"path": [{"kind": "__K__", "name": "b"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "c"}]}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "d"}]}, "properties": {"s": {"stringValue": "{{repeat 1501 s}}"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "K"}]}}}, {"update": {"key": {"path": [{"kind": "K", "name": "nope"}]}}}, {"insert": {"key": {"path": [{"kind": "K"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "K"}]}}}, {"upsert": {"key": {"path": [{"kind": "K", "id": "0"}]}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}, {"path": [{"kind": "K", "name": "c"}]}, {"path": [{"kind": "K", "id": "1"}]}, {"path": [{"kind": "K", "id": "2"}]}, {"path": [{"kind": "K", "id": "3"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "e"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "e"}]}, "properties": {"x": {"integerValue": "1"}}}, "baseVersion": "6"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "e"}]}, "properties": {"x": {"integerValue": "2"}}}, "baseVersion": "6"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"delete": {"path": [{"kind": "K", "name": "e"}]}, "baseVersion": "100"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "K", "name": "new1"}]}}, "baseVersion": "0"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "K", "name": "new2"}]}}, "baseVersion": "1"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "new3"}]}}, "baseVersion": "11"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"delete": {"path": [{"kind": "K", "name": "new4"}]}, "baseVersion": "5"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"update": {"key": {"path": [{"kind": "K", "name": "e"}]}}, "baseVersion": "1"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "f"}]}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "g"}]}}, "baseVersion": "-1"}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "e"}]}, {"path": [{"kind": "K", "name": "new1"}]}, {"path": [{"kind": "K", "name": "new2"}]}, {"path": [{"kind": "K", "name": "new3"}]}, {"path": [{"kind": "K", "name": "f"}]}]}

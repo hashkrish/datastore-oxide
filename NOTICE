@@ -1,0 +1,28 @@
+datastore-oxide
+Copyright 2026 The datastore-oxide authors
+
+Parts of this software reimplement, in Rust, behavior of the App Engine Java SDK's local
+datastore and its index tooling (GoogleCloudPlatform/appengine-java-standard: api_dev/.../datastore/dev,
+api/.../datastore such as CompositeIndexManager, and utils/.../config such as IndexesXml), which is
+licensed under the Apache License, Version 2.0:
+
+  Copyright 2021 Google LLC
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+  except in compliance with the License. You may obtain a copy of the License at
+  https://www.apache.org/licenses/LICENSE-2.0
+
+Files containing such ports say so in their module documentation.
+
+This software includes, and compiles code generated from, protocol buffer definitions published
+by Google LLC under the Apache License, Version 2.0:
+
+  - proto/googleapis: from googleapis/googleapis (commit in proto/googleapis.commit);
+  - proto/appengine: from GoogleCloudPlatform/appengine-java-standard (commit in
+    proto/appengine.commit), unmodified; datastore-oxide adds a few fields when compiling them
+    (crates/oxide-proto/build.rs).
+
+Each file keeps its copyright and license header; the license text is in LICENSE and
+proto/appengine/LICENSE.
+
+Google, Google Cloud, Cloud Datastore, Firestore and App Engine are trademarks of Google LLC.
+datastore-oxide is not affiliated with or endorsed by Google LLC.

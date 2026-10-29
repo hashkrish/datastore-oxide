@@ -1,0 +1,9 @@
+# --index_file creates and maintains the named YAML file.
+ARGS --index_file={dir}/custom.yaml --store_on_disk=false --consistency=1.0 {dir}
+
+FILE custom.yaml
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}, "direction": "DESCENDING"}]}}
+
+FILE custom.yaml
+LS .

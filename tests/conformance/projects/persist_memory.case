@@ -1,0 +1,17 @@
+# In memory (--store_on_disk=false) nothing survives a restart.
+ARGS --store_on_disk=false --consistency=1.0 {dir}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}}}}]}
+
+POST /persist
+
+RESTART
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:allocateIds
+{"keys": [{"path": [{"kind": "K"}]}]}
+
+LS WEB-INF

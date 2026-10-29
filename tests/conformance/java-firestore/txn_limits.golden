@@ -1,0 +1,932 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }, {
+    "version": "3"
+  }],
+  "indexUpdates": 6
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ERIFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Cannot modify entities in a read-only transaction.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ERMFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:rollback
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ERQFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 400
+{"error":{"code":400,"message":"Cannot retry a read-only transaction.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ERUFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }],
+  "indexUpdates": 99,
+  "commitVersion": "4"
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ERYFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "4"
+  }, {
+    "version": "5"
+  }],
+  "indexUpdates": 3,
+  "commitVersion": "5"
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ERcFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "1"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "2"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "3"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "4"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "5"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "6"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "7"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "8"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "9"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "10"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "11"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "12"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "13"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "14"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "15"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "16"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "17"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "18"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "19"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "20"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "21"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "22"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "23"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "24"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "25"
+        }]
+      }
+    },
+    "version": "5"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "H",
+          "id": "26"
+        }]
+      }
+    },
+    "version": "5"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ERgFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBSyIBYQwYACAA",
+      "version": "2"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBSyIBYQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "5"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIBSyIBYQwLEgFDGAEMGAAgAA==",
+      "version": "3"
+    }],
+    "endCursor": "ChoSFGoBcHIPCxIBSyIBYQwLEgFDGAEMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "5"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBSyIBYQwYACAA",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIBSyIBYQwLEgFDGAEMGAAgAA==",
+      "version": "3"
+    }],
+    "endCursor": "ChoSFGoBcHIPCxIBSyIBYQwLEgFDGAEMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "5"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }],
+  "transaction": "ERkFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "6"
+  }],
+  "indexUpdates": 4,
+  "commitVersion": "6"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "5"
+        }
+      }
+    },
+    "version": "6"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "5"
+        }
+      }
+    },
+    "version": "6"
+  }],
+  "transaction": "ERoFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Cannot modify entities in a read-only transaction.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIBSyIBYQwLEgFDGAEMGAAgAA==",
+      "version": "3"
+    }],
+    "endCursor": "ChoSFGoBcHIPCxIBSyIBYQwLEgFDGAEMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "6"
+  },
+  "transaction": "ERsFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "7"
+  }],
+  "indexUpdates": 4,
+  "commitVersion": "7"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "7"
+        }
+      }
+    },
+    "version": "7"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"single_use_transaction in a commit request must be READ_WRITE.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"non-transaction commit cannot specify a transaction","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "7"
+        }
+      }
+    },
+    "version": "7"
+  }]
+}
+
+<<< END

@@ -1,0 +1,185 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }, {
+    "version": "3"
+  }],
+  "indexUpdates": 8
+}
+
+<<< END
+>>> POST /v1/projects/p:runAggregationQuery
+<<< 501
+{"error":{"code":501,"message":"Method google.datastore.v1.Datastore\/RunAggregationQuery is unimplemented","status":"UNIMPLEMENTED"}}
+<<< END
+>>> POST /v1/projects/p:runAggregationQuery
+<<< 501
+{"error":{"code":501,"message":"Method google.datastore.v1.Datastore\/RunAggregationQuery is unimplemented","status":"UNIMPLEMENTED"}}
+<<< END
+>>> POST /v1/projects/p:runAggregationQuery
+<<< 501
+{"error":{"code":501,"message":"Method google.datastore.v1.Datastore\/RunAggregationQuery is unimplemented","status":"UNIMPLEMENTED"}}
+<<< END
+>>> POST /v1/projects/p:runAggregationQuery
+<<< 501
+{"error":{"code":501,"message":"Method google.datastore.v1.Datastore\/RunAggregationQuery is unimplemented","status":"UNIMPLEMENTED"}}
+<<< END
+>>> POST /v1/projects/p:runAggregationQuery
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "A",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "n": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "A",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "n": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBQSIBYQwYACAA",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "A",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "n": {
+            "integerValue": "2"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBQSIBYgwYACAA",
+      "version": "3"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBQSIBYgwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EQcAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "A",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "n": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "A",
+          "name": "b"
+        }]
+      },
+      "properties": {
+        "n": {
+          "integerValue": "2"
+        }
+      }
+    },
+    "version": "3"
+  }],
+  "transaction": "EQgAAAAAAAAA"
+}
+
+<<< END

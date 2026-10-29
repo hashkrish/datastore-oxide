@@ -1,0 +1,136 @@
+# Property and value validation.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"__x__": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"__x": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"a.b": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"{{repeat 1501 p}}": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"{{repeat 1500 p}}": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"x": {}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"x": {"excludeFromIndexes": true}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"s": {"stringValue": "{{repeat 1501 s}}"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"s": {"stringValue": "{{repeat 1500 s}}"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"s": {"stringValue": "{{repeat 751 é}}"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"s": {"stringValue": "{{repeat 1501 s}}", "excludeFromIndexes": true}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"b": {"blobValue": "{{repeat 2001 AAAA}}"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"b": {"blobValue": "{{repeat 2000 AAAA}}"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"b": {"blobValue": "{{repeat 2001 AAAA}}", "excludeFromIndexes": true}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"a": {"arrayValue": {"values": [{"arrayValue": {}}]}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"a": {"arrayValue": {"values": [{"integerValue": "1"}]}, "excludeFromIndexes": true}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"a": {"arrayValue": {"values": [{"integerValue": "1"}]}, "meaning": 14}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"a": {"arrayValue": {"values": [{"stringValue": "{{repeat 1501 s}}"}]}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"a": {"arrayValue": {"values": [{"stringValue": "{{repeat 1501 s}}", "excludeFromIndexes": true}]}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"e": {"entityValue": {"properties": {"s": {"stringValue": "{{repeat 1501 s}}"}}}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"e": {"entityValue": {"properties": {"s": {"stringValue": "{{repeat 1501 s}}"}}}, "excludeFromIndexes": true}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"e": {"entityValue": {"properties": {"__x__": {"integerValue": "1"}}}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"e": {"entityValue": {"properties": {"": {"integerValue": "1"}}}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"e": {"entityValue": {"key": {"path": [{"kind": "K"}]}}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"e": {"entityValue": {"key": {"path": [{"kind": "__K__", "name": "x"}]}}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"k": {"keyValue": {"path": [{"kind": "K"}]}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"k": {"keyValue": {"path": []}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"k": {"keyValue": {"partitionId": {"projectId": "other"}, "path": [{"kind": "K", "name": "x"}]}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"k": {"keyValue": {"path": [{"kind": "__K__", "name": "x"}]}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"g": {"geoPointValue": {"latitude": 91, "longitude": 0}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"g": {"geoPointValue": {"latitude": 0, "longitude": 181}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"g": {"geoPointValue": {"latitude": "NaN", "longitude": 0}}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"t": {"timestampValue": "0000-12-31T23:59:59Z"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"t": {"timestampValue": "10000-01-01T00:00:00Z"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"t": {"timestampValue": "not a time"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"i": {"integerValue": "9223372036854775808"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"i": {"integerValue": 5}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"i": {"integerValue": "1.5"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"d": {"doubleValue": "1.5"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"bl": {"blobValue": "!!notbase64"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"bl": {"blobValue": "AAE"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"big": {"stringValue": "{{repeat 1048000 x}}", "excludeFromIndexes": true}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"big": {"stringValue": "{{repeat 1048576 x}}", "excludeFromIndexes": true}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v"}]}, "properties": {"big": {"blobValue": "{{repeat 262144 AAAA}}", "excludeFromIndexes": true}}}}]}
+

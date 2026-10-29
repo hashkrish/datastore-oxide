@@ -1,0 +1,434 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 75
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "3"
+  }, {
+    "version": "4"
+  }, {
+    "version": "5"
+  }, {
+    "version": "6"
+  }, {
+    "version": "7"
+  }],
+  "indexUpdates": 21
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "8"
+  }],
+  "indexUpdates": 6
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:15.992629556Z",
+      "endTime": "2026-10-27T16:32:16.031993402Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+      "kinds": ["K"]
+    },
+    "outputUrlPrefix": "/work/proj/k1"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/k1"
+  }
+}
+
+<<< END
+>>> LS k1/<last>
+<<< 200
+2026-10-27T16:32:16_011.overall_export_metadata
+all_namespaces
+<<< END
+>>> PROTO k1/<last>/*.overall_export_metadata#1
+<<< 200
+1 {
+  1 {
+    1: 1
+    2: "K"
+    3: 3
+    4: bytes 
+  }
+  2: "all_namespaces/kind_K/all_namespaces_kind_K.export_metadata"
+  3: 2
+  4: 94
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:16.046801419Z",
+      "endTime": "2026-10-27T16:32:16.048169307Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+      "kinds": ["L", "K"]
+    },
+    "outputUrlPrefix": "/work/proj/k2"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/k2"
+  }
+}
+
+<<< END
+>>> LS k2/<last>
+<<< 200
+2026-10-27T16:32:16_047.overall_export_metadata
+all_namespaces
+<<< END
+>>> PROTO k2/<last>/*.overall_export_metadata#1
+<<< 200
+1 {
+  1 {
+    1: 1
+    2: "L"
+    3: 3
+    4: bytes 
+  }
+  2: "all_namespaces/kind_L/all_namespaces_kind_L.export_metadata"
+  3: 2
+  4: 92
+}
+1 {
+  1 {
+    1: 1
+    2: "K"
+    3: 3
+    4: bytes 
+  }
+  2: "all_namespaces/kind_K/all_namespaces_kind_K.export_metadata"
+  3: 2
+  4: 94
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:16.053100021Z",
+      "endTime": "2026-10-27T16:32:16.057042309Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+      "namespaceIds": [""]
+    },
+    "outputUrlPrefix": "/work/proj/n0"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/n0"
+  }
+}
+
+<<< END
+>>> LS n0/<last>
+<<< 200
+2026-10-27T16:32:16_056.overall_export_metadata
+default_namespace
+<<< END
+>>> PROTO n0/<last>/*.overall_export_metadata#1
+<<< 200
+1 {
+  1 {
+    1: 2
+    2: bytes 
+    3: 1
+    4: bytes 
+  }
+  2: "default_namespace/all_kinds/default_namespace_all_kinds.export_metadata"
+  3: 4
+  4: 1107
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:16.062508133Z",
+      "endTime": "2026-10-27T16:32:16.063079347Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+      "namespaceIds": ["ns1"]
+    },
+    "outputUrlPrefix": "/work/proj/n1"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/n1"
+  }
+}
+
+<<< END
+>>> LS n1/<last>
+<<< 200
+2026-10-27T16:32:16_062.overall_export_metadata
+namespace_ns1
+<<< END
+>>> PROTO n1/<last>/*.overall_export_metadata#1
+<<< 200
+1 {
+  1 {
+    1: 2
+    2: bytes 
+    3: 2
+    4: "ns1"
+  }
+  2: "namespace_ns1/all_kinds/namespace_ns1_all_kinds.export_metadata"
+  3: 1
+  4: 50
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:16.069737677Z",
+      "endTime": "2026-10-27T16:32:16.071322267Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+      "namespaceIds": ["", "ns2"]
+    },
+    "outputUrlPrefix": "/work/proj/n2"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/n2"
+  }
+}
+
+<<< END
+>>> LS n2/<last>
+<<< 200
+2026-10-27T16:32:16_070.overall_export_metadata
+default_namespace
+namespace_ns2
+<<< END
+>>> PROTO n2/<last>/*.overall_export_metadata#1
+<<< 200
+1 {
+  1 {
+    1: 2
+    2: bytes 
+    3: 1
+    4: bytes 
+  }
+  2: "default_namespace/all_kinds/default_namespace_all_kinds.export_metadata"
+  3: 4
+  4: 1107
+}
+1 {
+  1 {
+    1: 2
+    2: bytes 
+    3: 2
+    4: "ns2"
+  }
+  2: "namespace_ns2/all_kinds/namespace_ns2_all_kinds.export_metadata"
+  3: 1
+  4: 50
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:16.075657671Z",
+      "endTime": "2026-10-27T16:32:16.076236277Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+      "kinds": ["K"],
+      "namespaceIds": ["ns1"]
+    },
+    "outputUrlPrefix": "/work/proj/kn"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/kn"
+  }
+}
+
+<<< END
+>>> LS kn/<last>
+<<< 200
+2026-10-27T16:32:16_075.overall_export_metadata
+namespace_ns1
+<<< END
+>>> PROTO kn/<last>/*.overall_export_metadata#1
+<<< 200
+1 {
+  1 {
+    1: 1
+    2: "K"
+    3: 2
+    4: "ns1"
+  }
+  2: "namespace_ns1/kind_K/namespace_ns1_kind_K.export_metadata"
+  3: 1
+  4: 50
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:16.079781963Z",
+      "endTime": "2026-10-27T16:32:16.081927911Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+      "kinds": ["K", "L"],
+      "namespaceIds": ["", "ns1"]
+    },
+    "outputUrlPrefix": "/work/proj/kn2"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/kn2"
+  }
+}
+
+<<< END
+>>> LS kn2/<last>
+<<< 200
+2026-10-27T16:32:16_081.overall_export_metadata
+default_namespace
+namespace_ns1
+<<< END
+>>> PROTO kn2/<last>/*.overall_export_metadata#1
+<<< 200
+1 {
+  1 {
+    1: 1
+    2: "K"
+    3: 1
+    4: bytes 
+  }
+  2: "default_namespace/kind_K/default_namespace_kind_K.export_metadata"
+  3: 1
+  4: 44
+}
+1 {
+  1 {
+    1: 1
+    2: "L"
+    3: 1
+    4: bytes 
+  }
+  2: "default_namespace/kind_L/default_namespace_kind_L.export_metadata"
+  3: 1
+  4: 42
+}
+1 {
+  1 {
+    1: 1
+    2: "K"
+    3: 2
+    4: "ns1"
+  }
+  2: "namespace_ns1/kind_K/namespace_ns1_kind_K.export_metadata"
+  3: 1
+  4: 50
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:16.085650854Z",
+      "endTime": "2026-10-27T16:32:16.086214943Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+      "kinds": ["Nope"]
+    },
+    "outputUrlPrefix": "/work/proj/missing"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/missing"
+  }
+}
+
+<<< END
+>>> LS missing/<last>
+<<< 200
+2026-10-27T16:32:16_085.overall_export_metadata
+<<< END
+>>> PROTO missing/<last>/*.overall_export_metadata#1
+<<< 200
+
+<<< END
+>>> ENTITIES kn2/<last>/default_namespace/kind_K/output-0
+<<< 200
+6a0d6a017072080b12014b2201610c72091a017620002a0208068201080b12014b2201610c
+<<< END
+>>> ENTITIES kn2/<last>/namespace_ns1/kind_K/output-0
+<<< 200
+6a136a017072080b12014b22016e0ca201036e733172091a017620002a0208048201080b12014b22016e0c
+<<< END

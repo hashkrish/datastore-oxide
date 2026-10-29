@@ -1,0 +1,398 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EQYAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EQcAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "2"
+  }],
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "b"
+        }]
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "3"
+  }, {
+    "key": {
+      "partitionId": {
+        "projectId": "p"
+      },
+      "path": [{
+        "kind": "K",
+        "id": "1"
+      }]
+    },
+    "version": "3"
+  }, {
+    "version": "3"
+  }],
+  "indexUpdates": 10,
+  "commitVersion": "3"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "2"
+        }
+      }
+    },
+    "version": "3"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "b"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "1"
+        }
+      }
+    },
+    "version": "3"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:rollback
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:rollback
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:rollback
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:rollback
+<<< 400
+{"error":{"code":400,"message":"Invalid transaction.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"transaction has expired or is invalid","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:rollback
+<<< 400
+{"error":{"code":400,"message":"transaction required","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"a transaction cannot be the empty string.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EQgAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EQkAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "4"
+  }, {
+    "version": "4"
+  }],
+  "indexUpdates": 4,
+  "commitVersion": "4"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "6"
+        }
+      }
+    },
+    "version": "4"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EQoAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "5"
+  }, {
+    "version": "5"
+  }],
+  "commitVersion": "5"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }, {
+          "kind": "C",
+          "id": "1"
+        }]
+      }
+    },
+    "version": "5"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EQsAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 409
+{"error":{"code":409,"message":"entity already exists","status":"ALREADY_EXISTS"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "6"
+        }
+      }
+    },
+    "version": "4"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EQwAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "4"
+  }],
+  "commitVersion": "4"
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EQ0AAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"non-transaction commit cannot specify a transaction","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "7"
+  }],
+  "indexUpdates": 4,
+  "commitVersion": "7"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "b"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "9"
+        }
+      }
+    },
+    "version": "7"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EQ4AAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "8"
+  }],
+  "indexUpdates": 2,
+  "commitVersion": "8"
+}
+
+<<< END
+>>> POST /v1/projects/q:commit
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END

@@ -1,0 +1,42 @@
+# v3 Delete: versions per key, costs, validation, routing
+V3 Put
+entity { key { app: "s~del" path { Element { type: "K" name: "a" } } } property { name: "x" multiple: false value { int64Value: 1 } } entity_group { Element { type: "K" name: "a" } } } entity { key { app: "s~del" path { Element { type: "K" name: "b" } } } entity_group { Element { type: "K" name: "b" } } }
+
+V3 Delete
+key { app: "s~del" path { Element { type: "K" name: "a" } } } key { app: "s~del" path { Element { type: "K" name: "missing" } } }
+
+V3 Delete
+key { app: "s~del" path { Element { type: "K" name: "missing" } } }
+
+V3 Delete
+
+V3 Delete
+key { app: "s~del" path { Element { type: "K" } } }
+
+V3 Delete
+key { app: "s~del" path { Element { type: "__foo__" name: "a" } } }
+
+V3 Delete
+key { app: "s~del" path { Element { type: "K" name: "b" } } } key { app: "s~del" path { Element { type: "K" name: "b" } } }
+
+V3 Put
+entity { key { app: "s~dq" path { Element { type: "K" name: "x" } } } entity_group { Element { type: "K" name: "x" } } } entity { key { app: "s~dr" path { Element { type: "K" name: "x" } } } entity_group { Element { type: "K" name: "x" } } }
+
+V3 Delete
+key { app: "s~dq" path { Element { type: "K" name: "x" } } } key { app: "s~dr" path { Element { type: "K" name: "x" } } }
+
+V3 Get
+key { app: "s~dq" path { Element { type: "K" name: "x" } } } key { app: "s~dr" path { Element { type: "K" name: "x" } } }
+
+V3 Delete
+key { app: "s~del" path { Element { type: "K" name: "a" } } } trusted: true force: true mark_changes: true sequence_number: 3
+
+V3 BeginTransaction
+app: "s~del"
+> t = handle
+
+V3 Delete
+key { app: "s~del" path { Element { type: "K" name: "b" } } } transaction { handle: {{t}} app: "s~del" }
+
+V3 Commit
+handle: {{t}} app: "s~del"

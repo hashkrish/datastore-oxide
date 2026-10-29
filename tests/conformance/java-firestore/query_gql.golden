@@ -1,0 +1,4071 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }, {
+    "version": "3"
+  }, {
+    "version": "4"
+  }, {
+    "version": "5"
+  }, {
+    "version": "6"
+  }, {
+    "version": "7"
+  }, {
+    "version": "8"
+  }, {
+    "version": "9"
+  }, {
+    "version": "10"
+  }, {
+    "version": "11"
+  }, {
+    "version": "12"
+  }, {
+    "version": "13"
+  }, {
+    "version": "14"
+  }, {
+    "version": "15"
+  }, {
+    "version": "16"
+  }, {
+    "version": "17"
+  }, {
+    "version": "18"
+  }, {
+    "version": "19"
+  }, {
+    "version": "20"
+  }, {
+    "version": "21"
+  }, {
+    "version": "22"
+  }, {
+    "version": "23"
+  }, {
+    "version": "24"
+  }, {
+    "version": "25"
+  }, {
+    "version": "26"
+  }, {
+    "version": "27"
+  }, {
+    "version": "28"
+  }, {
+    "version": "29"
+  }, {
+    "version": "30"
+  }, {
+    "version": "31"
+  }, {
+    "version": "32"
+  }],
+  "indexUpdates": 177
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgBDBgAIAA=",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 0.0
+          },
+          "name": {
+            "stringValue": "Eve"
+          },
+          "age": {
+            "stringValue": "30"
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgCDBgAIAA=",
+      "version": "6"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 2.5
+          },
+          "city": {
+            "stringValue": "Rome"
+          },
+          "born": {
+            "timestampValue": "1995-06-01T12:00:00Z"
+          },
+          "name": {
+            "stringValue": "bob"
+          },
+          "active": {
+            "booleanValue": false
+          },
+          "age": {
+            "integerValue": "25"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "y"
+              }, {
+                "stringValue": "z"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYgwYACAA",
+      "version": "3"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "c"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": -1.0
+          },
+          "city": {
+            "nullValue": null
+          },
+          "name": {
+            "stringValue": "Carol"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "35"
+          },
+          "tags": {
+            "arrayValue": {
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYwwYACAA",
+      "version": "4"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "d"
+          }]
+        },
+        "properties": {
+          "name": {
+            "stringValue": "Frank"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "z"
+              }, {
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBZAwYACAA",
+      "version": "7"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "e"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 0.0
+          },
+          "name": {
+            "stringValue": ""
+          },
+          "active": {
+            "nullValue": null
+          },
+          "age": {
+            "integerValue": "40"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBZQwYACAA",
+      "version": "8"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBZQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }]
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgBDBgAIAA=",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 0.0
+          },
+          "name": {
+            "stringValue": "Eve"
+          },
+          "age": {
+            "stringValue": "30"
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgCDBgAIAA=",
+      "version": "6"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 2.5
+          },
+          "city": {
+            "stringValue": "Rome"
+          },
+          "born": {
+            "timestampValue": "1995-06-01T12:00:00Z"
+          },
+          "name": {
+            "stringValue": "bob"
+          },
+          "active": {
+            "booleanValue": false
+          },
+          "age": {
+            "integerValue": "25"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "y"
+              }, {
+                "stringValue": "z"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYgwYACAA",
+      "version": "3"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "c"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": -1.0
+          },
+          "city": {
+            "nullValue": null
+          },
+          "name": {
+            "stringValue": "Carol"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "35"
+          },
+          "tags": {
+            "arrayValue": {
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYwwYACAA",
+      "version": "4"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "d"
+          }]
+        },
+        "properties": {
+          "name": {
+            "stringValue": "Frank"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "z"
+              }, {
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBZAwYACAA",
+      "version": "7"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "e"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 0.0
+          },
+          "name": {
+            "stringValue": ""
+          },
+          "active": {
+            "nullValue": null
+          },
+          "age": {
+            "integerValue": "40"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBZQwYACAA",
+      "version": "8"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBZQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }]
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgBDBgAIAA=",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 0.0
+          },
+          "name": {
+            "stringValue": "Eve"
+          },
+          "age": {
+            "stringValue": "30"
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgCDBgAIAA=",
+      "version": "6"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 2.5
+          },
+          "city": {
+            "stringValue": "Rome"
+          },
+          "born": {
+            "timestampValue": "1995-06-01T12:00:00Z"
+          },
+          "name": {
+            "stringValue": "bob"
+          },
+          "active": {
+            "booleanValue": false
+          },
+          "age": {
+            "integerValue": "25"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "y"
+              }, {
+                "stringValue": "z"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYgwYACAA",
+      "version": "3"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "c"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": -1.0
+          },
+          "city": {
+            "nullValue": null
+          },
+          "name": {
+            "stringValue": "Carol"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "35"
+          },
+          "tags": {
+            "arrayValue": {
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYwwYACAA",
+      "version": "4"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "d"
+          }]
+        },
+        "properties": {
+          "name": {
+            "stringValue": "Frank"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "z"
+              }, {
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBZAwYACAA",
+      "version": "7"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "e"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 0.0
+          },
+          "name": {
+            "stringValue": ""
+          },
+          "active": {
+            "nullValue": null
+          },
+          "age": {
+            "integerValue": "40"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBZQwYACAA",
+      "version": "8"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBZQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }]
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "KEY_ONLY",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgBDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "2"
+          }]
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgCDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYgwYACAA"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "c"
+          }]
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYwwYACAA"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "d"
+          }]
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBZAwYACAA"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "e"
+          }]
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBZQwYACAA"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBZQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "projection": [{
+      "property": {
+        "name": "__key__"
+      }
+    }],
+    "kind": [{
+      "name": "P"
+    }]
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "PROJECTION",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "name": {
+            "meaning": 18,
+            "stringValue": "bob"
+          },
+          "age": {
+            "integerValue": "25",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "Ci0KCQoDYWdlEgIIGQoNCgRuYW1lEgUaA2JvYhINagFwcggLEgFQIgFiDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "name": {
+            "meaning": 18,
+            "stringValue": "Alice"
+          },
+          "age": {
+            "integerValue": "30",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "Ci8KCQoDYWdlEgIIHgoPCgRuYW1lEgcaBUFsaWNlEg1qAXByCAsSAVAiAWEMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "name": {
+            "meaning": 18,
+            "stringValue": "dave"
+          },
+          "age": {
+            "integerValue": "30",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "Ci0KCQoDYWdlEgIIHgoOCgRuYW1lEgYaBGRhdmUSDGoBcHIHCxIBUBgBDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "c"
+          }]
+        },
+        "properties": {
+          "name": {
+            "meaning": 18,
+            "stringValue": "Carol"
+          },
+          "age": {
+            "integerValue": "35",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "Ci8KCQoDYWdlEgIIIwoPCgRuYW1lEgcaBUNhcm9sEg1qAXByCAsSAVAiAWMMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "e"
+          }]
+        },
+        "properties": {
+          "name": {
+            "meaning": 18,
+            "stringValue": ""
+          },
+          "age": {
+            "integerValue": "40",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "CioKCQoDYWdlEgIIKAoKCgRuYW1lEgIaABINagFwcggLEgFQIgFlDBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "name": {
+            "meaning": 18,
+            "stringValue": "Eve"
+          },
+          "age": {
+            "meaning": 18,
+            "stringValue": "30"
+          }
+        }
+      },
+      "cursor": "Ci4KCwoDYWdlEgQaAjMwCg0KBG5hbWUSBRoDRXZlEgxqAXByBwsSAVAYAgwYACAA"
+    }],
+    "endCursor": "Ci4KCwoDYWdlEgQaAjMwCg0KBG5hbWUSBRoDRXZlEgxqAXByBwsSAVAYAgwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "projection": [{
+      "property": {
+        "name": "age"
+      }
+    }, {
+      "property": {
+        "name": "name"
+      }
+    }],
+    "kind": [{
+      "name": "P"
+    }]
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "PROJECTION",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "age": {
+            "integerValue": "25",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "Cg8KCQoDYWdlEgIIGRgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "age": {
+            "integerValue": "30",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "Cg8KCQoDYWdlEgIIHhgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "c"
+          }]
+        },
+        "properties": {
+          "age": {
+            "integerValue": "35",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "Cg8KCQoDYWdlEgIIIxgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "e"
+          }]
+        },
+        "properties": {
+          "age": {
+            "integerValue": "40",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "Cg8KCQoDYWdlEgIIKBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "age": {
+            "meaning": 18,
+            "stringValue": "30"
+          }
+        }
+      },
+      "cursor": "ChEKCwoDYWdlEgQaAjMwGAAgAA=="
+    }],
+    "endCursor": "ChEKCwoDYWdlEgQaAjMwGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "projection": [{
+      "property": {
+        "name": "age"
+      }
+    }],
+    "kind": [{
+      "name": "P"
+    }],
+    "distinctOn": [{
+      "name": "age"
+    }]
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "PROJECTION",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "name": {
+            "meaning": 18,
+            "stringValue": "bob"
+          },
+          "age": {
+            "integerValue": "25",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "Cg8KCQoDYWdlEgIIGRgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "name": {
+            "meaning": 18,
+            "stringValue": "Alice"
+          },
+          "age": {
+            "integerValue": "30",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "Cg8KCQoDYWdlEgIIHhgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "c"
+          }]
+        },
+        "properties": {
+          "name": {
+            "meaning": 18,
+            "stringValue": "Carol"
+          },
+          "age": {
+            "integerValue": "35",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "Cg8KCQoDYWdlEgIIIxgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "e"
+          }]
+        },
+        "properties": {
+          "name": {
+            "meaning": 18,
+            "stringValue": ""
+          },
+          "age": {
+            "integerValue": "40",
+            "meaning": 18
+          }
+        }
+      },
+      "cursor": "Cg8KCQoDYWdlEgIIKBgAIAA="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "name": {
+            "meaning": 18,
+            "stringValue": "Eve"
+          },
+          "age": {
+            "meaning": 18,
+            "stringValue": "30"
+          }
+        }
+      },
+      "cursor": "ChEKCwoDYWdlEgQaAjMwGAAgAA=="
+    }],
+    "endCursor": "ChEKCwoDYWdlEgQaAjMwGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "projection": [{
+      "property": {
+        "name": "age"
+      }
+    }, {
+      "property": {
+        "name": "name"
+      }
+    }],
+    "kind": [{
+      "name": "P"
+    }],
+    "distinctOn": [{
+      "name": "age"
+    }]
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Disallowed literal: 2.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Disallowed literal: 2.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Disallowed literal: 5.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 0.0
+          },
+          "name": {
+            "stringValue": "Eve"
+          },
+          "age": {
+            "stringValue": "30"
+          }
+        }
+      },
+      "cursor": "Ch8KCwoDYWdlEgQaAjMwEgxqAXByBwsSAVAYAgwYACAB",
+      "version": "6"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "e"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 0.0
+          },
+          "name": {
+            "stringValue": ""
+          },
+          "active": {
+            "nullValue": null
+          },
+          "age": {
+            "integerValue": "40"
+          }
+        }
+      },
+      "cursor": "Ch4KCQoDYWdlEgIIKBINagFwcggLEgFQIgFlDBgAIAE=",
+      "version": "8"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "c"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": -1.0
+          },
+          "city": {
+            "nullValue": null
+          },
+          "name": {
+            "stringValue": "Carol"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "35"
+          },
+          "tags": {
+            "arrayValue": {
+            }
+          }
+        }
+      },
+      "cursor": "Ch4KCQoDYWdlEgIIIxINagFwcggLEgFQIgFjDBgAIAE=",
+      "version": "4"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ch0KCQoDYWdlEgIIHhIMagFwcgcLEgFQGAEMGAAgAQ==",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ch4KCQoDYWdlEgIIHhINagFwcggLEgFQIgFhDBgAIAE=",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 2.5
+          },
+          "city": {
+            "stringValue": "Rome"
+          },
+          "born": {
+            "timestampValue": "1995-06-01T12:00:00Z"
+          },
+          "name": {
+            "stringValue": "bob"
+          },
+          "active": {
+            "booleanValue": false
+          },
+          "age": {
+            "integerValue": "25"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "y"
+              }, {
+                "stringValue": "z"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ch4KCQoDYWdlEgIIGRINagFwcggLEgFQIgFiDBgAIAE=",
+      "version": "3"
+    }],
+    "endCursor": "Ch4KCQoDYWdlEgIIGRINagFwcggLEgFQIgFiDBgAIAE=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "order": [{
+      "property": {
+        "name": "age"
+      },
+      "direction": "DESCENDING"
+    }]
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 2.5
+          },
+          "city": {
+            "stringValue": "Rome"
+          },
+          "born": {
+            "timestampValue": "1995-06-01T12:00:00Z"
+          },
+          "name": {
+            "stringValue": "bob"
+          },
+          "active": {
+            "booleanValue": false
+          },
+          "age": {
+            "integerValue": "25"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "y"
+              }, {
+                "stringValue": "z"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci0KCQoDYWdlEgIIGQoNCgRuYW1lEgUaA2JvYhINagFwcggLEgFQIgFiDBgAIAA=",
+      "version": "3"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci0KCQoDYWdlEgIIHgoOCgRuYW1lEgYaBGRhdmUSDGoBcHIHCxIBUBgBDBgAIAA=",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ci8KCQoDYWdlEgIIHgoPCgRuYW1lEgcaBUFsaWNlEg1qAXByCAsSAVAiAWEMGAAgAA==",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "c"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": -1.0
+          },
+          "city": {
+            "nullValue": null
+          },
+          "name": {
+            "stringValue": "Carol"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "35"
+          },
+          "tags": {
+            "arrayValue": {
+            }
+          }
+        }
+      },
+      "cursor": "Ci8KCQoDYWdlEgIIIwoPCgRuYW1lEgcaBUNhcm9sEg1qAXByCAsSAVAiAWMMGAAgAA==",
+      "version": "4"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "e"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 0.0
+          },
+          "name": {
+            "stringValue": ""
+          },
+          "active": {
+            "nullValue": null
+          },
+          "age": {
+            "integerValue": "40"
+          }
+        }
+      },
+      "cursor": "CioKCQoDYWdlEgIIKAoKCgRuYW1lEgIaABINagFwcggLEgFQIgFlDBgAIAA=",
+      "version": "8"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 0.0
+          },
+          "name": {
+            "stringValue": "Eve"
+          },
+          "age": {
+            "stringValue": "30"
+          }
+        }
+      },
+      "cursor": "Ci4KCwoDYWdlEgQaAjMwCg0KBG5hbWUSBRoDRXZlEgxqAXByBwsSAVAYAgwYACAA",
+      "version": "6"
+    }],
+    "endCursor": "Ci4KCwoDYWdlEgQaAjMwCg0KBG5hbWUSBRoDRXZlEgxqAXByBwsSAVAYAgwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "order": [{
+      "property": {
+        "name": "age"
+      },
+      "direction": "ASCENDING"
+    }, {
+      "property": {
+        "name": "name"
+      },
+      "direction": "DESCENDING"
+    }]
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Disallowed literal: 30.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgBDBgAIAA=",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "age"
+        },
+        "op": "EQUAL",
+        "value": {
+          "integerValue": "30"
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 2.5
+          },
+          "city": {
+            "stringValue": "Rome"
+          },
+          "born": {
+            "timestampValue": "1995-06-01T12:00:00Z"
+          },
+          "name": {
+            "stringValue": "bob"
+          },
+          "active": {
+            "booleanValue": false
+          },
+          "age": {
+            "integerValue": "25"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "y"
+              }, {
+                "stringValue": "z"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYgwYACAA",
+      "version": "3"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBYgwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "name"
+        },
+        "op": "EQUAL",
+        "value": {
+          "stringValue": "bob"
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 2.5
+          },
+          "city": {
+            "stringValue": "Rome"
+          },
+          "born": {
+            "timestampValue": "1995-06-01T12:00:00Z"
+          },
+          "name": {
+            "stringValue": "bob"
+          },
+          "active": {
+            "booleanValue": false
+          },
+          "age": {
+            "integerValue": "25"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "y"
+              }, {
+                "stringValue": "z"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYgwYACAA",
+      "version": "3"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBYgwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "name"
+        },
+        "op": "EQUAL",
+        "value": {
+          "stringValue": "bob"
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgBDBgAIAA=",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "c"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": -1.0
+          },
+          "city": {
+            "nullValue": null
+          },
+          "name": {
+            "stringValue": "Carol"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "35"
+          },
+          "tags": {
+            "arrayValue": {
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYwwYACAA",
+      "version": "4"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBYwwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "active"
+        },
+        "op": "EQUAL",
+        "value": {
+          "booleanValue": true
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "c"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": -1.0
+          },
+          "city": {
+            "nullValue": null
+          },
+          "name": {
+            "stringValue": "Carol"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "35"
+          },
+          "tags": {
+            "arrayValue": {
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYwwYACAA",
+      "version": "4"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBYwwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "city"
+        },
+        "op": "EQUAL",
+        "value": {
+          "nullValue": null
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CicKEgoFc2NvcmUSCSEAAAAAAAD4PxINagFwcggLEgFQIgFhDBgAIAA=",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 2.5
+          },
+          "city": {
+            "stringValue": "Rome"
+          },
+          "born": {
+            "timestampValue": "1995-06-01T12:00:00Z"
+          },
+          "name": {
+            "stringValue": "bob"
+          },
+          "active": {
+            "booleanValue": false
+          },
+          "age": {
+            "integerValue": "25"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "y"
+              }, {
+                "stringValue": "z"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CicKEgoFc2NvcmUSCSEAAAAAAAAEQBINagFwcggLEgFQIgFiDBgAIAA=",
+      "version": "3"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CiYKEgoFc2NvcmUSCSEAAAAAAAD4fxIMagFwcgcLEgFQGAEMGAAgAA==",
+      "version": "5"
+    }],
+    "endCursor": "CiYKEgoFc2NvcmUSCSEAAAAAAAD4fxIMagFwcgcLEgFQGAEMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "score"
+        },
+        "op": "GREATER_THAN",
+        "value": {
+          "doubleValue": 1.0
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ch0KCQoDYWdlEgIIHhIMagFwcgcLEgFQGAEMGAAgAA==",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "Ch4KCQoDYWdlEgIIHhINagFwcggLEgFQIgFhDBgAIAA=",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "c"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": -1.0
+          },
+          "city": {
+            "nullValue": null
+          },
+          "name": {
+            "stringValue": "Carol"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "35"
+          },
+          "tags": {
+            "arrayValue": {
+            }
+          }
+        }
+      },
+      "cursor": "Ch4KCQoDYWdlEgIIIxINagFwcggLEgFQIgFjDBgAIAA=",
+      "version": "4"
+    }],
+    "endCursor": "Ch4KCQoDYWdlEgIIIxINagFwcggLEgFQIgFjDBgAIAA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "compositeFilter": {
+        "op": "AND",
+        "filters": [{
+          "propertyFilter": {
+            "property": {
+              "name": "age"
+            },
+            "op": "GREATER_THAN_OR_EQUAL",
+            "value": {
+              "integerValue": "30"
+            }
+          }
+        }, {
+          "propertyFilter": {
+            "property": {
+              "name": "age"
+            },
+            "op": "LESS_THAN",
+            "value": {
+              "integerValue": "40"
+            }
+          }
+        }]
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"unsupported composite property operator","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Filter has 2 properties, expected 1","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Unrecognized PropertyFilter.op: NOT_IN","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgBDBgAIAA=",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "d"
+          }]
+        },
+        "properties": {
+          "name": {
+            "stringValue": "Frank"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "z"
+              }, {
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBZAwYACAA",
+      "version": "7"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBZAwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "tags"
+        },
+        "op": "EQUAL",
+        "value": {
+          "stringValue": "x"
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <SINGLE_QUOTE_STRING> \"\\'x\\' \"\" at line 1, column 32.\nWas expecting one of:\n    \"ancestor\" ...\n    \"parent\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "__key__"
+        },
+        "op": "EQUAL",
+        "value": {
+          "keyValue": {
+            "partitionId": {
+            },
+            "path": [{
+              "kind": "P",
+              "name": "a"
+            }]
+          }
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIBUCIBYQwLEgFDGAEMGAAgAA==",
+      "version": "9"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "2"
+          }
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIBUCIBYQwLEgFDGAIMGAAgAA==",
+      "version": "10"
+    }],
+    "endCursor": "ChoSFGoBcHIPCxIBUCIBYQwLEgFDGAIMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "32"
+  },
+  "query": {
+    "kind": [{
+      "name": "C"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "__key__"
+        },
+        "op": "HAS_ANCESTOR",
+        "value": {
+          "keyValue": {
+            "partitionId": {
+            },
+            "path": [{
+              "kind": "P",
+              "name": "a"
+            }]
+          }
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "32"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "__key__"
+        },
+        "op": "HAS_ANCESTOR",
+        "value": {
+          "keyValue": {
+            "partitionId": {
+            },
+            "path": [{
+              "kind": "P",
+              "name": "a"
+            }]
+          }
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <SINGLE_QUOTE_STRING> \"\\'P\\' \"\" at line 1, column 37.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 2.5
+          },
+          "city": {
+            "stringValue": "Rome"
+          },
+          "born": {
+            "timestampValue": "1995-06-01T12:00:00Z"
+          },
+          "name": {
+            "stringValue": "bob"
+          },
+          "active": {
+            "booleanValue": false
+          },
+          "age": {
+            "integerValue": "25"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "y"
+              }, {
+                "stringValue": "z"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "CiYKEQoEYm9ybhIJCIDgyc/ArbYBEg1qAXByCAsSAVAiAWIMGAAgAA==",
+      "version": "3"
+    }],
+    "endCursor": "CiYKEQoEYm9ybhIJCIDgyc/ArbYBEg1qAXByCAsSAVAiAWIMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "born"
+        },
+        "op": "GREATER_THAN",
+        "value": {
+          "timestampValue": "1991-01-01T00:00:00Z"
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Invalid datetime text (does not match pattern): \"1991-01-01 00:00:00\"","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "M"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "v"
+        },
+        "op": "EQUAL",
+        "value": {
+          "blobValue": "abc="
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgBDBgAIAA=",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "age"
+        },
+        "op": "EQUAL",
+        "value": {
+          "integerValue": "30"
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "compositeFilter": {
+        "op": "AND",
+        "filters": [{
+          "propertyFilter": {
+            "property": {
+              "name": "age"
+            },
+            "op": "EQUAL",
+            "value": {
+              "integerValue": "30"
+            }
+          }
+        }, {
+          "propertyFilter": {
+            "property": {
+              "name": "name"
+            },
+            "op": "EQUAL",
+            "value": {
+              "stringValue": "Alice"
+            }
+          }
+        }]
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Absent named binding: missing.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Absent positional binding: 1.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgBDBgAIAA=",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }],
+    "endCursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "age"
+        },
+        "op": "EQUAL",
+        "value": {
+          "integerValue": "30"
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgBDBgAIAA=",
+      "version": "5"
+    }],
+    "endCursor": "ChISDGoBcHIHCxIBUBgBDBgAIAA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "limit": 1
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": "NaN"
+          },
+          "name": {
+            "stringValue": "dave"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgBDBgAIAA=",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "score": {
+            "doubleValue": 0.0
+          },
+          "name": {
+            "stringValue": "Eve"
+          },
+          "age": {
+            "stringValue": "30"
+          }
+        }
+      },
+      "cursor": "ChISDGoBcHIHCxIBUBgCDBgAIAA=",
+      "version": "6"
+    }],
+    "endCursor": "ChISDGoBcHIHCxIBUBgCDBgAIAA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "limit": 2
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Disallowed literal: 2.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "compositeFilter": {
+        "op": "AND",
+        "filters": [{
+          "propertyFilter": {
+            "property": {
+              "name": "age"
+            },
+            "op": "GREATER_THAN",
+            "value": {
+              "integerValue": "30"
+            }
+          }
+        }, {
+          "propertyFilter": {
+            "property": {
+              "name": "name"
+            },
+            "op": "EQUAL",
+            "value": {
+              "stringValue": "x"
+            }
+          }
+        }]
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "C"
+          }]
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIIX19raW5kX18iAUMMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "G"
+          }]
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIIX19raW5kX18iAUcMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "M"
+          }]
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIIX19raW5kX18iAU0MGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "P"
+          }]
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIIX19raW5kX18iAVAMGAAgAA=="
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "__kind__",
+            "name": "Q"
+          }]
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIIX19raW5kX18iAVEMGAAgAA=="
+    }],
+    "endCursor": "ChoSFGoBcHIPCxIIX19raW5kX18iAVEMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "__kind__"
+    }]
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "unidx": {
+            "stringValue": "u",
+            "excludeFromIndexes": true
+          },
+          "score": {
+            "doubleValue": 1.5
+          },
+          "city": {
+            "stringValue": "Paris"
+          },
+          "born": {
+            "timestampValue": "1990-01-01T00:00:00Z"
+          },
+          "name": {
+            "stringValue": "Alice"
+          },
+          "active": {
+            "booleanValue": true
+          },
+          "age": {
+            "integerValue": "30"
+          },
+          "tags": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBUCIBYQwYACAA",
+      "version": "2"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "id": "1"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "1"
+          }
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIBUCIBYQwLEgFDGAEMGAAgAA==",
+      "version": "9"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "id": "1"
+          }, {
+            "kind": "G",
+            "name": "x"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "4"
+          }
+        }
+      },
+      "cursor": "CiISHGoBcHIXCxIBUCIBYQwLEgFDGAEMCxIBRyIBeAwYACAA",
+      "version": "12"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }, {
+            "kind": "C",
+            "id": "2"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "2"
+          }
+        }
+      },
+      "cursor": "ChoSFGoBcHIPCxIBUCIBYQwLEgFDGAIMGAAgAA==",
+      "version": "10"
+    }],
+    "endCursor": "ChoSFGoBcHIPCxIBUCIBYQwLEgFDGAIMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "32"
+  },
+  "query": {
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "__key__"
+        },
+        "op": "HAS_ANCESTOR",
+        "value": {
+          "keyValue": {
+            "partitionId": {
+            },
+            "path": [{
+              "kind": "P",
+              "name": "a"
+            }]
+          }
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 0, column 0.\nWas expecting:\n    \"select\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 6.\nWas expecting one of:\n    \"avg\" ...\n    \"count\" ...\n    \"count_up_to\" ...\n    \"distinct\" ...\n    \"sum\" ...\n    <UNQUOTED_NAME> ...\n    \"*\" ...\n    <UNQUOTED_NAME> ...\n    <UNQUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 13.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <UNQUOTED_NAME> \"SELEC \"\" at line 1, column 1.\nWas expecting:\n    \"select\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 21.\nWas expecting:\n    \"(\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Lexical error at line 1, column 42.  Encountered: <EOF> after : \"\\'unterminated\"","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \"<EOF>\" at line 1, column 24.\nWas expecting one of:\n    <UNQUOTED_NAME> ...\n    <QUOTED_NAME> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"The limit -1 is < 0.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" \"=\" \"= \"\" at line 1, column 28.\nWas expecting one of:\n    \"false\" ...\n    \"null\" ...\n    \"true\" ...\n    <INTEGER> ...\n    <DOUBLE> ...\n    <SINGLE_QUOTE_STRING> ...\n    <DOUBLE_QUOTE_STRING> ...\n    <UNQUOTED_NAME> ...\n    <NAME_BINDING_SITE> ...\n    <POSITION_BINDING_SITE> ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Encountered \" <UNQUOTED_NAME> \"extra \"\" at line 1, column 32.\nWas expecting one of:\n    <EOF> \n    \"and\" ...\n    \"group\" ...\n    \"limit\" ...\n    \"offset\" ...\n    \"or\" ...\n    \"order\" ...\n    ","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "my prop"
+        },
+        "op": "EQUAL",
+        "value": {
+          "integerValue": "1"
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "age"
+        },
+        "op": "EQUAL",
+        "value": {
+          "integerValue": "-30"
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "score"
+        },
+        "op": "EQUAL",
+        "value": {
+          "doubleValue": 1000.0
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }],
+    "filter": {
+      "propertyFilter": {
+        "property": {
+          "name": "name"
+        },
+        "op": "EQUAL",
+        "value": {
+          "stringValue": "it's"
+        }
+      }
+    }
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p",
+            "namespaceId": "ns"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "age": {
+            "integerValue": "99"
+          }
+        }
+      },
+      "cursor": "ChgSEmoBcHIICxIBUCIBYQyiAQJucxgAIAA=",
+      "version": "13"
+    }],
+    "endCursor": "ChgSEmoBcHIICxIBUCIBYQyiAQJucxgAIAA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  },
+  "query": {
+    "kind": [{
+      "name": "P"
+    }]
+  }
+}
+
+<<< END

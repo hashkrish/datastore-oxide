@@ -1,0 +1,62 @@
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+<<< 200
+<!-- Indices written at Tue, 27 Oct 2026 09:21:52 UTC -->
+
+<datastore-indexes autoGenerate="true"/>
+
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+<<< 200
+<!-- Indices written at Tue, 27 Oct 2026 09:21:52 UTC -->
+
+<datastore-indexes autoGenerate="true">
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="K" ancestor="false" source="auto">
+        <property name="c" direction="asc"/>
+        <property name="d" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="N" ancestor="false" source="auto">
+        <property name="a" direction="asc"/>
+        <property name="b" direction="asc"/>
+    </datastore-index>
+
+</datastore-indexes>
+
+<<< END

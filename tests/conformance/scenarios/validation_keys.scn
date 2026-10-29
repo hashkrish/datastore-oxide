@@ -1,0 +1,123 @@
+# Key validation on writes and lookups.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": []}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": ""}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "id": "0"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "id": "-1"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": ""}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "__K__", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "__K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K__", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "__a__"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "__a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "__Stat_Total__", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "__BlobInfo__", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K"}, {"kind": "C", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "id": "9223372036854775807"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "{{repeat 1501 k}}", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "{{repeat 1500 k}}", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "{{repeat 1501 n}}"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "{{repeat 1500 n}}"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"partitionId": {"projectId": "other"}, "path": [{"kind": "K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"partitionId": {"namespaceId": "__ns__"}, "path": [{"kind": "K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"partitionId": {"namespaceId": "bad ns!"}, "path": [{"kind": "K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"partitionId": {"namespaceId": "{{repeat 101 n}}"}, "path": [{"kind": "K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"partitionId": {"namespaceId": "ok.ns-_1"}, "path": [{"kind": "K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"partitionId": {"databaseId": "db"}, "path": [{"kind": "K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "A", "id": "1"}, {"kind": "A", "id": "2"}, {"kind": "A", "id": "3"}, {"kind": "A", "id": "4"}, {"kind": "A", "id": "5"}, {"kind": "A", "id": "6"}, {"kind": "A", "id": "7"}, {"kind": "A", "id": "8"}, {"kind": "A", "id": "9"}, {"kind": "A", "id": "10"}, {"kind": "A", "id": "11"}, {"kind": "A", "id": "12"}, {"kind": "A", "id": "13"}, {"kind": "A", "id": "14"}, {"kind": "A", "id": "15"}, {"kind": "A", "id": "16"}, {"kind": "A", "id": "17"}, {"kind": "A", "id": "18"}, {"kind": "A", "id": "19"}, {"kind": "A", "id": "20"}, {"kind": "A", "id": "21"}, {"kind": "A", "id": "22"}, {"kind": "A", "id": "23"}, {"kind": "A", "id": "24"}, {"kind": "A", "id": "25"}, {"kind": "A", "id": "26"}, {"kind": "A", "id": "27"}, {"kind": "A", "id": "28"}, {"kind": "A", "id": "29"}, {"kind": "A", "id": "30"}, {"kind": "A", "id": "31"}, {"kind": "A", "id": "32"}, {"kind": "A", "id": "33"}, {"kind": "A", "id": "34"}, {"kind": "A", "id": "35"}, {"kind": "A", "id": "36"}, {"kind": "A", "id": "37"}, {"kind": "A", "id": "38"}, {"kind": "A", "id": "39"}, {"kind": "A", "id": "40"}, {"kind": "A", "id": "41"}, {"kind": "A", "id": "42"}, {"kind": "A", "id": "43"}, {"kind": "A", "id": "44"}, {"kind": "A", "id": "45"}, {"kind": "A", "id": "46"}, {"kind": "A", "id": "47"}, {"kind": "A", "id": "48"}, {"kind": "A", "id": "49"}, {"kind": "A", "id": "50"}, {"kind": "A", "id": "51"}, {"kind": "A", "id": "52"}, {"kind": "A", "id": "53"}, {"kind": "A", "id": "54"}, {"kind": "A", "id": "55"}, {"kind": "A", "id": "56"}, {"kind": "A", "id": "57"}, {"kind": "A", "id": "58"}, {"kind": "A", "id": "59"}, {"kind": "A", "id": "60"}, {"kind": "A", "id": "61"}, {"kind": "A", "id": "62"}, {"kind": "A", "id": "63"}, {"kind": "A", "id": "64"}, {"kind": "A", "id": "65"}, {"kind": "A", "id": "66"}, {"kind": "A", "id": "67"}, {"kind": "A", "id": "68"}, {"kind": "A", "id": "69"}, {"kind": "A", "id": "70"}, {"kind": "A", "id": "71"}, {"kind": "A", "id": "72"}, {"kind": "A", "id": "73"}, {"kind": "A", "id": "74"}, {"kind": "A", "id": "75"}, {"kind": "A", "id": "76"}, {"kind": "A", "id": "77"}, {"kind": "A", "id": "78"}, {"kind": "A", "id": "79"}, {"kind": "A", "id": "80"}, {"kind": "A", "id": "81"}, {"kind": "A", "id": "82"}, {"kind": "A", "id": "83"}, {"kind": "A", "id": "84"}, {"kind": "A", "id": "85"}, {"kind": "A", "id": "86"}, {"kind": "A", "id": "87"}, {"kind": "A", "id": "88"}, {"kind": "A", "id": "89"}, {"kind": "A", "id": "90"}, {"kind": "A", "id": "91"}, {"kind": "A", "id": "92"}, {"kind": "A", "id": "93"}, {"kind": "A", "id": "94"}, {"kind": "A", "id": "95"}, {"kind": "A", "id": "96"}, {"kind": "A", "id": "97"}, {"kind": "A", "id": "98"}, {"kind": "A", "id": "99"}, {"kind": "K", "name": "deep"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "A", "id": "1"}, {"kind": "A", "id": "2"}, {"kind": "A", "id": "3"}, {"kind": "A", "id": "4"}, {"kind": "A", "id": "5"}, {"kind": "A", "id": "6"}, {"kind": "A", "id": "7"}, {"kind": "A", "id": "8"}, {"kind": "A", "id": "9"}, {"kind": "A", "id": "10"}, {"kind": "A", "id": "11"}, {"kind": "A", "id": "12"}, {"kind": "A", "id": "13"}, {"kind": "A", "id": "14"}, {"kind": "A", "id": "15"}, {"kind": "A", "id": "16"}, {"kind": "A", "id": "17"}, {"kind": "A", "id": "18"}, {"kind": "A", "id": "19"}, {"kind": "A", "id": "20"}, {"kind": "A", "id": "21"}, {"kind": "A", "id": "22"}, {"kind": "A", "id": "23"}, {"kind": "A", "id": "24"}, {"kind": "A", "id": "25"}, {"kind": "A", "id": "26"}, {"kind": "A", "id": "27"}, {"kind": "A", "id": "28"}, {"kind": "A", "id": "29"}, {"kind": "A", "id": "30"}, {"kind": "A", "id": "31"}, {"kind": "A", "id": "32"}, {"kind": "A", "id": "33"}, {"kind": "A", "id": "34"}, {"kind": "A", "id": "35"}, {"kind": "A", "id": "36"}, {"kind": "A", "id": "37"}, {"kind": "A", "id": "38"}, {"kind": "A", "id": "39"}, {"kind": "A", "id": "40"}, {"kind": "A", "id": "41"}, {"kind": "A", "id": "42"}, {"kind": "A", "id": "43"}, {"kind": "A", "id": "44"}, {"kind": "A", "id": "45"}, {"kind": "A", "id": "46"}, {"kind": "A", "id": "47"}, {"kind": "A", "id": "48"}, {"kind": "A", "id": "49"}, {"kind": "A", "id": "50"}, {"kind": "A", "id": "51"}, {"kind": "A", "id": "52"}, {"kind": "A", "id": "53"}, {"kind": "A", "id": "54"}, {"kind": "A", "id": "55"}, {"kind": "A", "id": "56"}, {"kind": "A", "id": "57"}, {"kind": "A", "id": "58"}, {"kind": "A", "id": "59"}, {"kind": "A", "id": "60"}, {"kind": "A", "id": "61"}, {"kind": "A", "id": "62"}, {"kind": "A", "id": "63"}, {"kind": "A", "id": "64"}, {"kind": "A", "id": "65"}, {"kind": "A", "id": "66"}, {"kind": "A", "id": "67"}, {"kind": "A", "id": "68"}, {"kind": "A", "id": "69"}, {"kind": "A", "id": "70"}, {"kind": "A", "id": "71"}, {"kind": "A", "id": "72"}, {"kind": "A", "id": "73"}, {"kind": "A", "id": "74"}, {"kind": "A", "id": "75"}, {"kind": "A", "id": "76"}, {"kind": "A", "id": "77"}, {"kind": "A", "id": "78"}, {"kind": "A", "id": "79"}, {"kind": "A", "id": "80"}, {"kind": "A", "id": "81"}, {"kind": "A", "id": "82"}, {"kind": "A", "id": "83"}, {"kind": "A", "id": "84"}, {"kind": "A", "id": "85"}, {"kind": "A", "id": "86"}, {"kind": "A", "id": "87"}, {"kind": "A", "id": "88"}, {"kind": "A", "id": "89"}, {"kind": "A", "id": "90"}, {"kind": "A", "id": "91"}, {"kind": "A", "id": "92"}, {"kind": "A", "id": "93"}, {"kind": "A", "id": "94"}, {"kind": "A", "id": "95"}, {"kind": "A", "id": "96"}, {"kind": "A", "id": "97"}, {"kind": "A", "id": "98"}, {"kind": "A", "id": "99"}, {"kind": "A", "id": "100"}, {"kind": "K", "name": "deep"}]}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K"}]}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": []}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "id": "0"}]}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "__K__", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "__a__"}]}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"partitionId": {"projectId": "other"}, "path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"partitionId": {"namespaceId": "__ns__"}, "path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "__kind__", "name": "K"}]}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}, {"path": [{"kind": "K"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "K"}, {"kind": "C"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"update": {"key": {"path": [{"kind": "K"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"delete": {"path": [{"kind": "K"}]}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "K", "name": "a"}]}}}, {"insert": {"key": {"path": [{"kind": "K"}]}}}, {"insert": {"key": {"path": [{"kind": "K"}]}}}]}

@@ -1,0 +1,87 @@
+# Project and database id validation.
+POST /v1/projects/P:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p_q:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p-q:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/1p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p1:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/a.b:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/example.com:proj:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/a:b:c:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/{{repeat 101 p}}:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/{{repeat 30 p}}:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/%7E:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/s~p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/e~p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/x:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/-p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"databaseId": "Db", "keys": [{"partitionId": {"projectId": "p", "databaseId": "Db"}, "path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"databaseId": "d_b", "keys": [{"partitionId": {"projectId": "p", "databaseId": "d_b"}, "path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"databaseId": "d-b", "keys": [{"partitionId": {"projectId": "p", "databaseId": "d-b"}, "path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"databaseId": "1db", "keys": [{"partitionId": {"projectId": "p", "databaseId": "1db"}, "path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"databaseId": "{{repeat 64 d}}", "keys": [{"partitionId": {"projectId": "p", "databaseId": "{{repeat 64 d}}"}, "path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"databaseId": "(default)", "keys": [{"partitionId": {"projectId": "p", "databaseId": "(default)"}, "path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"databaseId": "a b", "keys": [{"partitionId": {"projectId": "p", "databaseId": "a b"}, "path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "databaseId": "x", "mutations": [{"upsert": {"key": {"partitionId": {"databaseId": "x"}, "path": [{"kind": "K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:allocateIds
+{"databaseId": "x", "keys": [{"partitionId": {"projectId": "p", "databaseId": "x"}, "path": [{"kind": "K"}]}]}
+
+POST /v1/projects/p:allocateIds
+{"keys": [{"partitionId": {"projectId": "q"}, "path": [{"kind": "K"}]}]}
+
+POST /v1/projects/p:allocateIds
+{"keys": [{"path": [{"kind": "__K__"}]}]}
+
+POST /v1/projects/p:allocateIds
+{"keys": [{"path": [{"kind": "K"}, {"kind": "C"}]}]}
+
+POST /v1/projects/p:reserveIds
+{"keys": [{"path": [{"kind": "__K__", "id": "1"}]}]}
+
+POST /v1/projects/p:reserveIds
+{"keys": [{"partitionId": {"namespaceId": "__x__"}, "path": [{"kind": "K", "id": "1"}]}]}

@@ -1,0 +1,126 @@
+# v3 CallHandler envelope: method dispatch, ignored fields, parse errors
+V3 Put
+entity { key { app: "s~env" path { Element { type: "K" name: "a" } } } property { name: "x" multiple: false value { int64Value: 1 } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get service=memcache request_id=r1
+key { app: "s~env" path { Element { type: "K" name: "a" } } }
+
+V3 Get service=-
+key { app: "s~env" path { Element { type: "K" name: "a" } } }
+
+V3 Get service=taskqueue
+key { app: "s~env" path { Element { type: "K" name: "a" } } }
+
+V3 Bogus
+
+V3 get
+
+V3 Touch
+
+V3 DeleteCursor
+
+V3 CreateIndex
+
+V3 UpdateIndex
+
+V3 DeleteIndex
+
+V3 Add
+
+V3 BulkAdd
+
+V3 -
+
+V3 Get
+
+V3 Put
+
+V3 Delete
+
+V3 AllocateIds
+
+V3 Commit
+
+V3 Rollback
+
+V3 BeginTransaction
+
+V3 RunQuery
+
+V3 Next
+
+V3 GetIndices
+
+V3HEX AddActions
+
+V3HEX Get
+0a05
+
+V3HEX Get
+08
+
+V3HEX Get
+0b
+
+V3HEX Get
+0c
+
+V3HEX Get
+0e
+
+V3HEX Get
+0f
+
+V3HEX Get
+0001
+
+V3HEX Put
+0a
+
+V3HEX RunQuery
+0a03
+
+V3HEX Get
+0d00000000
+
+V3HEX Get
+0801
+
+V3HEX Get
+f80701
+
+V3 Get
+key { app: "s~env" }
+
+V3 Get
+key { path { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~env" path { Element { name: "a" } } }
+
+V3 Put
+entity { key { app: "s~env" path { Element { type: "K" name: "a" } } } }
+
+V3 Put
+entity { key { app: "s~env" path { Element { type: "K" name: "a" } } } entity_group { } property { name: "x" value { } } }
+
+V3 Put
+entity { key { app: "s~env" path { Element { type: "K" name: "a" } } } entity_group { } property { name: "x" multiple: false } }
+
+V3 Put
+entity { key { app: "s~env" path { Element { type: "K" name: "a" } } } entity_group { } property { name: "x" multiple: false value { PointValue { x: 1 } } } }
+
+V3 RunQuery
+app: "s~env" Filter { }
+
+V3 RunQuery
+app: "s~env" Order { }
+
+V3 Next
+cursor { }
+
+V3 Commit
+handle: 1
+
+V3 GetIndices
+database_id: "x"

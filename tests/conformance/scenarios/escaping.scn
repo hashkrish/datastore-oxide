@@ -1,0 +1,30 @@
+# How error messages escape special characters (error bodies are compact JSON).
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"partitionId": {"namespaceId": "\u00e9<>&'=\\/"}, "path": [{"kind": "K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"partitionId": {"namespaceId": "a\nb\tc\u0001\u2028"}, "path": [{"kind": "K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"partitionId": {"namespaceId": "\u65e5\u672c"}, "path": [{"kind": "K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"partitionId": {"namespaceId": "\ud83d\ude00"}, "path": [{"kind": "K", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "__é<>&'=\\/__", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "__a\nb\tc\u0001 __", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "__日本__", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "__😀__", "name": "a"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"s": {"stringValue": "\u00e9\u65e5\u672c\ud83d\ude00\u2028<>"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}

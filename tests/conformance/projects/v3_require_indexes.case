@@ -1,0 +1,25 @@
+# App Engine v3: --require_indexes fails queries with NEED_INDEX; GetIndices lists the index file.
+ARGS --require_indexes --consistency=1.0 {dir}
+SETUP WEB-INF/index.yaml
+indexes:
+- kind: K
+  properties:
+  - name: a
+  - name: b
+    direction: desc
+END
+
+V3 Put
+entity { key { app: "s~pr" path { Element { type: "K" name: "a" } } } entity_group { } property { name: "a" multiple: false value { int64Value: 1 } } property { name: "b" multiple: false value { int64Value: 2 } } }
+
+V3 RunQuery
+app: "s~pr" kind: "K" Filter { op: 5 property { name: "a" multiple: false value { int64Value: 1 } } } Order { property: "b" direction: DESCENDING }
+
+V3 RunQuery
+app: "s~pr" kind: "K" Filter { op: 5 property { name: "a" multiple: false value { int64Value: 1 } } } Order { property: "b" }
+
+V3 RunQuery
+app: "s~pr" kind: "K" Order { property: "a" } Order { property: "c" }
+
+V3 GetIndices
+app_id: "s~pr"

@@ -1,0 +1,2 @@
+Invalid value for --consistency: Infinity. Must be in [0.0, 1.0].
+Exiting.

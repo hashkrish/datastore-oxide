@@ -1,0 +1,180 @@
+# v3 transactions: options, cross-group rules, commit versions, contention
+V3 Put
+entity { key { app: "s~txn" path { Element { type: "K" name: "a" } } } property { name: "x" multiple: false value { int64Value: 1 } } entity_group { Element { type: "K" name: "a" } } } entity { key { app: "s~txn" path { Element { type: "K" name: "b" } } } property { name: "x" multiple: false value { int64Value: 1 } } entity_group { Element { type: "K" name: "b" } } }
+
+V3 BeginTransaction
+app: "s~txn"
+> t = handle
+
+V3 Get
+key { app: "s~txn" path { Element { type: "K" name: "a" } } } transaction { handle: {{t}} app: "s~txn" }
+
+V3 Get
+key { app: "s~txn" path { Element { type: "K" name: "b" } } } transaction { handle: {{t}} app: "s~txn" }
+
+V3 Get
+key { app: "s~txn" path { Element { type: "K" name: "a" } Element { type: "C" id: 1 } } } transaction { handle: {{t}} app: "s~txn" }
+
+V3 Put
+entity { key { app: "s~txn" path { Element { type: "K" name: "b" } } } entity_group { Element { type: "K" name: "b" } } } transaction { handle: {{t}} app: "s~txn" }
+
+V3 Put
+entity { key { app: "s~txn" path { Element { type: "K" name: "a" } Element { type: "C" id: 2 } } } entity_group { Element { type: "K" name: "a" } } } transaction { handle: {{t}} app: "s~txn" }
+
+V3 Commit
+handle: {{t}} app: "s~txn"
+
+V3 BeginTransaction
+app: "s~txn" allow_multiple_eg: true database_id: "db"
+> x = handle
+
+V3 Get
+key { app: "s~txn" path { Element { type: "K" name: "a" } } } key { app: "s~txn" path { Element { type: "K" name: "b" } } } key { app: "s~txn" path { Element { type: "K" name: "c" } } } transaction { handle: {{x}} app: "s~txn" }
+
+V3 Put
+entity { key { app: "s~txn" path { Element { type: "K" name: "a" } } } property { name: "x" multiple: false value { int64Value: 2 } } entity_group { Element { type: "K" name: "a" } } } entity { key { app: "s~txn" path { Element { type: "K" name: "c" } } } entity_group { Element { type: "K" name: "c" } } } transaction { handle: {{x}} app: "s~txn" }
+
+V3 Delete
+key { app: "s~txn" path { Element { type: "K" name: "b" } } } key { app: "s~txn" path { Element { type: "K" name: "gone" } } } transaction { handle: {{x}} app: "s~txn" }
+
+V3 Commit
+handle: {{x}} app: "s~txn"
+
+V3 Commit
+handle: {{x}} app: "s~txn"
+
+V3 Rollback
+handle: {{x}} app: "s~txn"
+
+V3 Get
+key { app: "s~txn" path { Element { type: "K" name: "a" } } } key { app: "s~txn" path { Element { type: "K" name: "b" } } } key { app: "s~txn" path { Element { type: "K" name: "c" } } }
+
+V3 BeginTransaction
+app: "s~txn" allow_multiple_eg: true
+> m = handle
+
+V3 Get
+key { app: "s~txn" path { Element { type: "G" id: 1 } } } key { app: "s~txn" path { Element { type: "G" id: 2 } } } key { app: "s~txn" path { Element { type: "G" id: 3 } } } key { app: "s~txn" path { Element { type: "G" id: 4 } } } key { app: "s~txn" path { Element { type: "G" id: 5 } } } key { app: "s~txn" path { Element { type: "G" id: 6 } } } key { app: "s~txn" path { Element { type: "G" id: 7 } } } key { app: "s~txn" path { Element { type: "G" id: 8 } } } key { app: "s~txn" path { Element { type: "G" id: 9 } } } key { app: "s~txn" path { Element { type: "G" id: 10 } } } key { app: "s~txn" path { Element { type: "G" id: 11 } } } key { app: "s~txn" path { Element { type: "G" id: 12 } } } key { app: "s~txn" path { Element { type: "G" id: 13 } } } key { app: "s~txn" path { Element { type: "G" id: 14 } } } key { app: "s~txn" path { Element { type: "G" id: 15 } } } key { app: "s~txn" path { Element { type: "G" id: 16 } } } key { app: "s~txn" path { Element { type: "G" id: 17 } } } key { app: "s~txn" path { Element { type: "G" id: 18 } } } key { app: "s~txn" path { Element { type: "G" id: 19 } } } key { app: "s~txn" path { Element { type: "G" id: 20 } } } key { app: "s~txn" path { Element { type: "G" id: 21 } } } key { app: "s~txn" path { Element { type: "G" id: 22 } } } key { app: "s~txn" path { Element { type: "G" id: 23 } } } key { app: "s~txn" path { Element { type: "G" id: 24 } } } key { app: "s~txn" path { Element { type: "G" id: 25 } } } key { app: "s~txn" path { Element { type: "G" id: 26 } } } transaction { handle: {{m}} app: "s~txn" }
+
+V3 Rollback
+handle: {{m}} app: "s~txn"
+
+V3 BeginTransaction
+app: "s~txn"
+> c1 = handle
+
+V3 Get
+key { app: "s~txn" path { Element { type: "K" name: "a" } } } transaction { handle: {{c1}} app: "s~txn" }
+
+V3 Put
+entity { key { app: "s~txn" path { Element { type: "K" name: "a" } } } property { name: "x" multiple: false value { int64Value: 3 } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "s~txn" path { Element { type: "K" name: "a" } } } property { name: "x" multiple: false value { int64Value: 4 } } entity_group { Element { type: "K" name: "a" } } } transaction { handle: {{c1}} app: "s~txn" }
+
+V3 Commit
+handle: {{c1}} app: "s~txn"
+
+V3 Rollback
+handle: {{c1}} app: "s~txn"
+
+V3 Rollback
+handle: {{c1}} app: "s~txn"
+
+V3 BeginTransaction
+app: "s~txn"
+> q = handle
+
+V3 RunQuery
+app: "s~txn" kind: "K" ancestor { app: "s~txn" path { Element { type: "K" name: "a" } } } transaction { handle: {{q}} app: "s~txn" }
+
+V3 Get
+key { app: "s~txn" path { Element { type: "K" name: "a" } } } transaction { handle: {{q}} app: "s~txn" }
+
+V3 Get
+key { app: "s~txn" path { Element { type: "K" name: "b" } } } transaction { handle: {{q}} app: "s~txn" }
+
+V3 Rollback
+handle: {{q}} app: "s~txn"
+
+V3 BeginTransaction
+app: "s~txn" allow_multiple_eg: true
+> q2 = handle
+
+V3 RunQuery
+app: "s~txn" kind: "K" ancestor { app: "s~txn" path { Element { type: "K" name: "a" } } } transaction { handle: {{q2}} app: "s~txn" }
+
+V3 Get
+key { app: "s~txn" path { Element { type: "K" name: "b" } } } transaction { handle: {{q2}} app: "s~txn" }
+
+V3 RunQuery
+app: "s~txn" kind: "K" transaction { handle: {{q2}} app: "s~txn" }
+
+V3 Rollback
+handle: {{q2}} app: "s~txn"
+
+V3 BeginTransaction
+app: "s~txn" mode: READ_ONLY
+> r = handle
+
+V3 Get
+key { app: "s~txn" path { Element { type: "K" name: "a" } } } transaction { handle: {{r}} app: "s~txn" }
+
+V3 Commit
+handle: {{r}} app: "s~txn"
+
+V3 BeginTransaction
+app: "s~txn" mode: READ_ONLY
+> r2 = handle
+
+V3 BeginTransaction
+app: "s~txn" previous_transaction { handle: {{r2}} app: "s~txn" }
+> r3 = handle
+
+V3 BeginTransaction
+app: "s~txn" mode: READ_ONLY previous_transaction { handle: {{r2}} app: "s~txn" }
+> r4 = handle
+
+V3 BeginTransaction
+app: "s~txn"
+> w = handle
+
+V3 BeginTransaction
+app: "s~txn" allow_multiple_eg: true previous_transaction { handle: {{w}} app: "s~txn" }
+> w2 = handle
+
+V3 BeginTransaction
+app: "s~txn" mode: READ_WRITE previous_transaction { handle: {{w}} app: "s~txn" }
+> w3 = handle
+
+V3 BeginTransaction
+app: "s~txn" previous_transaction { handle: 777777 app: "s~txn" }
+> w4 = handle
+
+V3 BeginTransaction
+app: "s~txn" mode: READ_WRITE
+> w5 = handle
+
+V3 Commit
+handle: {{w5}} app: "s~txn-other"
+
+V3 Put
+entity { key { app: "s~txn-other" path { Element { type: "K" name: "a" } } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Commit
+handle: {{w5}} app: "s~txn-other"
+
+V3 Rollback
+handle: {{w5}} app: "e~txn"
+
+V3 Rollback
+handle: 5555555 app: "s~txn"
+
+V3 Rollback
+handle: 5555555 app: "s~never-seen"
+
+V3 Commit
+handle: 5555555 app: "s~never-seen2"
+
+V3 BeginTransaction
+app: ""

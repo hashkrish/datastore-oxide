@@ -1,0 +1,129 @@
+# XML auto file: index computation, history counts and ordering, reset.
+ARGS --store_on_disk=false --consistency=1.0 {dir}
+
+LS WEB-INF
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}}
+
+FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}, "direction": "DESCENDING"}]}}
+
+FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}, "direction": "DESCENDING"}]}}
+
+FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}, "direction": "DESCENDING"}], "limit": 5}}
+
+FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "x"}, "op": "EQUAL", "value": {"integerValue": "1"}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "x"}, "op": "EQUAL", "value": {"integerValue": "1"}}}, {"propertyFilter": {"property": {"name": "y"}, "op": "EQUAL", "value": {"integerValue": "2"}}}]}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "x"}, "op": "EQUAL", "value": {"integerValue": "1"}}}, "order": [{"property": {"name": "a"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "x"}, "op": "EQUAL", "value": {"integerValue": "2"}}}, "order": [{"property": {"name": "a"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "y"}, "op": "EQUAL", "value": {"integerValue": "1"}}}, {"propertyFilter": {"property": {"name": "x"}, "op": "EQUAL", "value": {"integerValue": "1"}}}]}}, "order": [{"property": {"name": "a"}, "direction": "DESCENDING"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "a"}, "op": "GREATER_THAN", "value": {"integerValue": "1"}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "x"}, "op": "EQUAL", "value": {"integerValue": "1"}}}, {"propertyFilter": {"property": {"name": "a"}, "op": "GREATER_THAN", "value": {"integerValue": "1"}}}]}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "a"}, "op": "LESS_THAN", "value": {"integerValue": "1"}}}, "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}, "direction": "DESCENDING"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "__key__"}, "direction": "DESCENDING"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "__key__"}, "direction": "DESCENDING"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "GREATER_THAN", "value": {"keyValue": {"path": [{"kind": "K", "name": "a"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "GREATER_THAN", "value": {"keyValue": {"path": [{"kind": "K", "name": "a"}]}}}}, "order": [{"property": {"name": "__key__"}, "direction": "DESCENDING"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "P", "name": "a"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "P", "name": "a"}]}}}}, {"propertyFilter": {"property": {"name": "x"}, "op": "EQUAL", "value": {"integerValue": "1"}}}]}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "P", "name": "a"}]}}}}, "order": [{"property": {"name": "a"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "P", "name": "a"}]}}}}, {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "x"}, "op": "EQUAL", "value": {"integerValue": "1"}}}, {"propertyFilter": {"property": {"name": "y"}, "op": "EQUAL", "value": {"integerValue": "1"}}}]}}]}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "projection": [{"property": {"name": "a"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "projection": [{"property": {"name": "b"}}, {"property": {"name": "a"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "projection": [{"property": {"name": "a"}}, {"property": {"name": "b"}}], "distinctOn": [{"name": "a"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "x"}, "op": "EQUAL", "value": {"integerValue": "1"}}}, "projection": [{"property": {"name": "a"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {}}
+
+POST /v1/projects/p:runQuery
+{"query": {"filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "GREATER_THAN", "value": {"keyValue": {"path": [{"kind": "K", "name": "a"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__kind__"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__property__"}], "order": [{"property": {"name": "__key__"}, "direction": "DESCENDING"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}, "direction": "DESCENDING"}]}, "partitionId": {"namespaceId": "n1"}}
+
+POST /v1/projects/p2:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}, "direction": "DESCENDING"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K2"}], "order": [{"property": {"name": "c"}}, {"property": {"name": "d"}}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}, "direction": "DESCENDING"}], "projection": [{"property": {"name": "__key__"}}]}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM G WHERE x = 1 ORDER BY y DESC", "allowLiterals": true}}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM G WHERE x = 2 ORDER BY y DESC", "allowLiterals": true}}
+
+FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+POST /reset
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K3"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}}]}}
+
+FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml

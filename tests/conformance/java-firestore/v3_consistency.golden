@@ -1,0 +1,142 @@
+>>> PATCH /v1/config
+<<< 200
+{
+  "jobPolicy": {
+    "forceStrongConsistency": true
+  },
+  "idAllocationPolicy": {
+    "policy": "SEQUENTIAL"
+  }
+}
+
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~cons"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+cost {
+  index_writes: 3
+  entity_writes: 1
+}
+version: [2]
+<<< END
+>>> V3 RunQuery
+<<< 0
+more_results: false
+keys_only: false
+index_only: false
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  key {
+    app: "s~cons"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+}]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  key {
+    app: "s~cons"
+    path {
+      Element: [{
+        type: "K"
+        name: "missing"
+      }]
+    }
+  }
+}]
+<<< END
+>>> V3 RunQuery
+<<< 0
+more_results: false
+keys_only: false
+index_only: false
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~cons"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 2
+}]
+<<< END
+>>> V3 RunQuery
+<<< 0
+result: [{
+  key {
+    app: "s~cons"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  property: [{
+    name: "x"
+    multiple: false
+    value {
+      int64Value: 1
+    }
+  }]
+  entity_group {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+more_results: false
+keys_only: false
+index_only: false
+version: [2]
+<<< END
+>>> PATCH /v1/config
+<<< 200
+{
+  "jobPolicy": {
+    "forceStrongConsistency": true
+  },
+  "idAllocationPolicy": {
+    "policy": "SEQUENTIAL"
+  }
+}
+
+<<< END

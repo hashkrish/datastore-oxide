@@ -1,0 +1,646 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 75
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "3"
+  }, {
+    "version": "4"
+  }, {
+    "version": "5"
+  }, {
+    "version": "6"
+  }, {
+    "version": "7"
+  }],
+  "indexUpdates": 21
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "8"
+  }],
+  "indexUpdates": 6
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:20.519978263Z",
+      "endTime": "2026-10-27T16:32:20.559468305Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "/work/proj/exp"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/exp"
+  }
+}
+
+<<< END
+>>> GLOB exp/*/*.overall_export_metadata
+<<< 200
+{"path":"/work/proj/exp/2026-10-27T16:32:20_539/2026-10-27T16:32:20_539.overall_export_metadata"}
+<<< END
+>>> GLOB exp/*
+<<< 200
+{"path":"/work/proj/exp/2026-10-27T16:32:20_539"}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "9"
+  }, {
+    "version": "10"
+  }, {
+    "version": "11"
+  }],
+  "indexUpdates": 12
+}
+
+<<< END
+>>> POST /v1/projects/p:import
+<<< 200
+{
+  "name": "projects/p/operations/898d18631cb943fb9c06e9819c7c81af",
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ImportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:20.586566354Z",
+      "endTime": "2026-10-27T16:32:20.602608245Z",
+      "operationType": "IMPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "inputUrl": "/work/proj/exp/2026-10-27T16:32:20_539/2026-10-27T16:32:20_539.overall_export_metadata"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.protobuf.Empty"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "T",
+          "name": "all"
+        }]
+      },
+      "properties": {
+        "key2": {
+          "keyValue": {
+            "partitionId": {
+              "projectId": "p",
+              "namespaceId": "ns"
+            },
+            "path": [{
+              "kind": "X",
+              "name": "n"
+            }, {
+              "kind": "Y",
+              "id": "1"
+            }]
+          }
+        },
+        "arr0": {
+          "arrayValue": {
+          }
+        },
+        "bool": {
+          "booleanValue": true
+        },
+        "unidxe": {
+          "entityValue": {
+            "properties": {
+              "x": {
+                "integerValue": "1"
+              }
+            }
+          },
+          "excludeFromIndexes": true
+        },
+        "ent0": {
+          "entityValue": {
+          }
+        },
+        "geo0": {
+          "geoPointValue": {
+          }
+        },
+        "entk": {
+          "entityValue": {
+            "key": {
+              "partitionId": {
+                "projectId": "p"
+              },
+              "path": [{
+                "kind": "E",
+                "name": "e"
+              }]
+            },
+            "properties": {
+              "q": {
+                "booleanValue": false
+              }
+            }
+          }
+        },
+        "geo": {
+          "geoPointValue": {
+            "latitude": 1.5,
+            "longitude": -2.0
+          }
+        },
+        "ts2": {
+          "timestampValue": "2024-01-02T03:04:05Z"
+        },
+        "ts4": {
+          "timestampValue": "2024-01-02T03:04:05.123456Z"
+        },
+        "ts3": {
+          "timestampValue": "2024-01-02T03:04:05.120Z"
+        },
+        "ts6": {
+          "timestampValue": "0001-01-01T00:00:00Z"
+        },
+        "ts5": {
+          "timestampValue": "2024-01-02T03:04:05Z"
+        },
+        "ts8": {
+          "timestampValue": "1969-12-31T23:59:59.999999Z"
+        },
+        "ts7": {
+          "timestampValue": "9999-12-31T23:59:59.999999Z"
+        },
+        "key": {
+          "keyValue": {
+            "partitionId": {
+              "projectId": "p"
+            },
+            "path": [{
+              "kind": "X",
+              "id": "7"
+            }]
+          }
+        },
+        "arr": {
+          "arrayValue": {
+            "values": [{
+              "integerValue": "1"
+            }, {
+              "stringValue": "a"
+            }, {
+              "nullValue": null
+            }, {
+              "entityValue": {
+              }
+            }]
+          }
+        },
+        "unidx": {
+          "stringValue": "u",
+          "excludeFromIndexes": true
+        },
+        "intmax": {
+          "integerValue": "9223372036854775807"
+        },
+        "dbl8": {
+          "doubleValue": 0.0
+        },
+        "blob0": {
+          "blobValue": ""
+        },
+        "dbl9": {
+          "doubleValue": "Infinity"
+        },
+        "dbl6": {
+          "doubleValue": "-Infinity"
+        },
+        "dbl7": {
+          "doubleValue": 1.23456789E7
+        },
+        "dbl4": {
+          "doubleValue": 3.0
+        },
+        "dbl5": {
+          "doubleValue": "NaN"
+        },
+        "str0": {
+          "stringValue": ""
+        },
+        "dbl2": {
+          "doubleValue": 1.0E20
+        },
+        "ent": {
+          "entityValue": {
+            "properties": {
+              "x": {
+                "integerValue": "1"
+              },
+              "inner": {
+                "entityValue": {
+                  "properties": {
+                    "y": {
+                      "stringValue": "z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "dbl3": {
+          "doubleValue": 1.0E-4
+        },
+        "int": {
+          "integerValue": "-42"
+        },
+        "dbl": {
+          "doubleValue": 1.5
+        },
+        "str": {
+          "stringValue": "héllo\u0001\"\n<>&=/\u2028"
+        },
+        "blob": {
+          "blobValue": "AAECAw=="
+        },
+        "null": {
+          "nullValue": null
+        },
+        "ts": {
+          "timestampValue": "2024-01-02T03:04:05.123456Z"
+        }
+      }
+    },
+    "version": "13"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "6"
+        }
+      }
+    },
+    "version": "12"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }, {
+          "kind": "C",
+          "name": "b"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "2"
+        }
+      }
+    },
+    "version": "4"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "L",
+          "id": "5"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "3"
+        }
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p",
+          "namespaceId": "ns1"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "n"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "4"
+        }
+      }
+    },
+    "version": "14"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p",
+          "namespaceId": "ns2"
+        },
+        "path": [{
+          "kind": "L",
+          "name": "m"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "5"
+        }
+      }
+    },
+    "version": "16"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "extra"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "7"
+        }
+      }
+    },
+    "version": "11"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "6"
+          }
+        }
+      },
+      "cursor": "ChMSDWoBcHIICxIBSyIBYQwYACAA",
+      "version": "12"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "extra"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "7"
+          }
+        }
+      },
+      "cursor": "ChcSEWoBcHIMCxIBSyIFZXh0cmEMGAAgAA==",
+      "version": "11"
+    }],
+    "endCursor": "ChcSEWoBcHIMCxIBSyIFZXh0cmEMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "17"
+  }],
+  "indexUpdates": 3
+}
+
+<<< END
+>>> POST /v1/projects/p2:import
+<<< 200
+{
+  "name": "projects/p2/operations/65cd882fdfda4864b86b6a0a7677335f",
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ImportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:20.688331221Z",
+      "endTime": "2026-10-27T16:32:20.691745866Z",
+      "operationType": "IMPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "inputUrl": "/work/proj/exp/2026-10-27T16:32:20_539/2026-10-27T16:32:20_539.overall_export_metadata"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.protobuf.Empty"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p2:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p2"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "6"
+        }
+      }
+    },
+    "version": "2"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p2",
+          "namespaceId": "ns1"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "n"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "4"
+        }
+      }
+    },
+    "version": "4"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p3:import
+<<< 400
+{"error":{"code":400,"message":"The requested kinds\/namespaces are not available","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p3:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p3:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p4:import
+<<< 400
+{"error":{"code":400,"message":"The requested kinds\/namespaces are not available","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p4:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p4:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p5:import
+<<< 400
+{"error":{"code":400,"message":"Failed to parse overall export metadata file","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p5:import
+<<< 400
+{"error":{"code":400,"message":"Failed to parse overall export metadata file","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p5:import
+<<< 400
+{"error":{"code":400,"message":"Failed to parse overall export metadata file","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p5:import
+<<< 400
+{"error":{"code":400,"message":"Failed to parse overall export metadata file","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p5:import
+<<< 400
+{"error":{"code":400,"message":"Failed to parse overall export metadata file","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p5:import
+<<< 400
+{"error":{"code":400,"message":"Failed to parse overall export metadata file","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p5:import
+<<< 400
+{"error":{"code":400,"message":"Invalid record","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p6:allocateIds
+<<< 200
+{
+  "keys": [{
+    "partitionId": {
+      "projectId": "p6"
+    },
+    "path": [{
+      "kind": "K",
+      "id": "5629499534213120"
+    }]
+  }]
+}
+
+<<< END

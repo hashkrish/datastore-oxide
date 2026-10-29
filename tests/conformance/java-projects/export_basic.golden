@@ -1,0 +1,169 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 75
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "3"
+  }, {
+    "version": "4"
+  }, {
+    "version": "5"
+  }, {
+    "version": "6"
+  }, {
+    "version": "7"
+  }],
+  "indexUpdates": 21
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "8"
+  }],
+  "indexUpdates": 6
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:13.740714991Z",
+      "endTime": "2026-10-27T16:32:13.797080556Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "/work/proj/exp"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/exp"
+  }
+}
+
+<<< END
+>>> LS exp
+<<< 200
+2026-10-27T16:32:13_769
+<<< END
+>>> LS exp/*
+<<< 200
+2026-10-27T16:32:13_769.overall_export_metadata
+all_namespaces
+<<< END
+>>> RECORDS exp/*/*.overall_export_metadata
+<<< 200
+33
+0a520a0808021200180322001241616c6c5f6e616d657370616365732f616c6c5f6b696e64732f616c6c5f6e616d657370616365735f616c6c5f6b696e64732e6578706f72745f6d65746164617461180620b709
+<<< END
+>>> PROTO exp/*/*.overall_export_metadata#1
+<<< 200
+1 {
+  1 {
+    1: 2
+    2: bytes 
+    3: 3
+    4: bytes 
+  }
+  2: "all_namespaces/all_kinds/all_namespaces_all_kinds.export_metadata"
+  3: 6
+  4: 1207
+}
+
+<<< END
+>>> LS exp/*/all_namespaces/all_kinds
+<<< 200
+all_namespaces_all_kinds.export_metadata
+output-0
+<<< END
+>>> PROTO exp/*/all_namespaces/all_kinds/all_namespaces_all_kinds.export_metadata
+<<< 200
+1 {
+  1: "2026-10-27T16:32:13_769"
+  2: <micros>
+  3: <micros>
+}
+2 {
+  1: bytes 
+  2: "output-0"
+}
+
+<<< END
+>>> ENTITIES exp/*/all_namespaces/all_kinds/output-*
+<<< 200
+6a156a017072100b12014b2201610c0b1201432201620c72091a017620002a0208028201080b12014b2201610c
+6a0f6a0170720a0b1201542203616c6c0c720b1a0361727220012a020801720c1a0361727220012a031a016172091a0361727220012a00721608131a0361727220012a0b1a096a046a007200820100720c08181a046172723020002a00721208101a04626c6f6220002a061a0400010203720f08101a05626c6f623020002a021a00720c1a04626f6f6c20002a02100172121a0364626c20002a0921000000000000f83f72131a0464626c3220002a0921408cb5781daf154472131a0464626c3320002a09212d431cebe2361a3f72131a0464626c3420002a0921000000000000084072131a0464626c3520002a0921000000000000f87f72131a0464626c3620002a0921000000000000f0ff72131a0464626c3720002a0921cdccccdc298c674172131a0464626c3820002a0921000000000000000072131a0464626c3920002a0921000000000000f07f724708131a03656e7420002a3c1a3a6a046a007200722408131a05696e6e657220002a171a156a046a007200720a1a017920002a031a017a82010072091a017820002a020801820100721708131a04656e743020002a0b1a096a046a007200820100723308131a04656e746b20002a271a256a0d6a017072080b1201452201650c72091a017120002a0210008201080b1201452201650c721f08091a0367656f20002a142b31000000000000f83f3900000000000000c02c722008091a0467656f3020002a142b3100000000000000003900000000000000002c72141a03696e7420002a0b08d6ffffffffffffffff0172161a06696e746d617820002a0a08ffffffffffffffff7f72161a036b657920002a0d636a0170737a0158800107746472251a046b65793220002a1b636a0170737a01588a01016e74737a015980010174a201026e7364720a1a046e756c6c20002a00721c1a0373747220002a131a1168c3a96c6c6f01220a3c3e263d2fe280a8720c1a047374723020002a021a00721308071a02747320002a090880ebbe82dcbd8303721408071a0374733220002a0908c0a6b782dcbd8303721408071a0374733320002a090880d0be82dcbd8303721408071a0374733420002a090880ebbe82dcbd8303721408071a0374733520002a0908c0a6b782dcbd8303721608071a0374733620002a0b088080d1869080d091ff01721508071a0374733720002a0a08ffbfcde3cc8191c203721608071a0374733820002a0b08ffffffffffffffffff017a0e1a05756e69647820002a031a01757a2408131a06756e6964786520002a161a146a046a00720072091a017820002a02080182010082010a0b1201542203616c6c0c
+6a0d6a017072080b12014b2201610c72091a017620002a0208068201080b12014b2201610c
+6a136a017072080b12014b22016e0ca201036e733172091a017620002a0208048201080b12014b22016e0c
+6a0c6a017072070b12014c18050c72091a017620002a0208038201070b12014c18050c
+6a136a017072080b12014c22016d0ca201036e733272091a017620002a0208058201080b12014c22016d0c
+<<< END
+>>> POST /v1/projects/p:export
+<<< 400
+{"error":{"code":400,"message":"The output_url_prefix: \/work\/proj\/exp\/ already exists","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> LS exp
+<<< 200
+2026-10-27T16:32:13_769
+<<< END
+>>> POST /v1/projects/nothing:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:13.823133096Z",
+      "endTime": "2026-10-27T16:32:13.823485361Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "/work/proj/empty"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/empty"
+  }
+}
+
+<<< END
+>>> LS empty
+<<< 200
+2026-10-27T16:32:13_823
+<<< END
+>>> LS empty/*
+<<< 200
+2026-10-27T16:32:13_823.overall_export_metadata
+<<< END
+>>> RECORDS empty/*/*.overall_export_metadata
+<<< 200
+33
+
+<<< END
+>>> PROTO empty/*/*.overall_export_metadata#1
+<<< 200
+
+<<< END
+>>> LS empty/*/all_namespaces/all_kinds
+<<< 404
+
+<<< END

@@ -1,0 +1,104 @@
+# Databases: lookups are per database, but queries see every database of the project.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "c"}]}, "properties": {"v": {"integerValue": "3"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}, "properties": {"v": {"integerValue": "10"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "b"}]}, "properties": {"v": {"integerValue": "2"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}, "properties": {"v": {"integerValue": "20"}}}}, {"upsert": {"key": {"path": [{"kind": "K2", "name": "d"}]}, "properties": {"v": {"integerValue": "4"}}}}], "databaseId": "db1"}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}, "properties": {"v": {"integerValue": "30"}}}}], "databaseId": "db2"}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}, "databaseId": "db1"}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}, "databaseId": "db2"}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "v"}, "direction": "DESCENDING"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "GREATER_THAN", "value": {"integerValue": "5"}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "EQUAL", "value": {"keyValue": {"path": [{"kind": "K", "name": "x"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "GREATER_THAN", "value": {"keyValue": {"partitionId": {"databaseId": "db1"}, "path": [{"kind": "K", "name": "a"}]}}}}}, "databaseId": "db1"}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__kind__"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__kind__"}]}, "databaseId": "db1"}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__namespace__"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__property__"}]}, "databaseId": "db1"}
+
+POST /v1/projects/p:runQuery
+{"query": {}}
+
+POST /v1/projects/p:runQuery
+{"query": {}, "databaseId": "db2"}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "limit": 2}}
+> c = batch.endCursor
+
+POST /v1/projects/p:runQuery
+{"databaseId": "db1", "query": {"kind": [{"name": "K"}], "startCursor": "{{c}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "P", "name": "p1"}, {"kind": "K", "name": "y"}]}, "properties": {"v": {"integerValue": "5"}}}}], "databaseId": "db1"}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "P", "name": "p1"}]}}}}}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"partitionId": {"databaseId": "db1"}, "path": [{"kind": "P", "name": "p1"}]}}}}}, "databaseId": "db1"}
+
+POST /v1/projects/p:runQuery
+{"gqlQuery": {"queryString": "SELECT * FROM K"}}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "x"}]}, {"path": [{"kind": "K", "name": "b"}]}]}
+
+POST /v1/projects/p:lookup
+{"databaseId": "db1", "keys": [{"partitionId": {"databaseId": "db1"}, "path": [{"kind": "K", "name": "x"}]}]}
+
+# Equal keys in different databases keep insertion order; re-creating moves to the end.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "L", "name": "x"}]}, "properties": {"v": {"integerValue": "30"}}}}], "databaseId": "db2"}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "L", "name": "x"}]}, "properties": {"v": {"integerValue": "10"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "L", "name": "x"}]}, "properties": {"v": {"integerValue": "20"}}}}], "databaseId": "db1"}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "L"}]}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "L"}], "order": [{"property": {"name": "__key__"}, "direction": "DESCENDING"}]}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "L", "name": "x"}]}, "properties": {"v": {"integerValue": "31"}}}}], "databaseId": "db2"}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "L"}]}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"delete": {"path": [{"kind": "L", "name": "x"}]}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "L", "name": "x"}]}, "properties": {"v": {"integerValue": "11"}}}}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "L"}]}}

@@ -1,0 +1,72 @@
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"This query requires a composite index that is not defined. You must update \/work\/proj\/WEB-INF\/datastore-indexes.xml or enable autoGenerate to have it automatically added.","status":"FAILED_PRECONDITION"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"This query requires a composite index that is not defined. You must update \/work\/proj\/WEB-INF\/datastore-indexes.xml or enable autoGenerate to have it automatically added.","status":"FAILED_PRECONDITION"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"This query requires a composite index that is not defined. You must update \/work\/proj\/WEB-INF\/datastore-indexes.xml or enable autoGenerate to have it automatically added.\n\nThe minimum required index is:\n    <datastore-index kind=\"K\" ancestor=\"false\" source=\"manual\">\n        <property name=\"z\" direction=\"asc\"\/>\n        <property name=\"c\" direction=\"asc\"\/>\n    <\/datastore-index>\n\n","status":"FAILED_PRECONDITION"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"This query requires a composite index that is not defined. You must update \/work\/proj\/WEB-INF\/datastore-indexes.xml or enable autoGenerate to have it automatically added.","status":"FAILED_PRECONDITION"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"This query requires a composite index that is not defined. You must update \/work\/proj\/WEB-INF\/datastore-indexes.xml or enable autoGenerate to have it automatically added.","status":"FAILED_PRECONDITION"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"This query requires a composite index that is not defined. You must update \/work\/proj\/WEB-INF\/datastore-indexes.xml or enable autoGenerate to have it automatically added.","status":"FAILED_PRECONDITION"}}
+<<< END
+>>> LS WEB-INF
+<<< 200
+datastore-indexes.xml
+<<< END

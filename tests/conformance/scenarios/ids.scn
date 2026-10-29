@@ -1,0 +1,36 @@
+# Sequential auto ids (global counter), scattered allocateIds, reserveIds.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "A"}]}}}, {"insert": {"key": {"path": [{"kind": "B"}]}}}, {"insert": {"key": {"partitionId": {"namespaceId": "n"}, "path": [{"kind": "A"}]}}}]}
+
+POST /v1/projects/q:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "A"}]}}}]}
+
+POST /v1/projects/p:allocateIds
+{"keys": [{"path": [{"kind": "A"}]}, {"path": [{"kind": "A"}]}, {"path": [{"kind": "P", "name": "x"}, {"kind": "C"}]}, {"partitionId": {"namespaceId": "n"}, "path": [{"kind": "Z"}]}]}
+
+POST /v1/projects/p:allocateIds
+{}
+
+POST /v1/projects/p:reserveIds
+{"keys": [{"path": [{"kind": "A", "id": "100"}]}, {"path": [{"kind": "A", "name": "named"}]}]}
+
+POST /v1/projects/p:reserveIds
+{"keys": [{"path": [{"kind": "A", "id": "9007199254740993"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "A"}]}}}]}
+
+POST /v1/projects/p:allocateIds
+{"keys": [{"path": [{"kind": "A", "id": "5"}]}]}
+
+POST /v1/projects/p:allocateIds
+{"keys": [{"path": [{"kind": "A", "name": "n"}]}]}
+
+POST /v1/projects/p:reserveIds
+{"keys": [{"path": [{"kind": "A"}]}]}
+
+POST /v1/projects/p:reserveIds
+{}
+
+POST /v1/projects/p:reserveIds
+{"databaseId": "", "keys": [{"path": [{"kind": "A", "id": "-5"}]}]}

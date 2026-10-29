@@ -1,0 +1,98 @@
+>>> GET /v1/projects/p:lookup
+<<< 404
+Not Found
+
+<<< END
+>>> PUT /v1/projects/p:lookup
+<<< 404
+Not Found
+
+<<< END
+>>> POST /v1/projects/p:bogus
+<<< 404
+Not Found
+
+<<< END
+>>> POST /v1/projects/p
+<<< 404
+Not Found
+
+<<< END
+>>> POST /v1/projects/:lookup
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p/x:lookup
+<<< 404
+Not Found
+
+<<< END
+>>> POST /v2/projects/p:lookup
+<<< 404
+Not Found (Unsupported API version "v2")
+
+<<< END
+>>> POST /v1beta1/projects/p:lookup
+<<< 404
+Not Found
+
+<<< END
+>>> POST /v1/projects/p%20q:lookup
+<<< 400
+{"error":{"code":400,"message":"\"p q\" is an invalid project id.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:lookup?alt=json
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup?projectId=other
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 0
+<timeout>
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p",
+          "namespaceId": "x"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      }
+    },
+    "version": "1"
+  }]
+}
+
+<<< END

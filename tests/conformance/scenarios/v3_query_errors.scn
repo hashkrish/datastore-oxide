@@ -1,0 +1,76 @@
+# v3 RunQuery errors
+V3 Put
+entity { key { app: "s~qry" path { Element { type: "K" name: "e00" } } } property { name: "x" multiple: false value { int64Value: 0 } } property { name: "y" multiple: false value { int64Value: 0 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 0 } } entity_group { Element { type: "K" name: "e00" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e01" } } } property { name: "x" multiple: false value { int64Value: 1 } } property { name: "y" multiple: false value { int64Value: 1 } } property { name: "t" multiple: false value { stringValue: "b" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 1 } } entity_group { Element { type: "K" name: "e01" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e02" } } } property { name: "x" multiple: false value { int64Value: 2 } } property { name: "y" multiple: false value { int64Value: 2 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 2 } } entity_group { Element { type: "K" name: "e02" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e03" } } } property { name: "x" multiple: false value { int64Value: 0 } } property { name: "y" multiple: false value { int64Value: 3 } } property { name: "t" multiple: false value { stringValue: "b" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 3 } } entity_group { Element { type: "K" name: "e03" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e04" } } } property { name: "x" multiple: false value { int64Value: 1 } } property { name: "y" multiple: false value { int64Value: 4 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 4 } } entity_group { Element { type: "K" name: "e04" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e05" } } } property { name: "x" multiple: false value { int64Value: 2 } } property { name: "y" multiple: false value { int64Value: 5 } } property { name: "t" multiple: false value { stringValue: "b" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 5 } } entity_group { Element { type: "K" name: "e05" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e06" } } } property { name: "x" multiple: false value { int64Value: 0 } } property { name: "y" multiple: false value { int64Value: 6 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 6 } } entity_group { Element { type: "K" name: "e06" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e07" } } } property { name: "x" multiple: false value { int64Value: 1 } } property { name: "y" multiple: false value { int64Value: 7 } } property { name: "t" multiple: false value { stringValue: "b" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 7 } } entity_group { Element { type: "K" name: "e07" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e08" } } } property { name: "x" multiple: false value { int64Value: 2 } } property { name: "y" multiple: false value { int64Value: 8 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 8 } } entity_group { Element { type: "K" name: "e08" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e09" } } } property { name: "x" multiple: false value { int64Value: 0 } } property { name: "y" multiple: false value { int64Value: 9 } } property { name: "t" multiple: false value { stringValue: "b" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 9 } } entity_group { Element { type: "K" name: "e09" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e10" } } } property { name: "x" multiple: false value { int64Value: 1 } } property { name: "y" multiple: false value { int64Value: 10 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 10 } } entity_group { Element { type: "K" name: "e10" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e11" } } } property { name: "x" multiple: false value { int64Value: 2 } } property { name: "y" multiple: false value { int64Value: 11 } } property { name: "t" multiple: false value { stringValue: "b" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 11 } } entity_group { Element { type: "K" name: "e11" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e12" } } } property { name: "x" multiple: false value { int64Value: 0 } } property { name: "y" multiple: false value { int64Value: 12 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 12 } } entity_group { Element { type: "K" name: "e12" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e13" } } } property { name: "x" multiple: false value { int64Value: 1 } } property { name: "y" multiple: false value { int64Value: 13 } } property { name: "t" multiple: false value { stringValue: "b" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 13 } } entity_group { Element { type: "K" name: "e13" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e14" } } } property { name: "x" multiple: false value { int64Value: 2 } } property { name: "y" multiple: false value { int64Value: 14 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 14 } } entity_group { Element { type: "K" name: "e14" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e15" } } } property { name: "x" multiple: false value { int64Value: 0 } } property { name: "y" multiple: false value { int64Value: 15 } } property { name: "t" multiple: false value { stringValue: "b" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 15 } } entity_group { Element { type: "K" name: "e15" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e16" } } } property { name: "x" multiple: false value { int64Value: 1 } } property { name: "y" multiple: false value { int64Value: 16 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 16 } } entity_group { Element { type: "K" name: "e16" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e17" } } } property { name: "x" multiple: false value { int64Value: 2 } } property { name: "y" multiple: false value { int64Value: 17 } } property { name: "t" multiple: false value { stringValue: "b" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 17 } } entity_group { Element { type: "K" name: "e17" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e18" } } } property { name: "x" multiple: false value { int64Value: 0 } } property { name: "y" multiple: false value { int64Value: 18 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 18 } } entity_group { Element { type: "K" name: "e18" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e19" } } } property { name: "x" multiple: false value { int64Value: 1 } } property { name: "y" multiple: false value { int64Value: 19 } } property { name: "t" multiple: false value { stringValue: "b" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 19 } } entity_group { Element { type: "K" name: "e19" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e20" } } } property { name: "x" multiple: false value { int64Value: 2 } } property { name: "y" multiple: false value { int64Value: 20 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 20 } } entity_group { Element { type: "K" name: "e20" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e21" } } } property { name: "x" multiple: false value { int64Value: 0 } } property { name: "y" multiple: false value { int64Value: 21 } } property { name: "t" multiple: false value { stringValue: "b" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 21 } } entity_group { Element { type: "K" name: "e21" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e22" } } } property { name: "x" multiple: false value { int64Value: 1 } } property { name: "y" multiple: false value { int64Value: 22 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 22 } } entity_group { Element { type: "K" name: "e22" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e23" } } } property { name: "x" multiple: false value { int64Value: 2 } } property { name: "y" multiple: false value { int64Value: 23 } } property { name: "t" multiple: false value { stringValue: "b" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 23 } } entity_group { Element { type: "K" name: "e23" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e24" } } } property { name: "x" multiple: false value { int64Value: 0 } } property { name: "y" multiple: false value { int64Value: 24 } } property { name: "t" multiple: false value { stringValue: "a" } } property { name: "arr" multiple: true value { int64Value: 1 } } property { name: "arr" multiple: true value { int64Value: 24 } } entity_group { Element { type: "K" name: "e24" } } } entity { key { app: "s~qry" path { Element { type: "K" name: "e00" } Element { type: "C" name: "c1" } } } property { name: "x" multiple: false value { int64Value: 9 } } entity_group { Element { type: "K" name: "e00" } } } entity { key { app: "s~qry" path { Element { type: "Z" name: "z" } } } property { name: "x" multiple: false value { int64Value: 1 } } entity_group { Element { type: "Z" name: "z" } } }
+
+V3 RunQuery
+app: "s~qry" kind: "K" Filter { op: 1 property { name: "x" multiple: false value { int64Value: 1 } } } Filter { op: 3 property { name: "y" multiple: false value { int64Value: 2 } } }
+
+V3 RunQuery
+app: "s~qry" kind: "K" Filter { op: 5 property { name: "x" multiple: false value { int64Value: 1 } } property { name: "x" multiple: false value { int64Value: 2 } } }
+
+V3 RunQuery
+app: "s~qry" kind: "K" Filter { op: 6 }
+
+V3 RunQuery
+app: "s~qry" kind: "K" Filter { op: 9 property { name: "x" multiple: false value { int64Value: 1 } } }
+
+V3 RunQuery
+app: "s~qry" kind: "K" Filter { op: 10 property { name: "x" multiple: false value { int64Value: 1 } } }
+
+V3 RunQuery
+app: "s~qry" kind: "K" search_query: "x"
+
+V3 RunQuery
+app: "s~qry" Filter { op: 5 property { name: "x" multiple: false value { int64Value: 1 } } }
+
+V3 RunQuery
+app: "s~qry" Order { property: "x" }
+
+V3 RunQuery
+app: "s~qry" Order { property: "__key__" direction: 2 }
+
+V3 RunQuery
+app: "s~qry" kind: "__entity_group__"
+
+V3 RunQuery
+app: "s~qry" kind: "K" Filter { op: 5 property { name: "__key__" multiple: false value { int64Value: 1 } } }
+
+V3 RunQuery
+app: "s~qry" kind: "K" property_name: "__key__"
+
+V3 RunQuery
+app: "s~qry" kind: "K" keys_only: true property_name: "x"
+
+V3 RunQuery
+app: "s~qry" kind: "K" ancestor { app: "s~zzz" path { Element { type: "K" name: "a" } } }
+
+V3 RunQuery
+app: "s~qry" kind: "K" ancestor { app: "s~qry" name_space: "n1" path { Element { type: "K" name: "a" } } }
+
+V3 RunQuery
+app: "s~qry" kind: "Z" compiled_cursor { postfix_position { key { app: "qry" path { Element { type: "K" name: "e05" } } } before: false } }
+
+V3 RunQuery
+app: "s~qry" kind: "K" Order { property: "y" } compiled_cursor { postfix_position { index_value { property_name: "x" value { int64Value: 1 } } key { app: "qry" path { Element { type: "K" name: "e05" } } } before: false } }
+
+V3 RunQuery
+app: "s~qry" kind: "K" count: -1
+
+V3 RunQuery
+app: "s~qry" kind: "K" limit: -1
+
+V3 BeginTransaction
+app: "s~qry"
+> t = handle
+
+V3 RunQuery
+app: "s~qry" kind: "K" transaction { handle: {{t}} app: "s~qry" }
+
+V3 RunQuery
+app: "s~zz" kind: "K" ancestor { app: "s~zz" path { Element { type: "K" name: "a" } } } transaction { handle: {{t}} app: "s~qry" }
+
+V3 RunQuery
+app: "s~qry" kind: "K" ancestor { app: "s~qry" path { Element { type: "K" name: "e01" } } } transaction { handle: {{t}} app: "s~qry" }
+
+V3 Rollback
+handle: {{t}} app: "s~qry"

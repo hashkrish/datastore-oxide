@@ -1,0 +1,19 @@
+# --store_index_configuration_on_disk=false still verifies a file without the marker.
+ARGS --store_index_configuration_on_disk=false --consistency=1.0 {dir}
+SETUP WEB-INF/index.yaml
+indexes:
+- kind: K
+  properties:
+  - name: a
+  - name: b
+    direction: desc
+
+- kind: "K"
+  ancestor: yes
+  properties:
+  - name: x
+  - name: c
+END
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "c"}}, {"property": {"name": "d"}}]}}

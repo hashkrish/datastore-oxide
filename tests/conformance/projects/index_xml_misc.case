@@ -1,0 +1,32 @@
+# XML auto file: invalid queries are not recorded; transactions; paging.
+ARGS --store_on_disk=false --consistency=1.0 {dir}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"compositeFilter": {"op": "AND", "filters": [{"propertyFilter": {"property": {"name": "a"}, "op": "GREATER_THAN", "value": {"integerValue": "1"}}}, {"propertyFilter": {"property": {"name": "b"}, "op": "GREATER_THAN", "value": {"integerValue": "1"}}}]}}}}
+
+LS WEB-INF
+POST /v1/projects/p:beginTransaction
+{}
+> t = transaction
+
+POST /v1/projects/p:runQuery
+{"readOptions": {"transaction": "{{t}}"}, "query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "P", "name": "a"}]}}}}, "order": [{"property": {"name": "z"}}]}}
+
+FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "0"}]}, "properties": {"a": {"integerValue": "0"}, "b": {"integerValue": "0"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "1"}]}, "properties": {"a": {"integerValue": "1"}, "b": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "2"}]}, "properties": {"a": {"integerValue": "2"}, "b": {"integerValue": "2"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "3"}]}, "properties": {"a": {"integerValue": "3"}, "b": {"integerValue": "0"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "4"}]}, "properties": {"a": {"integerValue": "4"}, "b": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}}], "limit": 2}}
+> c = batch.endCursor
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}}], "limit": 2, "startCursor": "{{c}}"}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}}], "limit": 2, "startCursor": "{{c}}"}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "order": [{"property": {"name": "a"}}, {"property": {"name": "b"}}], "offset": 1}}
+
+FILE WEB-INF/appengine-generated/datastore-indexes-auto.xml

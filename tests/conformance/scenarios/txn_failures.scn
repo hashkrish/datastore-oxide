@@ -1,0 +1,149 @@
+# Handles after contention (failed transactions), retries with previousTransaction, read-only edge cases.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "b"}]}, "properties": {"v": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t1 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{t1}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "2"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t1}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "3"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t1}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "3"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{t1}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t1}}", "mutations": []}
+
+POST /v1/projects/p:rollback
+{"transaction": "{{t1}}"}
+
+POST /v1/projects/p:rollback
+{"transaction": "{{t1}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t2 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{t2}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "4"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "b"}]}], "readOptions": {"transaction": "{{t2}}"}}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{t2}}"}}
+
+POST /v1/projects/p:rollback
+{"transaction": "{{t2}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t3 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{t3}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "5"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t3}}", "mutations": []}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t4 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{t4}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "6"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t4}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "7"}}}}]}
+
+POST /v1/projects/p:beginTransaction
+{"transactionOptions": {"readWrite": {"previousTransaction": "{{t4}}"}}}
+> t5 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t4}}", "mutations": []}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{t5}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t5}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "8"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:beginTransaction
+{"transactionOptions": {"readWrite": {"previousTransaction": "EQEAAAAAAAAA"}}}
+> t6 = transaction
+
+POST /v1/projects/p:beginTransaction
+{"transactionOptions": {"readWrite": {"previousTransaction": "AAAA"}}}
+
+POST /v1/projects/p:beginTransaction
+{"transactionOptions": {"readOnly": {}}}
+> r1 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{r1}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "9"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{r1}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{r1}}", "mutations": []}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t7 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t7}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K"}]}, "properties": {}}}, {"insert": {"key": {"path": [{"kind": "K"}]}, "properties": {}}}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t8 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t8}}", "mutations": [{"insert": {"key": {"path": [{"kind": "K", "name": "a"}, {"kind": "C", "id": "1"}]}, "properties": {}}}, {"insert": {"key": {"path": [{"kind": "K", "name": "a"}, {"kind": "C", "id": "1"}]}, "properties": {}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}, {"kind": "C", "id": "1"}]}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t9 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t9}}", "mutations": [{"delete": {"path": [{"kind": "K", "name": "a"}, {"kind": "C", "id": "1"}]}}, {"update": {"key": {"path": [{"kind": "K", "name": "a"}, {"kind": "C", "id": "1"}]}, "properties": {}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}, {"kind": "C", "id": "1"}]}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t10 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}, {"kind": "__entity_group__", "id": "1"}]}], "readOptions": {"transaction": "{{t10}}"}}

@@ -1,0 +1,8 @@
+create
+
+Creates a local Cloud Datastore project directory.
+
+Usage: cloud_datastore_emulator create [options] <directory>
+
+Options:
+

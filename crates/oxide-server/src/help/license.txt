@@ -1,0 +1,6 @@
+license
+
+Prints license information.
+
+Usage: cloud_datastore_emulator license 
+

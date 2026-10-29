@@ -1,0 +1,114 @@
+# Queries inside transactions: the shared __none__ group, and (Firestore mode) tracking of matches.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "1"}, {"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "R", "name": "2"}, {"kind": "K", "name": "b"}]}, "properties": {"v": {"integerValue": "2"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "y"}]}, "properties": {"v": {"integerValue": "2"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "z"}]}, "properties": {"v": {"integerValue": "3"}}}}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t1 = transaction
+
+POST /v1/projects/p:beginTransaction
+{}
+> t2 = transaction
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "R", "name": "1"}]}}}}}, "readOptions": {"transaction": "{{t1}}"}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "R", "name": "2"}]}}}}}, "readOptions": {"transaction": "{{t2}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "2"}, {"kind": "K", "name": "b"}]}, "properties": {"v": {"integerValue": "20"}}}}], "transaction": "{{t2}}"}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "1"}, {"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "10"}}}}], "transaction": "{{t1}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t3 = transaction
+
+POST /v1/projects/p:beginTransaction
+{}
+> t4 = transaction
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "R", "name": "1"}]}}}}}, "readOptions": {"transaction": "{{t3}}"}}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "R", "name": "2"}, {"kind": "K", "name": "b"}]}], "readOptions": {"transaction": "{{t4}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "1"}, {"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "11"}}}}], "transaction": "{{t3}}"}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "2"}, {"kind": "K", "name": "b"}]}, "properties": {"v": {"integerValue": "21"}}}}], "transaction": "{{t4}}"}
+
+POST /v1/projects/p:beginTransaction
+{"transactionOptions": {"readOnly": {}}}
+> t5 = transaction
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "HAS_ANCESTOR", "value": {"keyValue": {"path": [{"kind": "R", "name": "1"}]}}}}}, "readOptions": {"transaction": "{{t5}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "R", "name": "1"}, {"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "12"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t5}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t6 = transaction
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "LESS_THAN", "value": {"integerValue": "10"}}}, "limit": 1, "order": [{"property": {"name": "v"}}]}, "readOptions": {"transaction": "{{t6}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "y"}]}, "properties": {"v": {"integerValue": "5"}}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "w"}]}, "properties": {"v": {"integerValue": "1"}}}}], "transaction": "{{t6}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t7 = transaction
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "LESS_THAN", "value": {"integerValue": "4"}}}}, "readOptions": {"transaction": "{{t7}}"}}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "x"}]}], "readOptions": {"transaction": "{{t7}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}, "properties": {"v": {"integerValue": "3"}}}}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "v"}, "op": "LESS_THAN", "value": {"integerValue": "4"}}}}, "readOptions": {"transaction": "{{t7}}"}}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "x"}]}], "readOptions": {"transaction": "{{t7}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t7}}"}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t8 = transaction
+
+POST /v1/projects/p:runQuery
+{"query": {"filter": {"propertyFilter": {"property": {"name": "__key__"}, "op": "GREATER_THAN", "value": {"keyValue": {"path": [{"kind": "K", "name": "x"}]}}}}}, "readOptions": {"transaction": "{{t8}}"}}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}], "projection": [{"property": {"name": "__key__"}}]}, "readOptions": {"transaction": "{{t8}}"}}
+
+POST /v1/projects/p:rollback
+{"transaction": "{{t8}}"}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}, "readOptions": {"newTransaction": {}}}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t9 = transaction
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "__kind__"}]}, "readOptions": {"transaction": "{{t9}}"}}

@@ -1,0 +1,120 @@
+# Transaction lifecycle: begin, transactional reads, commit, rollback, handle reuse.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t1 = transaction
+
+POST /v1/projects/p:beginTransaction
+{}
+> t2 = transaction
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}, {"path": [{"kind": "K", "name": "b"}]}], "readOptions": {"transaction": "{{t1}}"}}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t1}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "2"}}}}, {"insert": {"key": {"path": [{"kind": "K"}]}, "properties": {}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "b"}]}, "properties": {"v": {"integerValue": "1"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}, {"path": [{"kind": "K", "name": "b"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t1}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "3"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{t1}}"}}
+
+POST /v1/projects/p:rollback
+{"transaction": "{{t1}}"}
+
+POST /v1/projects/p:rollback
+{"transaction": "{{t2}}"}
+
+POST /v1/projects/p:rollback
+{"transaction": "{{t2}}"}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t2}}", "mutations": []}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}], "readOptions": {"transaction": "{{t2}}"}}
+
+POST /v1/projects/p:rollback
+{"transaction": "AAAA"}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "EQkAAAAAAAAA"}
+
+POST /v1/projects/p:rollback
+{}
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": ""}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t3 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t3}}", "mutations": []}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t4 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t4}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "5"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "6"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t5 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t5}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}, {"kind": "C", "id": "1"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"delete": {"path": [{"kind": "K", "name": "a"}, {"kind": "C", "id": "1"}]}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}, {"kind": "C", "id": "1"}]}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t6 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t6}}", "mutations": [{"insert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t7 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t7}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "6"}}}}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t8 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "transaction": "{{t8}}"}
+
+POST /v1/projects/p:commit
+{"transaction": "{{t8}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "b"}]}, "properties": {"v": {"integerValue": "9"}}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "b"}]}]}
+
+POST /v1/projects/p:beginTransaction
+{"databaseId": "db"}
+> t9 = transaction
+
+POST /v1/projects/p:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t9}}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {}}}]}
+
+POST /v1/projects/q:commit
+{"mode": "TRANSACTIONAL", "transaction": "{{t2}}"}

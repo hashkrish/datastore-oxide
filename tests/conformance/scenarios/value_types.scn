@@ -1,0 +1,20 @@
+# Every value type round-trips; doubles print like Java; timestamps truncate to micros.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "T", "name": "all"}]}, "properties": {
+ "null": {"nullValue": null}, "bool": {"booleanValue": true}, "int": {"integerValue": "-42"}, "intmax": {"integerValue": "9223372036854775807"},
+ "dbl": {"doubleValue": 1.5}, "dbl2": {"doubleValue": 1e20}, "dbl3": {"doubleValue": 0.0001}, "dbl4": {"doubleValue": 3}, "dbl5": {"doubleValue": "NaN"},
+ "dbl6": {"doubleValue": "-Infinity"}, "dbl7": {"doubleValue": 12345678.9}, "dbl8": {"doubleValue": -0.0}, "dbl9": {"doubleValue": "Infinity"},
+ "ts": {"timestampValue": "2024-01-02T03:04:05.123456Z"}, "ts2": {"timestampValue": "2024-01-02T03:04:05Z"}, "ts3": {"timestampValue": "2024-01-02T03:04:05.120Z"},
+ "ts4": {"timestampValue": "2024-01-02T03:04:05.123456789Z"}, "ts5": {"timestampValue": "2024-01-02T05:04:05+02:00"}, "ts6": {"timestampValue": "0001-01-01T00:00:00Z"},
+ "ts7": {"timestampValue": "9999-12-31T23:59:59.999999Z"}, "ts8": {"timestampValue": "1969-12-31T23:59:59.999999Z"},
+ "key": {"keyValue": {"path": [{"kind": "X", "id": "7"}]}}, "key2": {"keyValue": {"partitionId": {"namespaceId": "ns"}, "path": [{"kind": "X", "name": "n"}, {"kind": "Y", "id": "1"}]}},
+ "str": {"stringValue": "héllo\u0001\"\n<>&=/ "}, "str0": {"stringValue": ""}, "blob": {"blobValue": "AAECAw=="}, "blob0": {"blobValue": ""},
+ "geo": {"geoPointValue": {"latitude": 1.5, "longitude": -2}}, "geo0": {"geoPointValue": {}},
+ "ent": {"entityValue": {"properties": {"x": {"integerValue": "1"}, "inner": {"entityValue": {"properties": {"y": {"stringValue": "z"}}}}}}},
+ "ent0": {"entityValue": {}}, "entk": {"entityValue": {"key": {"path": [{"kind": "E", "name": "e"}]}, "properties": {"q": {"booleanValue": false}}}},
+ "arr": {"arrayValue": {"values": [{"integerValue": "1"}, {"stringValue": "a"}, {"nullValue": null}, {"entityValue": {}}]}}, "arr0": {"arrayValue": {}},
+ "unidx": {"stringValue": "u", "excludeFromIndexes": true}, "unidxe": {"entityValue": {"properties": {"x": {"integerValue": "1"}}}, "excludeFromIndexes": true}
+}}}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "T", "name": "all"}]}]}

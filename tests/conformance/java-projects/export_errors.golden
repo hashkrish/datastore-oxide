@@ -1,0 +1,304 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 75
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:18.251737964Z",
+      "endTime": "2026-10-27T16:32:18.290820066Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    }
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:18.303852688Z",
+      "endTime": "2026-10-27T16:32:18.304793952Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    }
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:18.308742644Z",
+      "endTime": "2026-10-27T16:32:18.309565999Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "exp"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/exp"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:18.313155804Z",
+      "endTime": "2026-10-27T16:32:18.313988504Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "gs://bucket/x"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/gs:/bucket/x"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:18.317417257Z",
+      "endTime": "2026-10-27T16:32:18.318533031Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "file:///work/proj/viafile"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/file:/work/proj/viafile"
+  }
+}
+
+<<< END
+>>> LS .
+<<< 200
+afile
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:18.322728356Z",
+      "endTime": "2026-10-27T16:32:18.323503566Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "/work/proj/no/such/dir"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/no/such/dir"
+  }
+}
+
+<<< END
+>>> LS no
+<<< 200
+such
+<<< END
+>>> POST /v1/projects/p:export
+<<< 500
+{"error":{"code":500,"message":"Failed to export entities.","status":"INTERNAL"}}
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:18.335664247Z",
+      "endTime": "2026-10-27T16:32:18.336484662Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "/work/proj/lab"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/lab"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:18.340965170Z",
+      "endTime": "2026-10-27T16:32:18.341317880Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+      "kinds": [""]
+    },
+    "outputUrlPrefix": "/work/proj/badkind"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/badkind"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:18.344963393Z",
+      "endTime": "2026-10-27T16:32:18.346349770Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+      "kinds": ["__kind__"]
+    },
+    "outputUrlPrefix": "/work/proj/reserved"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/reserved"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:18.350357870Z",
+      "endTime": "2026-10-27T16:32:18.350584170Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+      "namespaceIds": ["__x__"]
+    },
+    "outputUrlPrefix": "/work/proj/badns"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/badns"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:export
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/BAD:export
+<<< 200
+{
+  "metadata": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesMetadata",
+    "common": {
+      "startTime": "2026-10-27T16:32:18.357114549Z",
+      "endTime": "2026-10-27T16:32:18.357418670Z",
+      "operationType": "EXPORT_ENTITIES",
+      "state": "SUCCESSFUL"
+    },
+    "entityFilter": {
+    },
+    "outputUrlPrefix": "/work/proj/p2"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.datastore.admin.v1.ExportEntitiesResponse",
+    "outputUrl": "/work/proj/p2"
+  }
+}
+
+<<< END
+>>> GET /v1/projects/p/operations
+<<< 404
+Not Found
+
+<<< END
+>>> GET /v1/projects/p/operations/x
+<<< 404
+Not Found
+
+<<< END
+>>> POST /v1/projects/p/operations/x:cancel
+<<< 404
+Not Found
+
+<<< END
+>>> DELETE /v1/projects/p/operations/x
+<<< 404
+Not Found
+
+<<< END
+>>> GET /v1/projects/p/indexes
+<<< 501
+{"error":{"code":501,"message":"Method google.datastore.admin.v1.DatastoreAdmin\/ListIndexes is unimplemented","status":"UNIMPLEMENTED"}}
+<<< END

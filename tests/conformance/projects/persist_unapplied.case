@@ -1,0 +1,16 @@
+# Unapplied jobs are rolled forward at shutdown (consistency 0: nothing applies on its own).
+ARGS --consistency=0.0 {dir}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "a"}]}, "properties": {"v": {"integerValue": "1"}}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "b"}]}, "properties": {"v": {"integerValue": "2"}}}}]}
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}}
+
+RESTART
+
+POST /v1/projects/p:runQuery
+{"query": {"kind": [{"name": "K"}]}}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}

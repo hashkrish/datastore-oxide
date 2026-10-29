@@ -1,0 +1,1384 @@
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~store"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+cost {
+  index_writes: 57
+  entity_writes: 1
+}
+version: [2]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    kind: GD_CONTACT
+    kind_uri: "kuri"
+    key {
+      app: "s~store"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "i"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }, {
+      name: "b"
+      multiple: false
+      value {
+        booleanValue: true
+      }
+    }, {
+      name: "d"
+      multiple: false
+      value {
+        doubleValue: 2.5
+      }
+    }, {
+      name: "s"
+      multiple: false
+      value {
+        stringValue: "str"
+      }
+    }, {
+      name: "m"
+      multiple: true
+      value {
+        stringValue: "x"
+      }
+    }, {
+      name: "m"
+      multiple: true
+      value {
+        stringValue: "y"
+      }
+    }, {
+      name: "dup"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }, {
+      name: "dup"
+      multiple: false
+      value {
+        int64Value: 2
+      }
+    }, {
+      name: "single"
+      multiple: true
+      value {
+        int64Value: 7
+      }
+    }, {
+      meaning: GD_WHEN
+      name: "ts"
+      multiple: false
+      value {
+        int64Value: 1234567
+      }
+    }, {
+      meaning: BYTESTRING
+      name: "bs"
+      multiple: false
+      value {
+        stringValue: "bytes"
+      }
+    }, {
+      meaning: BLOB
+      name: "blob"
+      multiple: false
+      value {
+        stringValue: "b"
+      }
+    }, {
+      meaning: GEORSS_POINT
+      name: "geo"
+      multiple: false
+      value {
+        PointValue {
+          x: 1.5
+          y: -2.5
+        }
+      }
+    }, {
+      name: "pt"
+      multiple: false
+      value {
+        PointValue {
+          x: 1.5
+          y: -2.5
+        }
+      }
+    }, {
+      name: "u"
+      multiple: false
+      value {
+        UserValue {
+          email: "a@b.c"
+          auth_domain: "gmail.com"
+          nickname: "n"
+          gaiaid: 0
+          obfuscated_gaiaid: "o"
+        }
+      }
+    }, {
+      name: "r"
+      multiple: false
+      value {
+        ReferenceValue {
+          app: "s~store"
+          PathElement: [{
+            type: "R"
+            id: 1
+          }, {
+            type: "C"
+            name: "x"
+          }]
+        }
+      }
+    }, {
+      name: "r2"
+      multiple: false
+      value {
+        ReferenceValue {
+          app: "e~store2"
+          PathElement: [{
+            type: "R"
+            name: "n"
+          }]
+          name_space: "ns"
+        }
+      }
+    }, {
+      meaning: ATOM_CATEGORY
+      name: "atom"
+      multiple: false
+      value {
+        stringValue: "c"
+      }
+    }, {
+      meaning: ATOM_LINK
+      name: "link"
+      multiple: false
+      value {
+        stringValue: "http://x"
+      }
+    }, {
+      meaning: GD_EMAIL
+      name: "email"
+      multiple: false
+      value {
+        stringValue: "a@b"
+      }
+    }, {
+      meaning: GD_RATING
+      name: "rating"
+      multiple: false
+      value {
+        int64Value: 50
+      }
+    }, {
+      meaning: GD_PHONENUMBER
+      name: "phone"
+      multiple: false
+      value {
+        stringValue: "1"
+      }
+    }, {
+      meaning: BLOBKEY
+      name: "bk"
+      multiple: false
+      value {
+        stringValue: "k"
+      }
+    }, {
+      name: "two"
+      multiple: false
+      value {
+        int64Value: 5
+        stringValue: "s"
+      }
+    }, {
+      name: "nul"
+      multiple: false
+      value {}
+    }, {
+      meaning: EMPTY_LIST
+      name: "el"
+      multiple: false
+      value {}
+    }, {
+      name: "both"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }, {
+      meaning_uri: "uri"
+      name: "muri"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }]
+    raw_property: [{
+      name: "both"
+      multiple: false
+      value {
+        int64Value: 2
+      }
+    }, {
+      meaning: TEXT
+      name: "text"
+      multiple: false
+      value {
+        stringValue: "t"
+      }
+    }, {
+      meaning: BLOB
+      name: "rawb"
+      multiple: false
+      value {
+        stringValue: "rb"
+      }
+    }, {
+      name: "rawi"
+      multiple: false
+      value {
+        int64Value: 3
+      }
+    }, {
+      name: "rm"
+      multiple: true
+      value {
+        int64Value: 1
+      }
+    }, {
+      name: "rm"
+      multiple: true
+      value {
+        int64Value: 2
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+    owner {
+      email: "o@x"
+      auth_domain: "d"
+      gaiaid: 9
+    }
+  }
+  version: 2
+}]
+<<< END
+>>> POST /v1/projects/store:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "store"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "r2": {
+          "keyValue": {
+            "partitionId": {
+              "projectId": "store2",
+              "namespaceId": "ns"
+            },
+            "path": [{
+              "kind": "R",
+              "name": "n"
+            }]
+          }
+        },
+        "pt": {
+          "geoPointValue": {
+            "latitude": 1.5,
+            "longitude": -2.5
+          },
+          "meaning": 23
+        },
+        "nul": {
+          "nullValue": null
+        },
+        "link": {
+          "meaning": 2,
+          "stringValue": "http://x"
+        },
+        "rating": {
+          "integerValue": "50",
+          "meaning": 13
+        },
+        "bk": {
+          "meaning": 17,
+          "stringValue": "k"
+        },
+        "two": {
+          "integerValue": "5"
+        },
+        "rawb": {
+          "blobValue": "cmI=",
+          "excludeFromIndexes": true
+        },
+        "geo": {
+          "geoPointValue": {
+            "latitude": 1.5,
+            "longitude": -2.5
+          }
+        },
+        "bs": {
+          "blobValue": "Ynl0ZXM="
+        },
+        "text": {
+          "meaning": 15,
+          "stringValue": "t",
+          "excludeFromIndexes": true
+        },
+        "email": {
+          "meaning": 8,
+          "stringValue": "a@b"
+        },
+        "b": {
+          "booleanValue": true
+        },
+        "d": {
+          "doubleValue": 2.5
+        },
+        "el": {
+          "arrayValue": {
+          }
+        },
+        "i": {
+          "integerValue": "1"
+        },
+        "muri": {
+          "integerValue": "1"
+        },
+        "m": {
+          "arrayValue": {
+            "values": [{
+              "stringValue": "x"
+            }, {
+              "stringValue": "y"
+            }]
+          }
+        },
+        "both": {
+          "arrayValue": {
+            "values": [{
+              "integerValue": "1"
+            }, {
+              "integerValue": "2",
+              "excludeFromIndexes": true
+            }]
+          }
+        },
+        "single": {
+          "arrayValue": {
+            "values": [{
+              "integerValue": "7"
+            }]
+          }
+        },
+        "r": {
+          "keyValue": {
+            "partitionId": {
+              "projectId": "store"
+            },
+            "path": [{
+              "kind": "R",
+              "id": "1"
+            }, {
+              "kind": "C",
+              "name": "x"
+            }]
+          }
+        },
+        "s": {
+          "stringValue": "str"
+        },
+        "blob": {
+          "blobValue": "Yg=="
+        },
+        "rawi": {
+          "integerValue": "3",
+          "excludeFromIndexes": true
+        },
+        "u": {
+          "entityValue": {
+            "properties": {
+              "email": {
+                "stringValue": "a@b.c",
+                "excludeFromIndexes": true
+              },
+              "auth_domain": {
+                "stringValue": "gmail.com",
+                "excludeFromIndexes": true
+              },
+              "user_id": {
+                "stringValue": "o",
+                "excludeFromIndexes": true
+              }
+            }
+          },
+          "meaning": 20
+        },
+        "phone": {
+          "meaning": 11,
+          "stringValue": "1"
+        },
+        "rm": {
+          "arrayValue": {
+            "values": [{
+              "integerValue": "1",
+              "excludeFromIndexes": true
+            }, {
+              "integerValue": "2",
+              "excludeFromIndexes": true
+            }]
+          }
+        },
+        "atom": {
+          "meaning": 1,
+          "stringValue": "c"
+        },
+        "dup": {
+          "arrayValue": {
+            "values": [{
+              "integerValue": "1"
+            }, {
+              "integerValue": "2"
+            }]
+          }
+        },
+        "ts": {
+          "timestampValue": "1970-01-01T00:00:01.234567Z"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~store"
+  path {
+    Element: [{
+      type: "K"
+      name: "order"
+    }]
+  }
+}]
+cost {
+  index_writes: 9
+  entity_writes: 1
+}
+version: [3]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~store"
+      path {
+        Element: [{
+          type: "K"
+          name: "order"
+        }]
+      }
+    }
+    property: [{
+      name: "z"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }, {
+      name: "a"
+      multiple: false
+      value {
+        int64Value: 2
+      }
+    }, {
+      name: "b"
+      multiple: false
+      value {
+        int64Value: 4
+      }
+    }]
+    raw_property: [{
+      name: "y"
+      multiple: false
+      value {
+        int64Value: 3
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "order"
+      }]
+    }
+  }
+  version: 3
+}]
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~store"
+  path {
+    Element: [{
+      type: "K"
+      name: "special"
+    }]
+  }
+}]
+cost {
+  index_writes: 7
+  entity_writes: 1
+}
+version: [4]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~store"
+      path {
+        Element: [{
+          type: "K"
+          name: "special"
+        }]
+      }
+    }
+    property: [{
+      name: "st0"
+      multiple: false
+      value {
+        int64Value: 4
+      }
+    }, {
+      name: "p"
+      multiple: false
+      value {
+        int64Value: 3
+      }
+    }, {
+      name: "st"
+      multiple: false
+      value {
+        int64Value: 2
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "special"
+      }]
+    }
+  }
+  version: 4
+}]
+<<< END
+>>> POST /v1/projects/store:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "5"
+  }],
+  "indexUpdates": 23
+}
+
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~store"
+      path {
+        Element: [{
+          type: "V1"
+          name: "all"
+        }]
+      }
+    }
+    property: [{
+      meaning: GD_WHEN
+      name: "ts"
+      multiple: false
+      value {
+        int64Value: 1577934245123456
+      }
+    }, {
+      meaning: BYTESTRING
+      name: "blob"
+      multiple: false
+      value {
+        stringValue: "\000\001\002"
+      }
+    }, {
+      meaning: GEORSS_POINT
+      name: "geo"
+      multiple: false
+      value {
+        PointValue {
+          x: 1.0
+          y: 2.0
+        }
+      }
+    }, {
+      name: "arr"
+      multiple: true
+      value {
+        int64Value: 1
+      }
+    }, {
+      meaning: EMPTY_LIST
+      name: "empty"
+      multiple: false
+      value {}
+    }, {
+      meaning: ENTITY_PROTO
+      name: "ent"
+      multiple: false
+      value {
+        stringValue: "j\023j\007s~storer\010\013\022\001E\"\001x\014r\t\032\001q \000*\002\010\001\202\001\010\013\022\001E\"\001x\014"
+      }
+    }, {
+      meaning: ENTITY_PROTO
+      name: "ent0"
+      multiple: false
+      value {
+        stringValue: "j\004j\000r\000r\t\032\001q \000*\002\020\001\202\001\000"
+      }
+    }, {
+      name: "k"
+      multiple: false
+      value {
+        ReferenceValue {
+          app: "s~store"
+          PathElement: [{
+            type: "R"
+            id: 3
+          }]
+        }
+      }
+    }, {
+      name: "n"
+      multiple: false
+      value {}
+    }, {
+      name: "d"
+      multiple: false
+      value {
+        doubleValue: 0.0
+      }
+    }]
+    raw_property: [{
+      meaning: BLOB
+      name: "rawblob"
+      multiple: false
+      value {
+        stringValue: "\003\004"
+      }
+    }, {
+      name: "arr"
+      multiple: true
+      value {
+        stringValue: "s"
+      }
+    }, {
+      meaning: TEXT
+      name: "text"
+      multiple: false
+      value {
+        stringValue: "long"
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "V1"
+        name: "all"
+      }]
+    }
+  }
+  version: 5
+}]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "e~store"
+      path {
+        Element: [{
+          type: "V1"
+          name: "all"
+        }]
+      }
+    }
+    property: [{
+      meaning: GD_WHEN
+      name: "ts"
+      multiple: false
+      value {
+        int64Value: 1577934245123456
+      }
+    }, {
+      meaning: BYTESTRING
+      name: "blob"
+      multiple: false
+      value {
+        stringValue: "\000\001\002"
+      }
+    }, {
+      meaning: GEORSS_POINT
+      name: "geo"
+      multiple: false
+      value {
+        PointValue {
+          x: 1.0
+          y: 2.0
+        }
+      }
+    }, {
+      name: "arr"
+      multiple: true
+      value {
+        int64Value: 1
+      }
+    }, {
+      meaning: EMPTY_LIST
+      name: "empty"
+      multiple: false
+      value {}
+    }, {
+      meaning: ENTITY_PROTO
+      name: "ent"
+      multiple: false
+      value {
+        stringValue: "j\023j\007e~storer\010\013\022\001E\"\001x\014r\t\032\001q \000*\002\010\001\202\001\010\013\022\001E\"\001x\014"
+      }
+    }, {
+      meaning: ENTITY_PROTO
+      name: "ent0"
+      multiple: false
+      value {
+        stringValue: "j\004j\000r\000r\t\032\001q \000*\002\020\001\202\001\000"
+      }
+    }, {
+      name: "k"
+      multiple: false
+      value {
+        ReferenceValue {
+          app: "e~store"
+          PathElement: [{
+            type: "R"
+            id: 3
+          }]
+        }
+      }
+    }, {
+      name: "n"
+      multiple: false
+      value {}
+    }, {
+      name: "d"
+      multiple: false
+      value {
+        doubleValue: 0.0
+      }
+    }]
+    raw_property: [{
+      meaning: BLOB
+      name: "rawblob"
+      multiple: false
+      value {
+        stringValue: "\003\004"
+      }
+    }, {
+      name: "arr"
+      multiple: true
+      value {
+        stringValue: "s"
+      }
+    }, {
+      meaning: TEXT
+      name: "text"
+      multiple: false
+      value {
+        stringValue: "long"
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "V1"
+        name: "all"
+      }]
+    }
+  }
+  version: 5
+}]
+<<< END
+>>> V3 RunQuery
+<<< 0
+result: [{
+  kind: GD_CONTACT
+  kind_uri: "kuri"
+  key {
+    app: "s~store"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  property: [{
+    name: "i"
+    multiple: false
+    value {
+      int64Value: 1
+    }
+  }, {
+    name: "b"
+    multiple: false
+    value {
+      booleanValue: true
+    }
+  }, {
+    name: "d"
+    multiple: false
+    value {
+      doubleValue: 2.5
+    }
+  }, {
+    name: "s"
+    multiple: false
+    value {
+      stringValue: "str"
+    }
+  }, {
+    name: "m"
+    multiple: true
+    value {
+      stringValue: "x"
+    }
+  }, {
+    name: "m"
+    multiple: true
+    value {
+      stringValue: "y"
+    }
+  }, {
+    name: "dup"
+    multiple: false
+    value {
+      int64Value: 1
+    }
+  }, {
+    name: "dup"
+    multiple: false
+    value {
+      int64Value: 2
+    }
+  }, {
+    name: "single"
+    multiple: true
+    value {
+      int64Value: 7
+    }
+  }, {
+    meaning: GD_WHEN
+    name: "ts"
+    multiple: false
+    value {
+      int64Value: 1234567
+    }
+  }, {
+    meaning: BYTESTRING
+    name: "bs"
+    multiple: false
+    value {
+      stringValue: "bytes"
+    }
+  }, {
+    meaning: BLOB
+    name: "blob"
+    multiple: false
+    value {
+      stringValue: "b"
+    }
+  }, {
+    meaning: GEORSS_POINT
+    name: "geo"
+    multiple: false
+    value {
+      PointValue {
+        x: 1.5
+        y: -2.5
+      }
+    }
+  }, {
+    name: "pt"
+    multiple: false
+    value {
+      PointValue {
+        x: 1.5
+        y: -2.5
+      }
+    }
+  }, {
+    name: "u"
+    multiple: false
+    value {
+      UserValue {
+        email: "a@b.c"
+        auth_domain: "gmail.com"
+        nickname: "n"
+        gaiaid: 0
+        obfuscated_gaiaid: "o"
+      }
+    }
+  }, {
+    name: "r"
+    multiple: false
+    value {
+      ReferenceValue {
+        app: "s~store"
+        PathElement: [{
+          type: "R"
+          id: 1
+        }, {
+          type: "C"
+          name: "x"
+        }]
+      }
+    }
+  }, {
+    name: "r2"
+    multiple: false
+    value {
+      ReferenceValue {
+        app: "e~store2"
+        PathElement: [{
+          type: "R"
+          name: "n"
+        }]
+        name_space: "ns"
+      }
+    }
+  }, {
+    meaning: ATOM_CATEGORY
+    name: "atom"
+    multiple: false
+    value {
+      stringValue: "c"
+    }
+  }, {
+    meaning: ATOM_LINK
+    name: "link"
+    multiple: false
+    value {
+      stringValue: "http://x"
+    }
+  }, {
+    meaning: GD_EMAIL
+    name: "email"
+    multiple: false
+    value {
+      stringValue: "a@b"
+    }
+  }, {
+    meaning: GD_RATING
+    name: "rating"
+    multiple: false
+    value {
+      int64Value: 50
+    }
+  }, {
+    meaning: GD_PHONENUMBER
+    name: "phone"
+    multiple: false
+    value {
+      stringValue: "1"
+    }
+  }, {
+    meaning: BLOBKEY
+    name: "bk"
+    multiple: false
+    value {
+      stringValue: "k"
+    }
+  }, {
+    name: "two"
+    multiple: false
+    value {
+      int64Value: 5
+      stringValue: "s"
+    }
+  }, {
+    name: "nul"
+    multiple: false
+    value {}
+  }, {
+    meaning: EMPTY_LIST
+    name: "el"
+    multiple: false
+    value {}
+  }, {
+    name: "both"
+    multiple: false
+    value {
+      int64Value: 1
+    }
+  }, {
+    meaning_uri: "uri"
+    name: "muri"
+    multiple: false
+    value {
+      int64Value: 1
+    }
+  }]
+  raw_property: [{
+    name: "both"
+    multiple: false
+    value {
+      int64Value: 2
+    }
+  }, {
+    meaning: TEXT
+    name: "text"
+    multiple: false
+    value {
+      stringValue: "t"
+    }
+  }, {
+    meaning: BLOB
+    name: "rawb"
+    multiple: false
+    value {
+      stringValue: "rb"
+    }
+  }, {
+    name: "rawi"
+    multiple: false
+    value {
+      int64Value: 3
+    }
+  }, {
+    name: "rm"
+    multiple: true
+    value {
+      int64Value: 1
+    }
+  }, {
+    name: "rm"
+    multiple: true
+    value {
+      int64Value: 2
+    }
+  }]
+  entity_group {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+  owner {
+    email: "o@x"
+    auth_domain: "d"
+    gaiaid: 9
+  }
+}]
+more_results: false
+keys_only: false
+index_only: false
+version: [2]
+<<< END
+>>> V3 RunQuery
+<<< 0
+more_results: false
+keys_only: false
+index_only: false
+<<< END
+>>> V3 RunQuery
+<<< 0
+result: [{
+  key {
+    app: "s~store"
+    path {
+      Element: [{
+        type: "K"
+        name: "special"
+      }]
+    }
+  }
+  property: [{
+    name: "st0"
+    multiple: false
+    value {
+      int64Value: 4
+    }
+  }, {
+    name: "p"
+    multiple: false
+    value {
+      int64Value: 3
+    }
+  }, {
+    name: "st"
+    multiple: false
+    value {
+      int64Value: 2
+    }
+  }]
+  entity_group {
+    Element: [{
+      type: "K"
+      name: "special"
+    }]
+  }
+}]
+more_results: false
+keys_only: false
+index_only: false
+version: [4]
+<<< END
+>>> POST /v1/projects/store:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "store"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "r2": {
+            "keyValue": {
+              "partitionId": {
+                "projectId": "store2",
+                "namespaceId": "ns"
+              },
+              "path": [{
+                "kind": "R",
+                "name": "n"
+              }]
+            }
+          },
+          "pt": {
+            "geoPointValue": {
+              "latitude": 1.5,
+              "longitude": -2.5
+            },
+            "meaning": 23
+          },
+          "nul": {
+            "nullValue": null
+          },
+          "link": {
+            "meaning": 2,
+            "stringValue": "http://x"
+          },
+          "rating": {
+            "integerValue": "50",
+            "meaning": 13
+          },
+          "bk": {
+            "meaning": 17,
+            "stringValue": "k"
+          },
+          "two": {
+            "integerValue": "5"
+          },
+          "rawb": {
+            "blobValue": "cmI=",
+            "excludeFromIndexes": true
+          },
+          "geo": {
+            "geoPointValue": {
+              "latitude": 1.5,
+              "longitude": -2.5
+            }
+          },
+          "bs": {
+            "blobValue": "Ynl0ZXM="
+          },
+          "text": {
+            "meaning": 15,
+            "stringValue": "t",
+            "excludeFromIndexes": true
+          },
+          "email": {
+            "meaning": 8,
+            "stringValue": "a@b"
+          },
+          "b": {
+            "booleanValue": true
+          },
+          "d": {
+            "doubleValue": 2.5
+          },
+          "el": {
+            "arrayValue": {
+            }
+          },
+          "i": {
+            "integerValue": "1"
+          },
+          "muri": {
+            "integerValue": "1"
+          },
+          "m": {
+            "arrayValue": {
+              "values": [{
+                "stringValue": "x"
+              }, {
+                "stringValue": "y"
+              }]
+            }
+          },
+          "both": {
+            "arrayValue": {
+              "values": [{
+                "integerValue": "1"
+              }, {
+                "integerValue": "2",
+                "excludeFromIndexes": true
+              }]
+            }
+          },
+          "single": {
+            "arrayValue": {
+              "values": [{
+                "integerValue": "7"
+              }]
+            }
+          },
+          "r": {
+            "keyValue": {
+              "partitionId": {
+                "projectId": "store"
+              },
+              "path": [{
+                "kind": "R",
+                "id": "1"
+              }, {
+                "kind": "C",
+                "name": "x"
+              }]
+            }
+          },
+          "s": {
+            "stringValue": "str"
+          },
+          "blob": {
+            "blobValue": "Yg=="
+          },
+          "rawi": {
+            "integerValue": "3",
+            "excludeFromIndexes": true
+          },
+          "u": {
+            "entityValue": {
+              "properties": {
+                "email": {
+                  "stringValue": "a@b.c",
+                  "excludeFromIndexes": true
+                },
+                "auth_domain": {
+                  "stringValue": "gmail.com",
+                  "excludeFromIndexes": true
+                },
+                "user_id": {
+                  "stringValue": "o",
+                  "excludeFromIndexes": true
+                }
+              }
+            },
+            "meaning": 20
+          },
+          "phone": {
+            "meaning": 11,
+            "stringValue": "1"
+          },
+          "rm": {
+            "arrayValue": {
+              "values": [{
+                "integerValue": "1",
+                "excludeFromIndexes": true
+              }, {
+                "integerValue": "2",
+                "excludeFromIndexes": true
+              }]
+            }
+          },
+          "atom": {
+            "meaning": 1,
+            "stringValue": "c"
+          },
+          "dup": {
+            "arrayValue": {
+              "values": [{
+                "integerValue": "1"
+              }, {
+                "integerValue": "2"
+              }]
+            }
+          },
+          "ts": {
+            "timestampValue": "1970-01-01T00:00:01.234567Z"
+          }
+        }
+      },
+      "cursor": "ChcSEWoFc3RvcmVyCAsSAUsiAWEMGAAgAA==",
+      "version": "2"
+    }],
+    "endCursor": "ChcSEWoFc3RvcmVyCAsSAUsiAWEMGAAgAA==",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT"
+  }
+}
+
+<<< END

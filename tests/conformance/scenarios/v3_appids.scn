@@ -1,0 +1,135 @@
+# v3 app ids: partition prefixes, scrubbing, response app ids, v1 interop
+V3 Put
+entity { key { app: "s~ap1" path { Element { type: "K" name: "a" } } } property { name: "x" multiple: false value { int64Value: 1 } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~ap1" path { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "e~ap1" path { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "dev~ap1" path { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "ap1" path { Element { type: "K" name: "a" } } }
+
+POST /v1/projects/ap1:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/ap2:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "v1"}]}, "properties": {"r": {"keyValue": {"path": [{"kind": "R", "id": "5"}]}}, "ref6": {"keyValue": {"partitionId": {"projectId": "ap6"}, "path": [{"kind": "R", "name": "z"}]}}}}}]}
+
+V3 Get
+key { app: "e~ap2" path { Element { type: "K" name: "v1" } } }
+
+V3 Get
+key { app: "s~ap2" path { Element { type: "K" name: "v1" } } }
+
+V3 Put
+entity { key { app: "example.com:foo" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "example.com:foo" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "example.com:foo" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "s~example.com:foo" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "s~example.com:foo" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~example.com:foo" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "__metadata-12_ap3__" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "__metadata-12_ap3__" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "__metadata-12_ap3__" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "s~__x__" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "s~__x__" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~__x__" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "S~Foo" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "S~Foo" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "S~Foo" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "a~b~c" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "a~b~c" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "a~b~c" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "~ap4" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "~ap4" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "~ap4" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa~ap4" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa~ap4" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa~ap4" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "-ap4" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "-ap4" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "-ap4" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "s~-ap4" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "s~-ap4" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~-ap4" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "s~ap_q" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "s~ap_q" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~ap_q" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "s~ap3#db" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "s~ap3#db" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~ap3#db" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "s~" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "s~" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "s~Example.com:Foo" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "s~Example.com:Foo" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~Example.com:Foo" path { Element { type: "K" name: "a" } } }
+
+V3 Put
+entity { key { app: "" path { Element { type: "K" name: "a" } } } property { name: "app" multiple: false value { stringValue: "" } } entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "" path { Element { type: "K" name: "a" } } }
+
+V3 RunQuery
+app: "s~scrub" kind: "K"
+
+V3 RunQuery
+app: "S~Foo" kind: "K"
+
+V3 RunQuery
+app: "" kind: "K"
+
+POST /v1/projects/scrubbed--oo:runQuery
+{"query": {"kind": [{"name": "K"}]}}

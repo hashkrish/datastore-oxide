@@ -1,0 +1,41 @@
+# REST routing and request decoding.
+GET /v1/projects/p:lookup
+
+PUT /v1/projects/p:lookup
+{}
+
+POST /v1/projects/p:bogus
+{}
+
+POST /v1/projects/p
+{}
+
+POST /v1/projects/:lookup
+{}
+
+POST /v1/projects/p/x:lookup
+{}
+
+POST /v2/projects/p:lookup
+{}
+
+POST /v1beta1/projects/p:lookup
+{}
+
+POST /v1/projects/p%20q:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup?alt=json
+{}
+
+POST /v1/projects/p:lookup?projectId=other
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"projectId": "other", "keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"project_id": "p", "keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}], "partition_id": {"namespace_id": "x"}}]}

@@ -1,0 +1,204 @@
+>>> V3 BeginTransaction
+<<< 0
+handle: 23
+app: "s~act"
+<<< END
+>>> V3HEX AddActions
+<<< 0
+
+<<< END
+>>> V3HEX AddActions
+<<< 0
+
+<<< END
+>>> V3HEX AddActions
+<<< 0
+application_error {
+  code: 1
+  detail: "Too many messages, maximum allowed: 5"
+}
+<<< END
+>>> V3HEX AddActions
+<<< 2
+
+<<< END
+>>> V3HEX AddActions
+<<< 2
+
+<<< END
+>>> V3HEX AddActions
+<<< 0
+application_error {
+  code: 1
+  detail: "Invalid transaction"
+}
+<<< END
+>>> V3HEX AddActions
+<<< 0
+application_error {
+  code: 1
+  detail: "transaction has expired or is invalid"
+}
+<<< END
+>>> V3HEX AddActions
+<<< 2
+
+<<< END
+>>> V3HEX AddActions
+<<< 2
+
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~act"
+  path {
+    Element: [{
+      type: "K"
+      name: "a"
+    }]
+  }
+}]
+cost {}
+<<< END
+>>> V3 Commit
+<<< 0
+cost {
+  index_writes: 3
+  entity_writes: 1
+}
+Version: [{
+  root_entity_key {
+    app: "s~act"
+    path {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 2
+}]
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~act"
+      path {
+        Element: [{
+          type: "K"
+          name: "a"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "a"
+      }]
+    }
+  }
+  version: 2
+}]
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 24
+app: "s~act"
+<<< END
+>>> V3HEX AddActions
+<<< 0
+
+<<< END
+>>> V3 Commit hostport=-
+<<< 0
+cost {
+  index_writes: 0
+  entity_writes: 0
+}
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 25
+app: "s~act"
+<<< END
+>>> V3HEX AddActions
+<<< 0
+
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~act"
+  path {
+    Element: [{
+      type: "K"
+      name: "b"
+    }]
+  }
+}]
+cost {}
+<<< END
+>>> V3 Commit hostport=127.0.0.1:1
+<<< 2
+
+<<< END
+>>> V3 Get
+<<< 0
+Entity: [{
+  entity {
+    key {
+      app: "s~act"
+      path {
+        Element: [{
+          type: "K"
+          name: "b"
+        }]
+      }
+    }
+    property: [{
+      name: "x"
+      multiple: false
+      value {
+        int64Value: 1
+      }
+    }]
+    entity_group {
+      Element: [{
+        type: "K"
+        name: "b"
+      }]
+    }
+  }
+  version: 3
+}]
+<<< END
+>>> V3 Rollback
+<<< 0
+application_error {
+  code: 1
+  detail: "transaction has expired or is invalid"
+}
+<<< END
+>>> V3 BeginTransaction
+<<< 0
+handle: 26
+app: "s~act"
+<<< END
+>>> V3HEX AddActions
+<<< 0
+
+<<< END
+>>> V3 Rollback
+<<< 0
+
+<<< END

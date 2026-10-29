@@ -1,0 +1,2 @@
+Invalid value for --consistency: -0.500000. Must be in [0.0, 1.0].
+Exiting.

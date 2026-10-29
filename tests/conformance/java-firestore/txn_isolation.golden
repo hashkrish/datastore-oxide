@@ -1,0 +1,975 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }, {
+    "version": "3"
+  }, {
+    "version": "4"
+  }, {
+    "version": "5"
+  }],
+  "indexUpdates": 24
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EVAFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "P",
+          "name": "r"
+        }, {
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "1"
+        },
+        "w": {
+          "integerValue": "10"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "6"
+  }],
+  "indexUpdates": 8
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 409
+{"error":{"code":409,"message":"too much contention on these datastore entities. please try again.","status":"ABORTED"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EVIFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "P",
+          "name": "r"
+        }, {
+          "kind": "K",
+          "name": "a"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "1"
+        },
+        "w": {
+          "integerValue": "10"
+        }
+      }
+    },
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "7"
+  }],
+  "indexUpdates": 8
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 409
+{"error":{"code":409,"message":"too much contention on these datastore entities. please try again.","status":"ABORTED"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EVQFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "8"
+  }],
+  "indexUpdates": 8
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "c"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "30"
+        },
+        "w": {
+          "integerValue": "300"
+        }
+      }
+    },
+    "version": "8"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "9"
+  }],
+  "indexUpdates": 8
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "c"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "30"
+        },
+        "w": {
+          "integerValue": "300"
+        }
+      }
+    },
+    "version": "8"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:rollback
+<<< 200
+{
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EVcFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "entityResults": [{
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "d"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "4"
+          },
+          "w": {
+            "integerValue": "40"
+          }
+        }
+      },
+      "cursor": "ChwKBwoBdhICCAQSDWoBcHIICxIBSyIBZAwYACAA",
+      "version": "5"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "r"
+          }, {
+            "kind": "K",
+            "name": "a"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "11"
+          },
+          "w": {
+            "integerValue": "110"
+          }
+        }
+      },
+      "cursor": "CiQKBwoBdhICCAsSFWoBcHIQCxIBUCIBcgwLEgFLIgFhDBgAIAA=",
+      "version": "7"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "P",
+            "name": "r"
+          }, {
+            "kind": "K",
+            "name": "b"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "20"
+          },
+          "w": {
+            "integerValue": "200"
+          }
+        }
+      },
+      "cursor": "CiQKBwoBdhICCBQSFWoBcHIQCxIBUCIBcgwLEgFLIgFiDBgAIAA=",
+      "version": "6"
+    }, {
+      "entity": {
+        "key": {
+          "partitionId": {
+            "projectId": "p"
+          },
+          "path": [{
+            "kind": "K",
+            "name": "c"
+          }]
+        },
+        "properties": {
+          "v": {
+            "integerValue": "31"
+          },
+          "w": {
+            "integerValue": "310"
+          }
+        }
+      },
+      "cursor": "ChwKBwoBdhICCB8SDWoBcHIICxIBSyIBYwwYACAA",
+      "version": "9"
+    }],
+    "endCursor": "ChwKBwoBdhICCB8SDWoBcHIICxIBSyIBYwwYACAA",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "9"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "10"
+  }],
+  "indexUpdates": 8
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 409
+{"error":{"code":409,"message":"too much contention on these datastore entities. please try again.","status":"ABORTED"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EVkFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 200
+{
+  "batch": {
+    "entityResultType": "FULL",
+    "endCursor": "CgA=",
+    "moreResults": "MORE_RESULTS_AFTER_LIMIT",
+    "snapshotVersion": "10"
+  }
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "11"
+  }],
+  "indexUpdates": 5
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "12"
+  }],
+  "indexUpdates": 7,
+  "commitVersion": "12"
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EVsFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "13"
+  }],
+  "indexUpdates": 7,
+  "commitVersion": "13"
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EVwFAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "c"
+        }]
+      },
+      "properties": {
+        "v": {
+          "integerValue": "31"
+        },
+        "w": {
+          "integerValue": "310"
+        }
+      }
+    },
+    "version": "9"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Cannot modify entities in a read-only transaction.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EV0FAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EV4FAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "14"
+  }],
+  "indexUpdates": 5,
+  "commitVersion": "14"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "15"
+  }],
+  "indexUpdates": 8,
+  "commitVersion": "15"
+}
+
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "EV8FAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "missing": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "0"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "1"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "2"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "3"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "4"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "5"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "6"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "7"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "8"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "9"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "10"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "11"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "12"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "13"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "14"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "15"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "16"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "17"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "18"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "19"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "20"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "21"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "22"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "23"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "24"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "25"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "26"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "27"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "28"
+        }]
+      }
+    },
+    "version": "15"
+  }, {
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "G",
+          "name": "29"
+        }]
+      }
+    },
+    "version": "15"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }, {
+    "version": "16"
+  }],
+  "indexUpdates": 186,
+  "commitVersion": "16"
+}
+
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"unsupported composite property operator","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Only one inequality filter per query is supported.  Encountered both v and w","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Filter has 2 properties, expected 1","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Unrecognized PropertyFilter.op: NOT_IN","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 500
+{"error":{"code":500,"status":"UNKNOWN"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"The first sort property must be the same as the property to which the inequality filter is applied.  In your query the first sort property is w but the inequality filter is on v","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"Only one inequality filter per query is supported.  Encountered both v and w","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:runQuery
+<<< 400
+{"error":{"code":400,"message":"unsupported composite property operator","status":"INVALID_ARGUMENT"}}
+<<< END

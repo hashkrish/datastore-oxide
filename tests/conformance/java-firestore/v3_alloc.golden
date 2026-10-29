@@ -1,0 +1,121 @@
+>>> V3 AllocateIds
+<<< 0
+start: 1
+end: 5
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~alloc"
+  path {
+    Element: [{
+      type: "K"
+      id: 6
+    }]
+  }
+}]
+cost {
+  index_writes: 1
+  entity_writes: 1
+}
+version: [2]
+<<< END
+>>> V3 AllocateIds
+<<< 0
+start: 7
+end: 9
+<<< END
+>>> V3 AllocateIds
+<<< 0
+start: 10
+end: 100
+<<< END
+>>> V3 AllocateIds
+<<< 0
+start: 101
+end: 100
+<<< END
+>>> V3 AllocateIds
+<<< 0
+start: 101
+end: 101
+<<< END
+>>> V3 AllocateIds
+<<< 0
+start: 102
+end: 101
+<<< END
+>>> V3 AllocateIds
+<<< 0
+start: 102
+end: 100
+<<< END
+>>> V3 AllocateIds
+<<< 0
+start: 101
+end: 101
+<<< END
+>>> V3 AllocateIds
+<<< 0
+start: 102
+end: 1000000101
+<<< END
+>>> V3 AllocateIds
+<<< 0
+application_error {
+  code: 1
+  detail: "cannot get more than 1000000000 keys in a single call"
+}
+<<< END
+>>> V3 AllocateIds
+<<< 0
+start: 1000000102
+end: 1000000101
+<<< END
+>>> V3 AllocateIds
+<<< 0
+start: 1000000102
+end: 1000000103
+<<< END
+>>> V3 AllocateIds
+<<< 0
+start: 1000000104
+end: 1000000104
+<<< END
+>>> V3 AllocateIds
+<<< 0
+start: 1000000105
+end: 1000000104
+<<< END
+>>> POST /v1/projects/alloc:allocateIds
+<<< 200
+{
+  "keys": [{
+    "partitionId": {
+      "projectId": "alloc"
+    },
+    "path": [{
+      "kind": "K",
+      "id": "5825877499707392"
+    }]
+  }]
+}
+
+<<< END
+>>> V3 Put
+<<< 0
+key: [{
+  app: "s~alloc"
+  path {
+    Element: [{
+      type: "K"
+      id: 1000000106
+    }]
+  }
+}]
+cost {
+  index_writes: 1
+  entity_writes: 1
+}
+version: [3]
+<<< END

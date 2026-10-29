@@ -1,0 +1,60 @@
+# v3 Get: validation, lax keys, strong/eventual reads, versions
+V3 Put
+entity { key { app: "s~get" path { Element { type: "K" name: "a" } } } property { name: "x" multiple: false value { int64Value: 1 } } entity_group { Element { type: "K" name: "a" } } } entity { key { app: "s~get" path { Element { type: "K" name: "b" } Element { type: "C" id: 2 } } } property { name: "y" multiple: false value { stringValue: "s" } } entity_group { Element { type: "K" name: "b" } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" name: "a" } } } key { app: "s~get" path { Element { type: "K" name: "missing" } } } key { app: "s~get" path { Element { type: "K" name: "b" } Element { type: "C" id: 2 } } } key { app: "s~get" path { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" name: "a" } } } strong: false
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" name: "missing" } } } strong: false
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" name: "missing" } } } strong: true failover_ms: 5 allow_deferred: true read_time_epoch_micros: 7
+
+V3 Get
+key { app: "" path { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~get" path { } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" id: 0 } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" name: "a" } Element { type: "C" } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" id: 1 name: "a" } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" name: "" } } }
+
+V3 Get
+key { app: "s~get" name_space: "" path { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" id: 5 } } } key { app: "s~get" name_space: "" path { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "" name: "a" } } } key { app: "s~get" path { Element { type: "__foo__" name: "a" } } } key { app: "s~get" path { Element { type: "K" name: "__a__" } } } key { app: "s~get" name_space: "a b" path { Element { type: "K" name: "a" } } } key { app: "s~get" name_space: "__x__" path { Element { type: "K" name: "a" } } } key { app: "s~get" database_id: "bad db" path { Element { type: "K" name: "a" } } } key { app: "s~get" path { Element { type: "K" id: -5 } } } key { app: "s~get" path { Element { type: "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK" name: "a" } } } key { app: "s~get" path { Element { type: "K" name: "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn" } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "__kind__" name: "K" } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "__entity_group__" id: 1 } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" name: "a" } Element { type: "__entity_group__" id: 1 } } }
+
+V3 Get
+key { app: "s~get" path { Element { type: "K" name: "a" } } } transaction { handle: 424242 app: "s~get" }

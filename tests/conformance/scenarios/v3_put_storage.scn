@@ -1,0 +1,42 @@
+# v3 Put stores the EntityProto nearly verbatim; v1 sees Java's conversion
+V3 Put
+entity { key { app: "s~store" path { Element { type: "K" name: "a" } } } property { name: "i" multiple: false value { int64Value: 1 } } property { name: "b" multiple: false value { booleanValue: true } } property { name: "d" multiple: false value { doubleValue: 2.5 } } property { name: "s" multiple: false value { stringValue: "str" } } property { name: "m" multiple: true value { stringValue: "x" } } property { name: "m" multiple: true value { stringValue: "y" } } property { name: "dup" multiple: false value { int64Value: 1 } } property { name: "dup" multiple: false value { int64Value: 2 } } property { name: "single" multiple: true value { int64Value: 7 } } property { meaning: 7 name: "ts" multiple: false value { int64Value: 1234567 } } property { meaning: 16 name: "bs" multiple: false value { stringValue: "bytes" } } property { meaning: 14 name: "blob" multiple: false value { stringValue: "b" } } property { meaning: 9 name: "geo" multiple: false value { PointValue { x: 1.5 y: -2.5 } } } property { name: "pt" multiple: false value { PointValue { x: 1.5 y: -2.5 } } } property { name: "u" multiple: false value { UserValue { email: "a@b.c" auth_domain: "gmail.com" nickname: "n" gaiaid: 0 obfuscated_gaiaid: "o" } } } property { name: "r" multiple: false value { ReferenceValue { app: "s~store" PathElement { type: "R" id: 1 } PathElement { type: "C" name: "x" } } } } property { name: "r2" multiple: false value { ReferenceValue { app: "e~store2" name_space: "ns" PathElement { type: "R" name: "n" } } } } property { meaning: 1 name: "atom" multiple: false value { stringValue: "c" } } property { meaning: 2 name: "link" multiple: false value { stringValue: "http://x" } } property { meaning: 8 name: "email" multiple: false value { stringValue: "a@b" } } property { meaning: 13 name: "rating" multiple: false value { int64Value: 50 } } property { meaning: 11 name: "phone" multiple: false value { stringValue: "1" } } property { meaning: 17 name: "bk" multiple: false value { stringValue: "k" } } property { name: "two" multiple: false value { int64Value: 5 stringValue: "s" } } property { name: "nul" multiple: false value {  } } property { meaning: 24 name: "el" multiple: false value {  } } property { name: "both" multiple: false value { int64Value: 1 } } raw_property { name: "both" multiple: false value { int64Value: 2 } } raw_property { meaning: 15 name: "text" multiple: false value { stringValue: "t" } } raw_property { meaning: 14 name: "rawb" multiple: false value { stringValue: "rb" } } raw_property { name: "rawi" multiple: false value { int64Value: 3 } } raw_property { name: "rm" multiple: true value { int64Value: 1 } } raw_property { name: "rm" multiple: true value { int64Value: 2 } } property { name: "muri" multiple: false value { int64Value: 1 } meaning_uri: "uri" } owner { email: "o@x" auth_domain: "d" gaiaid: 9 } kind: GD_CONTACT kind_uri: "kuri" entity_group { Element { type: "K" name: "a" } } }
+
+V3 Get
+key { app: "s~store" path { Element { type: "K" name: "a" } } }
+
+POST /v1/projects/store:lookup
+{"keys": [{"path": [{"kind": "K", "name": "a"}]}]}
+
+V3 Put
+entity { key { app: "s~store" path { Element { type: "K" name: "order" } } } property { name: "z" multiple: false value { int64Value: 1 } } property { name: "a" multiple: false value { int64Value: 2 } } raw_property { name: "y" multiple: false value { int64Value: 3 } } property { name: "b" multiple: false value { int64Value: 4 } } entity_group { Element { type: "K" name: "order" } } }
+
+V3 Get
+key { app: "s~store" path { Element { type: "K" name: "order" } } }
+
+V3 Put
+entity { key { app: "s~store" path { Element { type: "K" name: "special" } } } property { name: "c" multiple: false value { int64Value: 1 } computed: true } property { name: "st" multiple: false value { int64Value: 2 } stashed: 3 } property { name: "p" multiple: false value { int64Value: 3 } } property { name: "st0" multiple: false value { int64Value: 4 } stashed: 0 } entity_group { Element { type: "K" name: "special" } } }
+
+V3 Get
+key { app: "s~store" path { Element { type: "K" name: "special" } } }
+
+POST /v1/projects/store:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "V1", "name": "all"}]}, "properties": {"ts": {"timestampValue": "2020-01-02T03:04:05.123456Z"}, "blob": {"blobValue": "AAEC"}, "rawblob": {"blobValue": "AwQ=", "excludeFromIndexes": true}, "geo": {"geoPointValue": {"latitude": 1.0, "longitude": 2.0}}, "arr": {"arrayValue": {"values": [{"integerValue": "1"}, {"stringValue": "s", "excludeFromIndexes": true}]}}, "empty": {"arrayValue": {}}, "ent": {"entityValue": {"key": {"path": [{"kind": "E", "name": "x"}]}, "properties": {"q": {"integerValue": "1"}}}}, "ent0": {"entityValue": {"properties": {"q": {"booleanValue": true}}}}, "text": {"stringValue": "long", "excludeFromIndexes": true, "meaning": 15}, "k": {"keyValue": {"path": [{"kind": "R", "id": "3"}]}}, "n": {"nullValue": null}, "d": {"doubleValue": -0.0}}}}]}
+
+V3 Get
+key { app: "s~store" path { Element { type: "V1" name: "all" } } }
+
+V3 Get
+key { app: "e~store" path { Element { type: "V1" name: "all" } } }
+
+V3 RunQuery
+app: "s~store" kind: "K" Filter { op: 5 property { name: "m" multiple: false value { stringValue: "y" } } }
+
+V3 RunQuery
+app: "s~store" kind: "K" Filter { op: 5 property { name: "dup" multiple: false value { int64Value: 2 } } }
+
+V3 RunQuery
+app: "s~store" kind: "K" Filter { op: 5 property { name: "c" multiple: false value { int64Value: 1 } } }
+
+POST /v1/projects/store:runQuery
+{"query": {"kind": [{"name": "K"}], "filter": {"propertyFilter": {"property": {"name": "dup"}, "op": "EQUAL", "value": {"integerValue": "1"}}}}}

@@ -1,0 +1,17 @@
+[package]
+name = "oxide-engine"
+description = "Storage and transaction semantics of the Datastore emulator"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+bytes.workspace = true
+md-5.workspace = true
+prost.workspace = true
+oxide-model.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+roxmltree.workspace = true
+yaml-rust2.workspace = true
+jiff.workspace = true

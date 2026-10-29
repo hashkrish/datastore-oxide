@@ -1,0 +1,107 @@
+>>> POST /v1/projects/p:allocateIds
+<<< 200
+{
+  "keys": [{
+    "partitionId": {
+      "projectId": "p"
+    },
+    "path": [{
+      "kind": "K",
+      "id": "5629499534213120"
+    }]
+  }, {
+    "partitionId": {
+      "projectId": "p"
+    },
+    "path": [{
+      "kind": "K",
+      "id": "5066549580791808"
+    }]
+  }, {
+    "partitionId": {
+      "projectId": "p"
+    },
+    "path": [{
+      "kind": "K",
+      "id": "6192449487634432"
+    }]
+  }]
+}
+
+<<< END
+>>> RESTART 
+<<< 200
+
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 200
+{
+  "keys": [{
+    "partitionId": {
+      "projectId": "p"
+    },
+    "path": [{
+      "kind": "K",
+      "id": "5629499534213120"
+    }]
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "key": {
+      "partitionId": {
+        "projectId": "p"
+      },
+      "path": [{
+        "kind": "K",
+        "id": "2"
+      }]
+    },
+    "version": "2"
+  }],
+  "indexUpdates": 1
+}
+
+<<< END
+>>> RESTART 
+<<< 200
+
+<<< END
+>>> POST /v1/projects/p:allocateIds
+<<< 200
+{
+  "keys": [{
+    "partitionId": {
+      "projectId": "p"
+    },
+    "path": [{
+      "kind": "K",
+      "id": "6192449487634432"
+    }]
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "key": {
+      "partitionId": {
+        "projectId": "p"
+      },
+      "path": [{
+        "kind": "K",
+        "id": "4"
+      }]
+    },
+    "version": "2"
+  }],
+  "indexUpdates": 1
+}
+
+<<< END

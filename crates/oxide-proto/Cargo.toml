@@ -1,0 +1,18 @@
+[package]
+name = "oxide-proto"
+description = "Generated protobuf/gRPC types for the Datastore, Admin, emulator-config and App Engine v3 APIs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+prost.workspace = true
+prost-types.workspace = true
+tonic.workspace = true
+tonic-prost.workspace = true
+
+[build-dependencies]
+prost.workspace = true
+prost-build.workspace = true
+prost-types.workspace = true
+tonic-prost-build.workspace = true
