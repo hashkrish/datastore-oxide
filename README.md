@@ -23,10 +23,21 @@ Every behavior is checked against the Java emulator: its recorded responses are 
 `cargo test` (see `docs/reference-behavior.md`, including the known gaps). On top of that, it
 serves production Datastore features the Java emulator lacks (listed in
 `docs/superset-backlog.md`); `start --no_superset` turns them off, leaving exactly the Java
-emulator's responses. Implemented so far:
+emulator's responses. The superset adds:
 
-- aggregation queries (`RunAggregationQuery`: `COUNT` with `up_to`, `SUM`, `AVG`, over gRPC and
-  REST, structured or GQL `AGGREGATE … OVER (…)` / `SELECT COUNT(*) …`).
+- aggregation queries (`COUNT` with `up_to`, `SUM`, `AVG`; structured or GQL);
+- `OR`, multi-value `IN`, `NOT_IN`, `!=` and inequalities on several properties;
+- property transforms (`increment`, `maximum`, `minimum`, server timestamps, array transforms)
+  and property masks on commits, lookups and queries;
+- point-in-time reads (`read_time`, an hour back);
+- query explain (plan summary and execution statistics);
+- vector values and vector search (`find_nearest`);
+- production's commit limits (500 mutations, 1 MiB entities);
+- Admin API index management, a long-running Operations service, export/import with
+  production's `output_url`, labels and `gs://` URLs (stored in a local directory);
+- App Engine v3 extras (`Touch`, `DeleteCursor`, index calls, `IN`/`NOT_EQUAL`/`NOT_IN`,
+  full-text `search_query`, deferred Gets, read times, proper errors);
+- a data viewer at `/_ah/admin/datastore`.
 
 ## Usage
 

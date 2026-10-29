@@ -3,8 +3,9 @@
 datastore-oxide matches the Java emulator, and on top of that serves production Datastore features
 the emulator lacks: a **superset**, behavior that never changes a response the Java emulator gives
 successfully. The superset is on by default; `start --no_superset` turns it off, leaving exactly
-Java's behavior (the conformance tests run that way). This file lists the gaps: those implemented
-so far, then those still to do.
+Java's behavior (the conformance tests run that way). This file lists the gaps: first how the
+superset fills them, then Java's behavior for each (what `--no_superset` keeps). Every gap listed
+below is implemented.
 
 Each entry says how Java behaves today, so the superset can be checked against it.
 
