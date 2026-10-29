@@ -43,6 +43,8 @@ const CONCURRENT_TRANSACTION: i32 = v3::error::ErrorCode::ConcurrentTransaction 
 const INTERNAL_ERROR: i32 = v3::error::ErrorCode::InternalError as i32;
 const NEED_INDEX: i32 = v3::error::ErrorCode::NeedIndex as i32;
 const PARSE_ERROR: i32 = das::rpc_error::ErrorCode::ParseError as i32;
+/// A Get with `allow_deferred` defers the keys after this many response bytes (superset).
+const DEFERRAL_BYTES: usize = 1 << 20;
 
 impl From<oxide_engine::Error> for Fail {
     fn from(e: oxide_engine::Error) -> Self {
@@ -91,6 +93,8 @@ struct Queries {
 
 pub struct Service {
     engine: Arc<Engine>,
+    /// Production behavior the Java emulator lacks (docs/superset-backlog.md).
+    superset: bool,
     resolver: Resolver,
     queries: Mutex<Queries>,
     /// Query handles: one counter for all projects that survives `/reset`.
@@ -101,9 +105,23 @@ impl Service {
     pub fn new(engine: Arc<Engine>) -> Self {
         Self {
             engine,
+            superset: false,
             resolver: Resolver::default(),
             queries: Mutex::new(Queries::default()),
             next_query: AtomicU64::new(0),
+        }
+    }
+
+    pub fn with_superset(self, superset: bool) -> Self {
+        Self { superset, ..self }
+    }
+
+    /// Java's uncaught exception (bare UNKNOWN), or with the superset a BAD_REQUEST saying why.
+    fn invalid(&self, message: impl Into<String>) -> Fail {
+        if self.superset {
+            bad_request(message)
+        } else {
+            Fail::Unknown
         }
     }
 
@@ -121,7 +139,9 @@ impl Service {
     }
 
     fn project(&self, app: &[u8]) -> Result<String, Fail> {
-        Ok(self.resolver.to_project_id(&text(app))?)
+        self.resolver
+            .to_project_id(&text(app))
+            .map_err(|_| self.invalid(format!("Invalid app id: {}", text(app))))
     }
 
     /// Maps the app ids of an inbound entity to project ids.
@@ -168,6 +188,11 @@ impl Service {
             "AllocateIds" => self.allocate_ids(Self::decode("AllocateIdsRequest", request)?),
             "GetIndices" => self.get_indices(Self::decode("GetIndicesRequest", request)?),
             "AddActions" => self.add_actions(request),
+            "Touch" if self.superset => self.touch(Self::decode("TouchRequest", request)?),
+            "DeleteCursor" if self.superset => self.delete_cursor(Self::decode("Cursor", request)?),
+            "CreateIndex" | "UpdateIndex" | "DeleteIndex" if self.superset => {
+                self.index_call(method, request)
+            }
             _ => Err(bad_request(format!(
                 "Cannot find definition for method: {method}"
             ))),
@@ -181,13 +206,28 @@ impl Service {
             entity::check_read_key(k).map_err(bad_request)?;
             keys.push((entity::key_of(k, &project), project));
         }
-        let mode = match &r.transaction {
-            Some(t) => ReadMode::Transaction(t.handle),
-            None if r.strong == Some(false) => ReadMode::Eventual,
-            None => ReadMode::Strong,
+        let read_time = r.read_time_epoch_micros.filter(|_| self.superset);
+        let mode = match (&r.transaction, read_time) {
+            (Some(t), _) => ReadMode::Transaction(t.handle),
+            (None, Some(t)) => ReadMode::At(t),
+            (None, None) if r.strong == Some(false) => ReadMode::Eventual,
+            (None, None) => ReadMode::Strong,
         };
-        let mut response = v3::GetResponse::default();
+        let mut response = v3::GetResponse {
+            read_time_epoch_micros: read_time,
+            ..Default::default()
+        };
+        // With allow_deferred, keys past this response size are deferred (superset).
+        let defer = self.superset && r.allow_deferred == Some(true);
+        let mut size = 0;
         for (key, project) in keys {
+            if defer && size > DEFERRAL_BYTES {
+                response
+                    .deferred
+                    .push(entity::reference(&key, &self.resolver.to_app_id(&project)));
+                response.in_order = Some(false);
+                continue;
+            }
             let app = self.resolver.to_app_id(&project);
             let result = self
                 .engine
@@ -206,6 +246,9 @@ impl Service {
                     ..Default::default()
                 },
             });
+            if defer {
+                size += response.entity.last().map_or(0, Message::encoded_len);
+            }
         }
         Ok(response.encode_to_vec())
     }
@@ -218,8 +261,14 @@ impl Service {
                 "A OnestoreEntity.Path must have at least one Element.",
             ));
         }
-        if path[..path.len() - 1].iter().any(entity::incomplete) {
-            return Err(Fail::Unknown);
+        if let Some(el) = path[..path.len() - 1]
+            .iter()
+            .find(|e| entity::incomplete(e))
+        {
+            return Err(self.invalid(format!(
+                "Incomplete key.path.element: type: {}\n",
+                oxide_engine::debug_quote(&text(&el.r#type))
+            )));
         }
         if path
             .iter()
@@ -241,7 +290,10 @@ impl Service {
                 && let Some(bytes) = &p.value.string_value
                 && os::EntityProto::decode(bytes.as_ref()).is_err()
             {
-                return Err(Fail::Unknown);
+                return Err(self.invalid(format!(
+                    "Invalid embedded entity in property {}.",
+                    text(&p.name)
+                )));
             }
             if ![entity::BLOB, entity::TEXT, entity::ENTITY_PROTO].contains(&meaning)
                 && p.value
@@ -283,7 +335,7 @@ impl Service {
             return Ok(Vec::new());
         };
         if first.key.app.is_empty() {
-            return Err(Fail::Unknown);
+            return Err(self.invalid("A OnestoreEntity.Reference must set app."));
         }
         let project = self.project(&first.key.app)?;
         let app = self.resolver.to_app_id(&project);
@@ -366,12 +418,15 @@ impl Service {
 
     fn run_query(&self, q: v3::Query) -> Outcome {
         if q.app.is_empty() {
-            return Err(Fail::Unknown);
+            return Err(self.invalid("The query must set app."));
         }
         let project = self.project(&q.app)?;
         let app = self.resolver.to_app_id(&project);
-        if q.count.is_some_and(|c| c < 0) || q.limit.is_some_and(|l| l < 0) {
-            return Err(Fail::Unknown);
+        if q.count.is_some_and(|c| c < 0) {
+            return Err(self.invalid("The query count must not be negative."));
+        }
+        if q.limit.is_some_and(|l| l < 0) {
+            return Err(self.invalid("The query limit must not be negative."));
         }
         let mut converted = q.clone();
         converted.app = project.clone().into();
@@ -401,12 +456,24 @@ impl Service {
             }
             mode = ReadMode::Transaction(t.handle);
         }
+        let read_time = if self.superset && converted.transaction.is_none() {
+            converted.read_time_epoch_micros.or(converted.read_time_us)
+        } else {
+            None
+        };
+        if let Some(t) = read_time {
+            mode = ReadMode::At(t);
+        }
         let (engine_query, nothing) = query::convert(self, &converted, &project)?;
         let batch = self.engine.run_query(&engine_query, mode)?;
-        let rows = if nothing { Vec::new() } else { batch.results };
+        let mut rows = if nothing { Vec::new() } else { batch.results };
+        if let Some(search) = converted.search_query.as_ref().filter(|_| self.superset) {
+            rows = self.search(&project, &text(search), rows, mode)?;
+        }
         let mut live = LiveQuery::new(&project, &engine_query, rows, &converted);
         let compile = q.compile == Some(true);
         let mut batch = live.next(self, None, None, compile)?;
+        batch.result.read_time_epoch_micros = read_time;
         if compile {
             batch.result.compiled_query = Some(query::compiled_query(&converted));
         }
@@ -423,15 +490,16 @@ impl Service {
     }
 
     fn next(&self, r: v3::NextRequest) -> Outcome {
+        let expired = "query has expired or is invalid. Please restart it with the last cursor to read more results.";
         let Some(app) = &r.cursor.app else {
-            return Err(Fail::Unknown);
+            return Err(self.invalid("The cursor must set app."));
         };
         let project = self.project(app)?;
         if !self.engine.has_project(&project) {
-            return Err(Fail::Unknown);
+            return Err(self.invalid(expired));
         }
         if r.count.is_some_and(|c| c < 0) {
-            return Err(Fail::Unknown);
+            return Err(self.invalid("The count must not be negative."));
         }
         let mut queries = self.queries();
         let key = (project.clone(), r.cursor.cursor);
@@ -453,7 +521,7 @@ impl Service {
 
     fn begin(&self, r: v3::BeginTransactionRequest) -> Outcome {
         if r.app.is_empty() {
-            return Err(Fail::Unknown);
+            return Err(self.invalid("The transaction must set app."));
         }
         let project = self.project(&r.app)?;
         let read_only =
@@ -549,6 +617,91 @@ impl Service {
                 .collect(),
         }
         .encode_to_vec())
+    }
+
+    /// `Touch` (superset): checks the keys; there is nothing to refresh.
+    fn touch(&self, r: v3::TouchRequest) -> Outcome {
+        for k in &r.key {
+            self.project(&k.app)?;
+        }
+        Ok(v3::TouchResponse {
+            cost: Some(v3::Cost::default()),
+        }
+        .encode_to_vec())
+    }
+
+    /// `DeleteCursor` (superset): forgets a live query.
+    fn delete_cursor(&self, c: v3::Cursor) -> Outcome {
+        if let Some(app) = &c.app {
+            let project = self.project(app)?;
+            self.queries().live.remove(&(project, c.cursor));
+        }
+        Ok(Vec::new())
+    }
+
+    /// `CreateIndex`, `UpdateIndex` and `DeleteIndex` (superset): composite indexes kept with the
+    /// Admin API's, which `--require_indexes` accepts. `CreateIndex` returns an
+    /// `Integer64Proto` id; the others a `VoidProto`.
+    fn index_call(&self, method: &str, request: &[u8]) -> Outcome {
+        let index = os::CompositeIndex::decode(request)
+            .map_err(|_| Fail::Rpc(PARSE_ERROR, wire::MALFORMED.into()))?;
+        self.project(&index.app_id)?;
+        let definition = query::index_from_definition(&index.definition)
+            .ok_or_else(|| bad_request("The index definition is invalid."))?;
+        match method {
+            "CreateIndex" => {
+                if !self.engine.add_admin_index(definition.clone()) {
+                    return Err(bad_request("The index already exists."));
+                }
+                let id = self
+                    .engine
+                    .defined_indexes()
+                    .iter()
+                    .position(|i| *i == definition)
+                    .map_or(0, |p| p as u64 + 1);
+                let mut out = vec![0x08];
+                prost::encoding::encode_varint(id, &mut out);
+                Ok(out)
+            }
+            "DeleteIndex" => {
+                self.engine.remove_admin_index(&definition);
+                Ok(Vec::new())
+            }
+            _ => Ok(Vec::new()),
+        }
+    }
+
+    /// Full-text search (superset): rows whose entity has every word of `search` among the words
+    /// of its string values, case-insensitively.
+    fn search(
+        &self,
+        project: &str,
+        search: &str,
+        rows: Vec<oxide_engine::query::QueryResult>,
+        mode: ReadMode,
+    ) -> Result<Vec<oxide_engine::query::QueryResult>, Fail> {
+        let wanted = query::words(search);
+        let mut out = Vec::with_capacity(rows.len());
+        for row in rows {
+            let entity = match &row.entity {
+                Some((e, _)) => Some(e.clone()),
+                None => match self
+                    .engine
+                    .lookup(project, std::slice::from_ref(&row.key), mode)?
+                    .pop()
+                {
+                    Some(LookupResult::Found { entity, .. }) => Some(entity),
+                    _ => None,
+                },
+            };
+            if entity.is_some_and(|e| {
+                let have = query::entity_words(&e);
+                wanted.iter().all(|w| have.contains(w))
+            }) {
+                out.push(row);
+            }
+        }
+        Ok(out)
     }
 
     fn add_actions(&self, request: &[u8]) -> Outcome {

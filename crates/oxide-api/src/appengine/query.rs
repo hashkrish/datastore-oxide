@@ -47,8 +47,9 @@ fn position(c: &v3::CompiledCursor) -> Option<Position> {
 /// Converts a v3 query (app ids already mapped to project ids) into an engine query that returns
 /// every row up to `offset + limit`. Also returns whether the query can match nothing at all (an
 /// explicitly empty namespace, an incomplete ancestor).
-pub fn convert(_svc: &Service, q: &v3::Query, project: &str) -> Result<(Query, bool), Fail> {
-    if q.search_query.is_some() {
+pub fn convert(svc: &Service, q: &v3::Query, project: &str) -> Result<(Query, bool), Fail> {
+    // With the superset, the caller filters the rows by the search words.
+    if q.search_query.is_some() && !svc.superset {
         return Err(bad_request("full-text search unsupported"));
     }
     let namespace = q.name_space.as_deref().map(text).unwrap_or_default();
@@ -61,8 +62,11 @@ pub fn convert(_svc: &Service, q: &v3::Query, project: &str) -> Result<(Query, b
         offset: q.offset.map_or(0, |o| usize::try_from(o).unwrap_or(0)),
         limit: q.limit.map(|l| usize::try_from(l).unwrap_or(0)),
         unbatched: true,
+        multiple_inequalities: svc.superset,
         ..Default::default()
     };
+    // Production's disjunctive filters (superset): IN with several values, NOT_EQUAL, NOT_IN.
+    let mut disjunction: Vec<Vec<Filter>> = vec![Vec::new()];
     if let Some(ancestor) = &q.ancestor {
         let app = text(&ancestor.app);
         if app != project {
@@ -80,6 +84,25 @@ pub fn convert(_svc: &Service, q: &v3::Query, project: &str) -> Result<(Query, b
         out.ancestor = Some(entity::key_of(ancestor, project));
     }
     for f in &q.filter {
+        if svc.superset && (matches!(f.op, 9 | 10) || (f.op == 6 && f.property.len() > 1)) {
+            let branches = disjunctive_filter(f, project)?;
+            if disjunction.len() * branches.len() > MAX_DISJUNCTIONS {
+                return Err(bad_request(format!(
+                    "The query contains more than the maximum {MAX_DISJUNCTIONS} disjunctions."
+                )));
+            }
+            disjunction = disjunction
+                .iter()
+                .flat_map(|d| {
+                    branches.iter().map(move |b| {
+                        let mut d = d.clone();
+                        d.extend(b.iter().cloned());
+                        d
+                    })
+                })
+                .collect();
+            continue;
+        }
         if matches!(f.op, 9 | 10) {
             return Err(Fail::Unknown);
         }
@@ -99,32 +122,17 @@ pub fn convert(_svc: &Service, q: &v3::Query, project: &str) -> Result<(Query, b
             7 => continue,
             _ => return Err(Fail::Unknown),
         };
-        let p = &f.property[0];
-        let property = text(&p.name);
-        let view = entity::view_of(&os::EntityProto {
-            key: os::Reference {
-                app: project.to_string().into(),
-                ..Default::default()
-            },
-            property: vec![os::Property {
-                multiple: false,
-                ..p.clone()
-            }],
-            ..Default::default()
-        });
-        let value = view
-            .properties
-            .values()
-            .next()
-            .and_then(IndexValue::from_value);
-        if property == KEY_PROPERTY && !matches!(value, Some(IndexValue::Key(_))) {
-            return Err(bad_request("__key__ filter value must be a Key"));
-        }
+        let (property, value) = filter_value(&f.property[0], project)?;
         out.filters.push(Filter {
             property,
             op,
-            value: value.unwrap_or(IndexValue::Null),
+            value,
         });
+    }
+    if disjunction.len() > 1 {
+        out.disjunction = disjunction;
+    } else {
+        out.filters.extend(disjunction.remove(0));
     }
     for o in &q.order {
         out.orders.push(Order {
@@ -147,6 +155,136 @@ pub fn convert(_svc: &Service, q: &v3::Query, project: &str) -> Result<(Query, b
     out.start_cursor = q.compiled_cursor.as_ref().and_then(position);
     out.end_cursor = q.end_compiled_cursor.as_ref().and_then(position);
     Ok((out, nothing))
+}
+
+/// Production's limit on disjunctions.
+const MAX_DISJUNCTIONS: usize = 30;
+
+/// A filter property's name and index value.
+fn filter_value(p: &os::Property, project: &str) -> Result<(String, IndexValue), Fail> {
+    let property = text(&p.name);
+    let view = entity::view_of(&os::EntityProto {
+        key: os::Reference {
+            app: project.to_string().into(),
+            ..Default::default()
+        },
+        property: vec![os::Property {
+            multiple: false,
+            ..p.clone()
+        }],
+        ..Default::default()
+    });
+    let value = view
+        .properties
+        .values()
+        .next()
+        .and_then(IndexValue::from_value);
+    if property == KEY_PROPERTY && !matches!(value, Some(IndexValue::Key(_))) {
+        return Err(bad_request("__key__ filter value must be a Key"));
+    }
+    Ok((property, value.unwrap_or(IndexValue::Null)))
+}
+
+/// `IN` with several values (one branch per value), `NOT_EQUAL` (9) and `NOT_IN` (10: the ranges
+/// around the excluded values, never matching null), as the v1 API's superset does.
+fn disjunctive_filter(f: &v3::query::Filter, project: &str) -> Result<Vec<Vec<Filter>>, Fail> {
+    let values = f
+        .property
+        .iter()
+        .map(|p| filter_value(p, project))
+        .collect::<Result<Vec<_>, _>>()?;
+    let Some((property, _)) = values.first().cloned() else {
+        return Err(bad_request("Filter has 0 properties, expected 1"));
+    };
+    if values.iter().any(|(p, _)| *p != property) {
+        return Err(bad_request(
+            "A filter's values must all be for one property.",
+        ));
+    }
+    let filter = |op, value: IndexValue| Filter {
+        property: property.clone(),
+        op,
+        value,
+    };
+    if f.op == 6 {
+        return Ok(values
+            .into_iter()
+            .map(|(_, v)| vec![filter(FilterOp::Equal, v)])
+            .collect());
+    }
+    let mut excluded: Vec<IndexValue> = values
+        .into_iter()
+        .map(|(_, v)| v)
+        .filter(|v| *v != IndexValue::Null)
+        .collect();
+    excluded.sort();
+    excluded.dedup();
+    let mut lower = IndexValue::Null;
+    let mut branches = Vec::with_capacity(excluded.len() + 1);
+    for v in excluded {
+        branches.push(vec![
+            filter(FilterOp::GreaterThan, lower.clone()),
+            filter(FilterOp::LessThan, v.clone()),
+        ]);
+        lower = v;
+    }
+    branches.push(vec![filter(FilterOp::GreaterThan, lower)]);
+    Ok(branches)
+}
+
+/// The engine index of a v3 index definition (`CreateIndex` and friends, superset).
+pub fn index_from_definition(d: &os::Index) -> Option<CompositeIndex> {
+    use os::index::property::Direction as D;
+    use oxide_engine::composite::IndexProperty;
+    let kind = text(&d.entity_type);
+    if kind.is_empty() {
+        return None;
+    }
+    let properties = d
+        .property
+        .iter()
+        .map(|p| {
+            let name = text(&p.name);
+            (!name.is_empty()).then(|| IndexProperty {
+                name,
+                direction: Some(if p.direction == Some(D::Descending as i32) {
+                    Direction::Descending
+                } else {
+                    Direction::Ascending
+                }),
+            })
+        })
+        .collect::<Option<Vec<_>>>()?;
+    Some(CompositeIndex {
+        kind,
+        ancestor: d.ancestor,
+        properties,
+    })
+}
+
+/// The lowercase words of a text (full-text search, superset).
+pub fn words(s: &str) -> std::collections::HashSet<String> {
+    s.split(|c: char| !c.is_alphanumeric())
+        .filter(|w| !w.is_empty())
+        .map(str::to_lowercase)
+        .collect()
+}
+
+/// The words of every string value of an entity, including arrays and embedded entities.
+pub fn entity_words(e: &oxide_model::Entity) -> std::collections::HashSet<String> {
+    fn collect(v: &oxide_model::Value, out: &mut std::collections::HashSet<String>) {
+        match &v.kind {
+            oxide_model::ValueKind::String(s) => out.extend(words(s)),
+            oxide_model::ValueKind::Array(a) => a.iter().for_each(|v| collect(v, out)),
+            oxide_model::ValueKind::Entity(e) => {
+                e.properties.values().for_each(|v| collect(v, out))
+            }
+            _ => {}
+        }
+    }
+    let mut out = std::collections::HashSet::new();
+    e.properties.values().for_each(|v| collect(v, &mut out));
+    out
 }
 
 impl LiveQuery {

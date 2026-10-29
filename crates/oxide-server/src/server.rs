@@ -484,7 +484,11 @@ fn grpc_routes(
             }
             .into_server()
         })
-        .add_service(oxide_api::appengine::Service::new(engine.clone()).into_server());
+        .add_service(
+            oxide_api::appengine::Service::new(engine.clone())
+                .with_superset(superset)
+                .into_server(),
+        );
     let routes = match operations {
         Some(store) => {
             routes.add_service(oxide_api::operations::OperationsService::new(store).into_server())

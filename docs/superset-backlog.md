@@ -25,6 +25,7 @@ With `--no_superset`, these behave exactly as Java does (the table rows below). 
 | Vector values and vector search | A vector value is an array of 1–2048 doubles with `meaning: 31` (`exclude_from_indexes` allowed, components never indexed); Java rejects it. `Query.find_nearest` (`crates/oxide-api/src/vector.rs`) runs after the rest of the query (filters, cursors, offset, limit) and ranks entities whose property holds a vector of the query vector's dimension by `EUCLIDEAN`, `COSINE` (1 − cosine similarity) or `DOT_PRODUCT` (larger is nearer); `distance_threshold` keeps distances ≤ it (≥ for dot product), `limit` is 1–100, and `distance_result_property` adds the distance to each result. Full or keys-only results; no other projection or `DISTINCT ON`. |
 | Admin API indexes and operations | `CreateIndex`, `GetIndex`, `ListIndexes`, `DeleteIndex` manage composite indexes (`crates/oxide-api/src/admin.rs`): listed indexes are those in the index configuration files plus those created through the API (state `READY`, ids derived from the definition); created ones count as defined for `--require_indexes`; only API-created ones can be deleted. Admin operations get names (`projects/{p}/operations/{id}`) and are kept for the `google.longrunning.Operations` service (`crates/oxide-api/src/operations.rs`) over gRPC and REST (`GET /v1/projects/{p}/operations[/{id}]`, `DELETE …`, `POST …:cancel`); they are finished when returned, so cancelling has no effect. |
 | Export and import like production | `output_url` names the overall metadata file (`{prefix}/{name}/{name}.overall_export_metadata`), which `ImportEntities` takes as `input_url`; `labels` are kept in the operation metadata; `gs://bucket/path` URLs are stored under `DATASTORE_OXIDE_GCS_ROOT` (default `./gcs`), and a `gs://` prefix may be exported to again (each export gets its own folder). There is no Cloud Storage client. |
+| App Engine v3 extras | `Touch` (checks the keys), `DeleteCursor` (forgets the live query), `CreateIndex` / `UpdateIndex` / `DeleteIndex` (composite indexes shared with the Admin API; `CreateIndex` returns an `Integer64Proto` id). Filters `IN` with several values, `NOT_EQUAL` (9) and `NOT_IN` (10) as in the v1 superset, and inequalities on several properties. Full-text `search_query`: rows whose string values (including arrays and embedded entities) contain every word, case-insensitively. `allow_deferred`: keys after 1 MiB of response are returned in `deferred` with `in_order: false`. `read_time_epoch_micros` / `read_time_us` read as of that time and are echoed. BAD_REQUEST with a message instead of a bare UNKNOWN for an empty or invalid app id, negative `count`/`limit`, incomplete parent keys, invalid embedded entities, and `Next` on an unknown project (`crates/oxide-api/src/appengine/`). |
 
 ## Unknown to Java's protos (fields its descriptors do not define)
 
@@ -71,13 +72,13 @@ Production App Engine's datastore_v3 service does these; Java's emulator does no
 
 | Feature | Java emulator behavior |
 |---|---|
-| `Touch`, `DeleteCursor`, `CreateIndex`, `UpdateIndex`, `DeleteIndex` | `application_error{1, "Cannot find definition for method: X"}` |
-| `NOT_EQUAL`, `NOT_IN` filters | bare gRPC UNKNOWN |
-| `IN` with several values | `Filter has N properties, expected 1` |
-| Full-text `search_query` | `full-text search unsupported` |
-| `allow_deferred` (deferred keys on large Gets) | accepted, never defers |
-| `read_time_epoch_micros` / `read_time_us` reads | accepted and ignored |
-| Proper errors instead of uncaught exceptions (empty app id, invalid app id, negative `count`/`limit`, incomplete parent keys, `Next` on an unknown project) | bare gRPC UNKNOWN |
+| `Touch`, `DeleteCursor`, `CreateIndex`, `UpdateIndex`, `DeleteIndex` (**implemented**) | `application_error{1, "Cannot find definition for method: X"}` |
+| `NOT_EQUAL`, `NOT_IN` filters (**implemented**) | bare gRPC UNKNOWN |
+| `IN` with several values (**implemented**) | `Filter has N properties, expected 1` |
+| Full-text `search_query` (**implemented**) | `full-text search unsupported` |
+| `allow_deferred` (deferred keys on large Gets) (**implemented**) | accepted, never defers |
+| `read_time_epoch_micros` / `read_time_us` reads (**implemented**) | accepted and ignored |
+| Proper errors instead of uncaught exceptions (empty app id, invalid app id, negative `count`/`limit`, incomplete parent keys, `Next` on an unknown project) (**implemented**) | bare gRPC UNKNOWN |
 
 ## Development tooling
 
