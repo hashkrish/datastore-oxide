@@ -55,6 +55,10 @@ impl DatastoreService {
                 let handle = self.begin(scope, Some(options))?;
                 (ReadMode::Transaction(handle), Some(encode_handle(handle)))
             }
+            // Java accepts a read time and ignores it.
+            Some(ConsistencyType::ReadTime(t)) if self.superset => {
+                (ReadMode::At(convert::timestamp_to_micros(t)?), None)
+            }
             _ => (ReadMode::Strong, None),
         })
     }
@@ -87,7 +91,15 @@ impl DatastoreService {
     ) -> Result<u64, Status> {
         use pb::transaction_options::Mode;
         let (read_only, previous) = match options.and_then(|o| o.mode.as_ref()) {
-            Some(Mode::ReadOnly(_)) => (true, None),
+            Some(Mode::ReadOnly(ro)) => {
+                if let Some(t) = ro.read_time.as_ref().filter(|_| self.superset) {
+                    return self
+                        .engine
+                        .begin_read_only_at(&scope.project_id, convert::timestamp_to_micros(t)?)
+                        .map_err(engine_status);
+                }
+                (true, None)
+            }
             Some(Mode::ReadWrite(rw)) if !rw.previous_transaction.is_empty() => {
                 // Java reports a malformed previous transaction as an internal error.
                 let previous = decode_handle(&rw.previous_transaction)
@@ -99,6 +111,14 @@ impl DatastoreService {
         self.engine
             .begin_transaction(&scope.project_id, read_only, true, previous)
             .map_err(engine_status)
+    }
+}
+
+/// The read time a response reports: the requested one, for point-in-time reads.
+fn read_time_of(mode: ReadMode) -> Option<prost_types::Timestamp> {
+    match mode {
+        ReadMode::At(t) => Some(convert::micros_to_timestamp(t)),
+        _ => None,
     }
 }
 
@@ -398,8 +418,10 @@ impl Datastore for DatastoreService {
             None
         };
         let (mode, transaction) = self.read_mode(r.read_options.as_ref(), &scope)?;
+        let read_time = read_time_of(mode);
         let mut response = pb::LookupResponse {
             transaction: transaction.unwrap_or_default().into(),
+            read_time,
             ..Default::default()
         };
         for result in self
@@ -469,8 +491,10 @@ impl Datastore for DatastoreService {
             ));
         }
         let (mode, transaction) = self.read_mode(r.read_options.as_ref(), &scope)?;
+        let read_time = read_time_of(mode);
         let batch = self.engine.run_query(&query, mode).map_err(engine_status)?;
         let mut batch = crate::query::batch_to_proto(&query, batch);
+        batch.read_time = read_time;
         if let Some(mask) = &mask {
             for result in &mut batch.entity_results {
                 if let Some(e) = &mut result.entity {
@@ -521,13 +545,14 @@ impl Datastore for DatastoreService {
             query.keys_only = true;
         }
         let (mode, transaction) = self.read_mode(r.read_options.as_ref(), &scope)?;
+        let read_time = read_time_of(mode);
         let batch = self.engine.run_query(&query, mode).map_err(engine_status)?;
         let result = aggregation::compute(&aggregations, batch.results.iter().skip(query.offset));
         Ok(Response::new(pb::RunAggregationQueryResponse {
             batch: Some(pb::AggregationResultBatch {
                 aggregation_results: vec![result],
                 more_results: pb::query_result_batch::MoreResultsType::NoMoreResults as i32,
-                read_time: None,
+                read_time,
             }),
             query: echo,
             transaction: transaction.unwrap_or_default().into(),

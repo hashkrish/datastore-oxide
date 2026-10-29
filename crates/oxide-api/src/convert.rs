@@ -422,7 +422,7 @@ fn check_coordinate(axis: &str, v: f64, limit: f64) -> Result<(), Status> {
     Ok(())
 }
 
-fn timestamp_to_micros(ts: &prost_types::Timestamp) -> Result<i64, Status> {
+pub(crate) fn timestamp_to_micros(ts: &prost_types::Timestamp) -> Result<i64, Status> {
     let micros = ts
         .seconds
         .checked_mul(1_000_000)

@@ -264,6 +264,9 @@ pub async fn run(cfg: StartConfig) -> Result<i32> {
     if cfg.firestore_in_datastore_mode {
         engine = engine.with_firestore_mode();
     }
+    if cfg.superset {
+        engine = engine.with_point_in_time();
+    }
     if cfg.enable_entity_groups == Some(false) {
         engine = engine.without_entity_groups();
     }

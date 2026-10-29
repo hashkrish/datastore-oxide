@@ -30,6 +30,17 @@ pub(crate) struct Group {
     pub version: i64,
     jobs: VecDeque<Job>,
 }
+impl Group {
+    /// Keys written by unapplied jobs.
+    pub fn written_keys(&self) -> impl Iterator<Item = &Key> {
+        self.jobs.iter().flat_map(|j| {
+            j.puts
+                .iter()
+                .filter_map(|(e, _)| e.key.as_ref())
+                .chain(&j.deletes)
+        })
+    }
+}
 #[derive(Debug)]
 pub(crate) struct Txn {
     pub read_only: bool,
@@ -45,6 +56,8 @@ pub(crate) struct Txn {
     pub writes: Vec<(Key, Option<Entity>)>,
     /// Transactional tasks (opaque `TaskQueueAddRequest`s), handed back on commit.
     pub actions: Vec<Vec<u8>>,
+    /// A read-only transaction's `read_time` (superset), in microseconds.
+    pub read_time: Option<i64>,
 }
 impl Txn {
     pub fn new(read_only: bool, xg: bool) -> Self {
@@ -57,6 +70,7 @@ impl Txn {
             snapshots: HashMap::new(),
             writes: Vec::new(),
             actions: Vec::new(),
+            read_time: None,
         }
     }
     pub fn buffer(&mut self, key: Key, entity: Option<Entity>) {
@@ -188,6 +202,33 @@ pub(crate) struct Project {
     pub kinds: KindTable,
     /// Set when a write is applied; cleared when the store is saved (Java's `dirty`).
     pub dirty: bool,
+    /// Point-in-time reads (superset): the wall-clock time of each commit version, ascending.
+    pub commit_times: VecDeque<(i64, i64)>,
+    /// Committed states of written keys, `(version, entity or None for deleted)` ascending,
+    /// starting with the state before the first recorded write.
+    pub history: HashMap<Key, Vec<(i64, Option<Entity>)>>,
+}
+
+/// How a job is stored.
+#[derive(Clone, Copy)]
+pub(crate) struct JobOptions<'a> {
+    /// Sequential ids: puts get the hidden `__scatter__` property.
+    pub scatter: bool,
+    pub indexes: &'a [CompositeIndex],
+    /// Record point-in-time history.
+    pub history: bool,
+}
+
+/// A committed write for the history: key, state before (with its version), state after.
+type HistoryWrite = (Key, Option<(Entity, i64)>, Option<Entity>);
+
+/// How long point-in-time reads reach back (production's default retention).
+pub(crate) const HISTORY_RETENTION_MICROS: i64 = 3_600_000_000;
+
+pub(crate) fn now_micros() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| d.as_micros() as i64)
 }
 impl Default for Project {
     fn default() -> Self {
@@ -200,6 +241,8 @@ impl Default for Project {
             groups: HashMap::new(),
             pending: Vec::new(),
             txns: HashMap::new(),
+            commit_times: VecDeque::new(),
+            history: HashMap::new(),
         }
     }
 }
@@ -267,6 +310,68 @@ impl Project {
         self.last_commit += 1;
         self.last_commit
     }
+
+    /// Records the wall-clock time of commit `version` (once per version).
+    fn record_commit_time(&mut self, version: i64) {
+        if self.commit_times.back().is_some_and(|(v, _)| *v >= version) {
+            return;
+        }
+        let now = now_micros().max(self.commit_times.back().map_or(0, |(_, t)| t + 1));
+        self.commit_times.push_back((version, now));
+        // Keep one commit older than the retention window: reads inside it resolve to it.
+        let cutoff = now - HISTORY_RETENTION_MICROS;
+        while self.commit_times.len() > 1 && self.commit_times[1].1 <= cutoff {
+            self.commit_times.pop_front();
+        }
+    }
+
+    /// The last version committed at or before `micros` (point-in-time reads).
+    pub fn version_at(&self, micros: i64) -> i64 {
+        match self.commit_times.iter().rposition(|(_, t)| *t <= micros) {
+            Some(i) => self.commit_times[i].0,
+            // Before every recorded commit: the state just before the first one.
+            None => self
+                .commit_times
+                .front()
+                .map_or(self.last_commit, |(v, _)| v - 1),
+        }
+    }
+
+    /// `key` as committed at `version` (point-in-time reads).
+    pub fn entity_at(&self, key: &Key, group: &Key, version: i64) -> Option<(Entity, i64)> {
+        match self.history.get(key) {
+            Some(states) => states
+                .iter()
+                .rev()
+                .find(|(v, _)| *v <= version)
+                .and_then(|(v, e)| e.clone().map(|e| (e, *v))),
+            None => self
+                .logical(key, group)
+                .filter(|(_, v, _)| *v <= version)
+                .map(|(e, v, _)| (e.clone(), v)),
+        }
+    }
+
+    /// Records a committed write of `key` in its history.
+    fn record(
+        &mut self,
+        key: &Key,
+        before: Option<(Entity, i64)>,
+        version: i64,
+        after: Option<Entity>,
+    ) {
+        let oldest = self.commit_times.front().map_or(i64::MIN, |(v, _)| *v);
+        let states = self.history.entry(key.clone()).or_insert_with(|| {
+            before
+                .map(|(e, v)| vec![(v, Some(e))])
+                .unwrap_or_else(|| vec![(0, None)])
+        });
+        states.push((version, after));
+        // Drop states that no retained version can read.
+        while states.len() > 1 && states[1].0 <= oldest {
+            states.remove(0);
+        }
+    }
     /// Creates a job for `group` from writes (`None` = delete) and adds it. Returns the job's
     /// cost and each key's resulting version, in the order given. Unchanged puts (including the
     /// hidden `__scatter__`) keep their version.
@@ -275,10 +380,14 @@ impl Project {
         group: &Key,
         timestamp: i64,
         writes: &[(Key, Option<Entity>)],
-        scatter: bool,
-        indexes: &[CompositeIndex],
+        options: JobOptions,
         decide: Decide,
     ) -> (JobCost, Vec<i64>) {
+        let JobOptions {
+            scatter,
+            indexes,
+            history,
+        } = options;
         let mut job = Job {
             timestamp,
             puts: Vec::new(),
@@ -294,8 +403,10 @@ impl Project {
             }
         }
         let mut version_of: HashMap<&Key, i64> = HashMap::new();
+        let mut recorded: Vec<HistoryWrite> = Vec::new();
         for (key, write) in &last {
             let before = self.logical(key, group);
+            let before_owned = before.map(|(e, v, _)| (e.clone(), v));
             match write {
                 None => {
                     if let Some((old, _, form)) = before {
@@ -303,6 +414,7 @@ impl Project {
                         cost.entity_writes += 1;
                         job.deletes.push((*key).clone());
                         version_of.insert(key, timestamp);
+                        recorded.push(((*key).clone(), before_owned, None));
                     } else {
                         version_of.insert(key, self.last_commit);
                     }
@@ -325,6 +437,7 @@ impl Project {
                             job.puts.push((entity.clone(), scatter));
                             cost.entity_writes += 1;
                             version_of.insert(key, timestamp);
+                            recorded.push(((*key).clone(), before_owned, Some(entity.clone())));
                         }
                     }
                 }
@@ -332,6 +445,12 @@ impl Project {
         }
         for (key, _) in writes {
             versions.push(version_of[key]);
+        }
+        if history {
+            self.record_commit_time(timestamp);
+            for (key, before, after) in recorded {
+                self.record(&key, before, timestamp, after);
+            }
         }
         let group_state = self.groups.entry(group.clone()).or_default();
         group_state.jobs.push_back(job);

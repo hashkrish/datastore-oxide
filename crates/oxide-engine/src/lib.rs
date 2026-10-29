@@ -161,6 +161,8 @@ pub enum ReadMode {
     Eventual,
     /// Reads inside a transaction (tracks the group, may read a snapshot).
     Transaction(u64),
+    /// Reads the committed state as of a time in microseconds (superset point-in-time reads).
+    At(i64),
 }
 /// Kinds that are served by pseudo-kind implementations; looking them up by key fails in Java.
 const PSEUDO_KINDS: &[&str] = &["__kind__", "__property__", "__namespace__"];
@@ -234,6 +236,8 @@ pub struct Engine {
     indexes: Option<index_files::IndexManager>,
     /// Firestore-in-Datastore mode (`--firestore_in_datastore_mode`).
     firestore: bool,
+    /// Keep committed history for point-in-time reads (superset).
+    point_in_time: bool,
     /// `--enable_entity_groups` (default true): reads and deletes use the root entity's group;
     /// otherwise the full key path (puts always use the root, as in Java).
     entity_groups: bool,
@@ -259,6 +263,7 @@ impl Engine {
                 .map_or(0, |d| d.as_millis() as i64 * 1000),
             indexes: None,
             firestore: false,
+            point_in_time: false,
             entity_groups: true,
             generation: AtomicU64::new(0),
         }
@@ -291,6 +296,39 @@ impl Engine {
         self.set_job_policy(JobPolicy::ForceStrongConsistency);
         self.firestore = true;
         self
+    }
+    /// Keeps an hour of committed history so reads can ask for an earlier `read_time`.
+    pub fn with_point_in_time(mut self) -> Self {
+        self.point_in_time = true;
+        self
+    }
+    /// Begins a read-only transaction that reads as of `read_time` (microseconds).
+    pub fn begin_read_only_at(&self, project_id: &str, read_time: i64) -> Result<u64> {
+        check_read_time(read_time)?;
+        let handle = self.begin_transaction(project_id, true, true, None)?;
+        let mut state = self.lock();
+        if let Some(txn) = state
+            .projects
+            .get_mut(project_id)
+            .and_then(|p| p.txns.get_mut(&handle))
+        {
+            txn.read_time = Some(read_time);
+        }
+        Ok(handle)
+    }
+    /// A read-only transaction with a `read_time` reads as of that time.
+    fn effective_mode(project: &store::Project, mode: ReadMode) -> Result<ReadMode> {
+        Ok(match mode {
+            ReadMode::Transaction(h) => match project.txns.get(&h).and_then(|t| t.read_time) {
+                Some(t) => ReadMode::At(t),
+                None => mode,
+            },
+            ReadMode::At(t) => {
+                check_read_time(t)?;
+                mode
+            }
+            _ => mode,
+        })
     }
     pub fn firestore_mode(&self) -> bool {
         self.firestore
@@ -660,6 +698,21 @@ impl Engine {
         }
         self.with_state(|state, decide| {
             let project = state.projects.entry(project_id.to_string()).or_default();
+            if let ReadMode::At(t) = Self::effective_mode(project, mode)? {
+                let version = project.version_at(t);
+                return Ok(keys
+                    .iter()
+                    .map(
+                        |key| match project.entity_at(key, &self.read_group(key), version) {
+                            Some((entity, version)) => LookupResult::Found { entity, version },
+                            None => LookupResult::Missing {
+                                key: key.clone(),
+                                version,
+                            },
+                        },
+                    )
+                    .collect());
+            }
             let mut results = Vec::with_capacity(keys.len());
             for key in keys {
                 let group = self.read_group(key);
@@ -691,6 +744,7 @@ impl Engine {
                             project.roll_forward(&group);
                             self.txn_read(project, h, key)
                         }
+                        ReadMode::At(_) => unreachable!("handled above"),
                     }
                 };
                 results.push(match found {
@@ -714,10 +768,14 @@ impl Engine {
     pub fn run_query(&self, q: &query::Query, mode: ReadMode) -> Result<query::QueryBatch> {
         self.with_state(|state, decide| {
             let project = state.projects.entry(q.project_id.clone()).or_default();
+            if let ReadMode::At(t) = Self::effective_mode(project, mode)? {
+                return self.query_at(project, q, t);
+            }
             let group = q.ancestor.as_ref().map(|a| self.read_group(a));
             let mut snapshot = None;
             if let Some(group) = &group {
                 match mode {
+                    ReadMode::At(_) => unreachable!("handled above"),
                     ReadMode::Eventual => {}
                     ReadMode::Strong => project.roll_forward(group),
                     ReadMode::Transaction(h) => {
@@ -801,6 +859,37 @@ impl Engine {
             Ok(batch)
         })
     }
+    /// Runs `q` over the committed state as of `t` (microseconds).
+    fn query_at(
+        &self,
+        project: &store::Project,
+        q: &query::Query,
+        t: i64,
+    ) -> Result<query::QueryBatch> {
+        let version = project.version_at(t);
+        let mut keys: Vec<&Key> = project
+            .entities
+            .keys()
+            .chain(project.history.keys())
+            .collect();
+        keys.extend(project.groups.values().flat_map(|g| g.written_keys()));
+        keys.retain(|k| q.kind.as_ref().is_none_or(|kind| k.kind() == kind));
+        keys.sort_by_key(|k| project.entities.get(*k).map_or(u64::MAX, |s| s.seq));
+        keys.dedup();
+        let mut seen = std::collections::HashSet::new();
+        let rows: Vec<(Key, Entity, i64, cost::Form)> = keys
+            .into_iter()
+            .filter(|k| seen.insert(*k))
+            .filter_map(|k| {
+                let (entity, v) = project.entity_at(k, &self.read_group(k), version)?;
+                let form = project.entities.get(k).map(|s| s.form).unwrap_or_default();
+                Some((k.clone(), entity, v, form))
+            })
+            .collect();
+        let mut batch = query::run(q, rows.iter().map(|(k, e, v, f)| (k, e, *v, *f)), version)?;
+        batch.snapshot_version = Some(version);
+        Ok(batch)
+    }
     /// Applies mutations one at a time, each as its own job. On error, mutations before the
     /// failing one stay applied.
     pub fn commit_non_transactional(
@@ -844,8 +933,11 @@ impl Engine {
                     &group,
                     timestamp,
                     &[(key, entity)],
-                    scatter,
-                    &indexes,
+                    store::JobOptions {
+                        scatter,
+                        indexes: &indexes,
+                        history: self.point_in_time,
+                    },
                     decide,
                 );
                 result.index_updates += cost.index_writes;
@@ -983,8 +1075,17 @@ impl Engine {
                     .cloned()
                     .collect();
                 let scatter = self.config().auto_id_policy == AutoIdPolicy::Sequential;
-                let (cost, versions) =
-                    project.add_job(group, timestamp, &writes, scatter, &indexes, decide);
+                let (cost, versions) = project.add_job(
+                    group,
+                    timestamp,
+                    &writes,
+                    store::JobOptions {
+                        scatter,
+                        indexes: &indexes,
+                        history: self.point_in_time,
+                    },
+                    decide,
+                );
                 total += cost;
                 for ((key, _), v) in writes.into_iter().zip(versions) {
                     version_of.insert(key, v);
@@ -1079,8 +1180,17 @@ impl Engine {
                     members.iter().map(|&i| writes[i].clone()).collect();
                 project.bump_group(&group);
                 let timestamp = project.next_timestamp();
-                let (job_cost, job_versions) =
-                    project.add_job(&group, timestamp, &job, scatter, &indexes, decide);
+                let (job_cost, job_versions) = project.add_job(
+                    &group,
+                    timestamp,
+                    &job,
+                    store::JobOptions {
+                        scatter,
+                        indexes: &indexes,
+                        history: self.point_in_time,
+                    },
+                    decide,
+                );
                 cost += job_cost;
                 for (i, v) in members.into_iter().zip(job_versions) {
                     versions[i] = v;
@@ -1198,10 +1308,16 @@ fn apply_partial(
     }
 }
 
-fn now_micros() -> i64 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map_or(0, |d| d.as_micros() as i64)
+use store::now_micros;
+
+/// Point-in-time reads reach back as far as the history is kept.
+fn check_read_time(t: i64) -> Result<()> {
+    if t < now_micros() - store::HISTORY_RETENTION_MICROS {
+        return Err(Error::invalid_argument(
+            "The read_time is older than the one-hour version retention period.",
+        ));
+    }
+    Ok(())
 }
 
 enum Write {

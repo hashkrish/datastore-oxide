@@ -729,3 +729,142 @@ fn no_superset_ignores_masks() {
         json!({"a": int(9)})
     );
 }
+
+/// A server timestamp after every commit so far and before the next one: the request time of
+/// a commit that writes a marker entity.
+fn server_time(emulator: &Emulator) -> Value {
+    let (status, body) = emulator.post(
+        "commit",
+        json!({"mode": "NON_TRANSACTIONAL", "mutations": [{
+            "upsert": {"key": {"path": [{"kind": "Marker", "name": "m"}]}},
+            "propertyTransforms": [{"property": "t", "setToServerValue": "REQUEST_TIME"}],
+        }]}),
+    );
+    assert_eq!(status, 200, "{body}");
+    body["mutationResults"][0]["transformResults"][0]["timestampValue"].clone()
+}
+
+#[test]
+fn point_in_time_reads() {
+    let emulator = start(&[]);
+    let commit = |mutations: Value| {
+        let (status, body) = emulator.post(
+            "commit",
+            json!({"mode": "NON_TRANSACTIONAL", "mutations": mutations}),
+        );
+        assert_eq!(status, 200, "{body}");
+    };
+    commit(json!([
+        {"upsert": {"key": key("a"), "properties": {"n": int(1)}}},
+        {"upsert": {"key": key("b"), "properties": {"n": int(1)}}},
+    ]));
+    std::thread::sleep(std::time::Duration::from_millis(5));
+    let then = server_time(&emulator);
+    std::thread::sleep(std::time::Duration::from_millis(5));
+    commit(json!([
+        {"update": {"key": key("a"), "properties": {"n": int(2)}}},
+        {"delete": key("b")},
+        {"insert": {"key": key("c"), "properties": {"n": int(3)}}},
+    ]));
+
+    // Lookup as of then: a's old value, b still there, c not yet.
+    let (status, body) = emulator.post(
+        "lookup",
+        json!({"keys": [key("a"), key("b"), key("c")], "readOptions": {"readTime": then}}),
+    );
+    assert_eq!(status, 200, "{body}");
+    assert_eq!(body["readTime"], then);
+    let found: Vec<(String, Value)> = body["found"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|r| {
+            (
+                r["entity"]["key"]["path"][0]["name"]
+                    .as_str()
+                    .unwrap()
+                    .to_string(),
+                r["entity"]["properties"]["n"].clone(),
+            )
+        })
+        .collect();
+    assert_eq!(found, [("a".into(), int(1)), ("b".into(), int(1))]);
+    assert_eq!(body["missing"][0]["entity"]["key"]["path"][0]["name"], "c");
+
+    // Queries and aggregations as of then.
+    let query = json!({"kind": [{"name": "T"}], "filter": pf("n", "GREATER_THAN", int(0))});
+    let (status, body) = emulator.post(
+        "runQuery",
+        json!({"query": query, "readOptions": {"readTime": then}}),
+    );
+    assert_eq!(status, 200, "{body}");
+    let names: Vec<&str> = body["batch"]["entityResults"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|r| r["entity"]["key"]["path"][0]["name"].as_str().unwrap())
+        .collect();
+    assert_eq!(names, ["a", "b"]);
+    assert_eq!(body["batch"]["readTime"], then);
+    assert_eq!(
+        emulator.aggregate(json!({
+            "aggregationQuery": {"nestedQuery": query, "aggregations": [
+                {"sum": {"property": {"name": "n"}}, "alias": "s"},
+            ]},
+            "readOptions": {"readTime": then},
+        })),
+        json!({"s": {"integerValue": "2"}})
+    );
+    // Now: a=2, c=3.
+    assert_eq!(
+        emulator.aggregate(json!({
+            "aggregationQuery": {"nestedQuery": query, "aggregations": [
+                {"sum": {"property": {"name": "n"}}, "alias": "s"},
+            ]},
+        })),
+        json!({"s": {"integerValue": "5"}})
+    );
+
+    // A read-only transaction at then.
+    let (status, begin) = emulator.post(
+        "beginTransaction",
+        json!({"transactionOptions": {"readOnly": {"readTime": then}}}),
+    );
+    assert_eq!(status, 200, "{begin}");
+    let (status, body) = emulator.post(
+        "lookup",
+        json!({"keys": [key("a")], "readOptions": {"transaction": begin["transaction"]}}),
+    );
+    assert_eq!(status, 200, "{body}");
+    assert_eq!(body["found"][0]["entity"]["properties"]["n"], int(1));
+
+    // Too old.
+    let (status, body) = emulator.post(
+        "lookup",
+        json!({"keys": [key("a")], "readOptions": {"readTime": "2000-01-01T00:00:00Z"}}),
+    );
+    assert_eq!(status, 400);
+    assert_eq!(
+        body["error"]["message"],
+        "The read_time is older than the one-hour version retention period."
+    );
+}
+
+#[test]
+fn no_superset_ignores_read_time() {
+    let emulator = start(&["--no_superset"]);
+    let (status, _) = emulator.post(
+        "commit",
+        json!({"mode": "NON_TRANSACTIONAL", "mutations": [
+            {"upsert": {"key": key("a"), "properties": {"n": int(1)}}},
+        ]}),
+    );
+    assert_eq!(status, 200);
+    let (status, body) = emulator.post(
+        "lookup",
+        json!({"keys": [key("a")], "readOptions": {"readTime": "2000-01-01T00:00:00Z"}}),
+    );
+    assert_eq!(status, 200);
+    assert_eq!(body["found"][0]["entity"]["properties"]["n"], int(1));
+    assert!(body.get("readTime").is_none());
+}
