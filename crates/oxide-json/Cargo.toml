@@ -4,6 +4,8 @@ description = "JSON output byte-compatible with protobuf-java's JsonFormat print
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+homepage.workspace = true
 
 [dependencies]
 serde_json.workspace = true

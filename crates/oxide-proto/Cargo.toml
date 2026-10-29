@@ -4,6 +4,8 @@ description = "Generated protobuf/gRPC types for the Datastore, Admin, emulator-
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+homepage.workspace = true
 
 [dependencies]
 prost.workspace = true

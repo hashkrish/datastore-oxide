@@ -4,6 +4,8 @@ description = "Drop-in replacement for the Cloud Datastore emulator (cloud_datas
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+homepage.workspace = true
 
 [[bin]]
 name = "datastore-oxide"
