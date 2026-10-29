@@ -20,6 +20,9 @@ fn third_party_licenses_are_up_to_date() {
             "none",
             "--format",
             "{p}",
+            // CI sets CARGO_TERM_COLOR=always, which wraps the `(*)` marker in escape codes.
+            "--color",
+            "never",
         ])
         .current_dir(root)
         .output()
