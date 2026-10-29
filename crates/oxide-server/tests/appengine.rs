@@ -20,7 +20,7 @@ impl Drop for Emulator {
 
 fn start() -> Emulator {
     let mut child = Command::new(env!("CARGO_BIN_EXE_datastore-oxide"))
-        .args(["start", "--testing", "--port=0"])
+        .args(["start", "--testing", "--port=0", "--no_superset"])
         .env("OXIDE_LOG", "off")
         .stdout(Stdio::piped())
         .spawn()

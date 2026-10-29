@@ -19,6 +19,8 @@ impl Launcher for Oxide {
         let mut child = Command::new(env!("CARGO_BIN_EXE_datastore-oxide"))
             .arg("start")
             .arg("--port=0")
+            // Java's behavior: no superset features.
+            .arg("--no_superset")
             .args(args)
             .current_dir(&self.cwd)
             .env("OXIDE_LOG", "off")

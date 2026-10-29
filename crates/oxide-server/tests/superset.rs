@@ -1,6 +1,5 @@
-//! Production features beyond the Java emulator, enabled by `--superset`
-//! (docs/superset-backlog.md). Without the flag, the conformance tests check that responses stay
-//! exactly Java's.
+//! Production features beyond the Java emulator, on by default (docs/superset-backlog.md). The
+//! conformance tests run with `--no_superset` and check that responses stay exactly Java's.
 
 use std::io::{BufRead, BufReader};
 use std::process::{Child, Command, Stdio};
@@ -91,8 +90,8 @@ fn gql(query: &str) -> Value {
 }
 
 #[test]
-fn aggregation_queries_need_the_flag() {
-    let emulator = start(&[]);
+fn no_superset_turns_aggregation_queries_off() {
+    let emulator = start(&["--no_superset"]);
     let (status, body) = emulator.post("runAggregationQuery", gql("SELECT COUNT(*) FROM A"));
     assert_eq!(status, 501);
     assert_eq!(
@@ -103,7 +102,7 @@ fn aggregation_queries_need_the_flag() {
 
 #[test]
 fn structured_aggregations() {
-    let emulator = start(&["--superset"]);
+    let emulator = start(&[]);
     emulator.seed(&[
         json!({"integerValue": "1"}),
         json!({"integerValue": "2"}),
@@ -181,7 +180,7 @@ fn structured_aggregations() {
 
 #[test]
 fn counts_past_the_batch_size() {
-    let emulator = start(&["--superset"]);
+    let emulator = start(&[]);
     emulator.seed(&vec![Value::Null; 450]);
     assert_eq!(
         emulator.aggregate(gql("SELECT COUNT(*) AS c FROM A")),
@@ -191,7 +190,7 @@ fn counts_past_the_batch_size() {
 
 #[test]
 fn gql_aggregations() {
-    let emulator = start(&["--superset"]);
+    let emulator = start(&[]);
     emulator.seed(&[json!({"integerValue": "1"}), json!({"integerValue": "5"})]);
     let (status, body) = emulator.post(
         "runAggregationQuery",
@@ -217,7 +216,7 @@ fn gql_aggregations() {
 
 #[test]
 fn transactions_need_ancestor_queries() {
-    let emulator = start(&["--superset"]);
+    let emulator = start(&[]);
     let (status, body) = emulator.post(
         "runAggregationQuery",
         json!({

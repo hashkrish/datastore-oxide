@@ -13,7 +13,8 @@ use crate::convert::{self, KeyUse, Scope, invalid};
 
 pub struct DatastoreService {
     engine: Arc<Engine>,
-    /// Production features the Java emulator lacks (`--superset`, docs/superset-backlog.md).
+    /// Production features the Java emulator lacks (off with `--no_superset`,
+    /// docs/superset-backlog.md).
     superset: bool,
 }
 

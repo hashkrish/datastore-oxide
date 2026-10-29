@@ -1080,7 +1080,7 @@ pub fn parse(gql: &pb::GqlQuery, _scope: &Scope) -> Result<pb::Query, Status> {
     parser.query()
 }
 
-/// Parses a GQL aggregation query (`RunAggregationQuery` with `--superset`).
+/// Parses a GQL aggregation query (`RunAggregationQuery`, unless `--no_superset`).
 pub fn parse_aggregation(
     gql: &pb::GqlQuery,
     _scope: &Scope,

@@ -16,7 +16,8 @@ impl Drop for Emulator {
 
 fn start(extra: &[&str]) -> Emulator {
     let mut child = Command::new(env!("CARGO_BIN_EXE_datastore-oxide"))
-        .args(["start", "--testing", "--port=0"])
+        // Java's behavior: no superset features.
+        .args(["start", "--testing", "--port=0", "--no_superset"])
         .args(extra)
         .env("OXIDE_LOG", "off")
         .stdout(Stdio::piped())

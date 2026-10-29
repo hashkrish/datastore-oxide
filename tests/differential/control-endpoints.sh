@@ -4,6 +4,7 @@
 # Header lines are sorted (their order is not part of the contract).
 #
 # Usage: tests/differential/control-endpoints.sh <java-host:port> <oxide-host:port> [--shutdown]
+# Start datastore-oxide with --no_superset to compare against Java's behavior exactly.
 set -uo pipefail
 
 JAVA="$1" OXIDE="$2"

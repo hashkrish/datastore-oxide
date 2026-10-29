@@ -70,8 +70,8 @@ pub struct StartConfig {
     pub firestore_in_datastore_mode: bool,
     pub enable_entity_groups: Option<bool>,
     pub allow_remote_shutdown: bool,
-    /// Not a Java option: enables production features the Java emulator lacks
-    /// (docs/superset-backlog.md).
+    /// Production features the Java emulator lacks (docs/superset-backlog.md). On unless
+    /// `--no_superset`, which is not a Java option.
     pub superset: bool,
     pub directory: Option<PathBuf>,
 }
@@ -94,7 +94,7 @@ impl Default for StartConfig {
             firestore_in_datastore_mode: false,
             enable_entity_groups: None,
             allow_remote_shutdown: false,
-            superset: false,
+            superset: true,
             directory: None,
         }
     }
@@ -200,7 +200,7 @@ const START_OPTIONS: &[OptSpec] = &[
     flag("firestore_in_datastore_mode"),
     value("enable_entity_groups"),
     flag("allow_remote_shutdown"),
-    flag("superset"),
+    flag("no_superset"),
 ];
 
 const CREATE_OPTIONS: &[OptSpec] = &[value("project_id")];
@@ -395,7 +395,7 @@ fn apply_start_option(cfg: &mut StartConfig, m: &Matched) -> Result<(), Command>
         "firestore_in_datastore_mode" => cfg.firestore_in_datastore_mode = true,
         "enable_entity_groups" => cfg.enable_entity_groups = Some(parse_bool(m)?),
         "allow_remote_shutdown" => cfg.allow_remote_shutdown = true,
-        "superset" => cfg.superset = true,
+        "no_superset" => cfg.superset = false,
         _ => unreachable!("unhandled option {}", m.name),
     }
     Ok(())
@@ -504,8 +504,8 @@ mod tests {
 
     #[test]
     fn superset_flag() {
-        assert!(!start("start --testing").superset);
-        assert!(start("start --testing --superset").superset);
+        assert!(start("start --testing").superset);
+        assert!(!start("start --testing --no_superset").superset);
     }
 
     #[test]
