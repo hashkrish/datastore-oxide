@@ -490,9 +490,27 @@ impl Datastore for DatastoreService {
                 "The property mask must not be set for a projection query.",
             ));
         }
+        let explain = r.explain_options.filter(|_| self.superset);
+        let plan_summary = explain
+            .map(|_| crate::explain::plan_summary(&query))
+            .transpose()?;
         let (mode, transaction) = self.read_mode(r.read_options.as_ref(), &scope)?;
+        if explain.is_some_and(|e| !e.analyze) {
+            // Explain only: the plan, without running the query.
+            return Ok(Response::new(pb::RunQueryResponse {
+                query: echo,
+                transaction: transaction.unwrap_or_default().into(),
+                explain_metrics: Some(pb::ExplainMetrics {
+                    plan_summary,
+                    execution_stats: None,
+                }),
+                ..Default::default()
+            }));
+        }
         let read_time = read_time_of(mode);
+        let started = std::time::Instant::now();
         let batch = self.engine.run_query(&query, mode).map_err(engine_status)?;
+        let scanned = batch.matched.len();
         let mut batch = crate::query::batch_to_proto(&query, batch);
         batch.read_time = read_time;
         if let Some(mask) = &mask {
@@ -502,11 +520,21 @@ impl Datastore for DatastoreService {
                 }
             }
         }
+        let explain_metrics = plan_summary.map(|plan_summary| pb::ExplainMetrics {
+            plan_summary: Some(plan_summary),
+            execution_stats: Some(crate::explain::execution_stats(
+                batch.entity_results.len(),
+                scanned,
+                // Like production, a query costs at least one read.
+                batch.entity_results.len().max(1),
+                started.elapsed(),
+            )),
+        });
         Ok(Response::new(pb::RunQueryResponse {
             batch: Some(batch),
             query: echo,
             transaction: transaction.unwrap_or_default().into(),
-            ..Default::default()
+            explain_metrics,
         }))
     }
 
@@ -544,10 +572,37 @@ impl Datastore for DatastoreService {
         if !aggregation::needs_entities(&aggregations) {
             query.keys_only = true;
         }
+        let explain = r.explain_options;
+        let plan_summary = explain
+            .map(|_| crate::explain::plan_summary(&query))
+            .transpose()?;
         let (mode, transaction) = self.read_mode(r.read_options.as_ref(), &scope)?;
+        if explain.is_some_and(|e| !e.analyze) {
+            return Ok(Response::new(pb::RunAggregationQueryResponse {
+                query: echo,
+                transaction: transaction.unwrap_or_default().into(),
+                explain_metrics: Some(pb::ExplainMetrics {
+                    plan_summary,
+                    execution_stats: None,
+                }),
+                ..Default::default()
+            }));
+        }
         let read_time = read_time_of(mode);
+        let started = std::time::Instant::now();
         let batch = self.engine.run_query(&query, mode).map_err(engine_status)?;
+        let rows = batch.results.len().saturating_sub(query.offset);
         let result = aggregation::compute(&aggregations, batch.results.iter().skip(query.offset));
+        let explain_metrics = plan_summary.map(|plan_summary| pb::ExplainMetrics {
+            plan_summary: Some(plan_summary),
+            // Aggregations bill one read per 1000 index entries, at least one.
+            execution_stats: Some(crate::explain::execution_stats(
+                1,
+                rows,
+                rows.div_ceil(1000).max(1),
+                started.elapsed(),
+            )),
+        });
         Ok(Response::new(pb::RunAggregationQueryResponse {
             batch: Some(pb::AggregationResultBatch {
                 aggregation_results: vec![result],
@@ -556,7 +611,7 @@ impl Datastore for DatastoreService {
             }),
             query: echo,
             transaction: transaction.unwrap_or_default().into(),
-            ..Default::default()
+            explain_metrics,
         }))
     }
 

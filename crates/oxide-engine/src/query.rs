@@ -897,6 +897,46 @@ pub fn run<'a>(
     })
 }
 
+/// The indexes a query would use (superset query explain): per disjunction, the equality-filtered
+/// properties by name, then the query's adjusted orders (ending with `__key__`).
+pub fn indexes_used(q: &Query) -> Result<Vec<Vec<(String, Direction)>>> {
+    let plan = if q.disjunction.is_empty() {
+        normalize_and_validate(q)?
+    } else {
+        normalize_disjunction(q)?
+    };
+    let branches: Vec<Vec<&Filter>> = if q.disjunction.is_empty() {
+        vec![q.filters.iter().collect()]
+    } else {
+        q.disjunction
+            .iter()
+            .map(|b| q.filters.iter().chain(b).collect())
+            .collect()
+    };
+    Ok(branches
+        .into_iter()
+        .map(|filters| {
+            let mut equalities: Vec<&str> = filters
+                .iter()
+                .filter(|f| f.op == FilterOp::Equal && f.property != KEY_PROPERTY)
+                .map(|f| f.property.as_str())
+                .collect();
+            equalities.sort();
+            equalities.dedup();
+            let mut index: Vec<(String, Direction)> = equalities
+                .into_iter()
+                .map(|p| (p.to_string(), Direction::Ascending))
+                .collect();
+            for o in &plan.orders {
+                if !index.iter().any(|(p, _)| *p == o.property) {
+                    index.push((o.property.clone(), o.direction));
+                }
+            }
+            index
+        })
+        .collect())
+}
+
 /// Group-by compares stored values exactly (proto equality), not by index order.
 fn same_value(a: &IndexValue, b: &IndexValue) -> bool {
     match (a, b) {

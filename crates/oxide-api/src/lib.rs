@@ -6,6 +6,7 @@ pub mod aggregation;
 pub mod appengine;
 pub mod config;
 pub mod convert;
+pub mod explain;
 pub mod export;
 pub mod gql;
 pub mod persist;

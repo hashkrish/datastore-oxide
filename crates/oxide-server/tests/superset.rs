@@ -868,3 +868,68 @@ fn no_superset_ignores_read_time() {
     assert_eq!(body["found"][0]["entity"]["properties"]["n"], int(1));
     assert!(body.get("readTime").is_none());
 }
+
+#[test]
+fn query_explain() {
+    let emulator = filter_fixture(&[]);
+    let query = json!({
+        "kind": [{"name": "A"}],
+        "filter": composite("AND", vec![
+            pf("c", "EQUAL", json!({"stringValue": "red"})),
+            pf("n", "GREATER_THAN", int(0)),
+        ]),
+        "order": [{"property": {"name": "n"}, "direction": "DESCENDING"}],
+    });
+    let index = json!([{"query_scope": "Kind", "properties": "(c ASC, n DESC, __key__ ASC)"}]);
+
+    // Explain only: the plan, no results.
+    let (status, body) = emulator.post("runQuery", json!({"query": query, "explainOptions": {}}));
+    assert_eq!(status, 200, "{body}");
+    assert!(body.get("batch").is_none());
+    assert_eq!(body["explainMetrics"]["planSummary"]["indexesUsed"], index);
+    assert!(body["explainMetrics"].get("executionStats").is_none());
+
+    // Analyze: results and execution statistics.
+    let (status, body) = emulator.post(
+        "runQuery",
+        json!({"query": query, "explainOptions": {"analyze": true}}),
+    );
+    assert_eq!(status, 200, "{body}");
+    assert_eq!(names(&body), ["c", "a"]);
+    let stats = &body["explainMetrics"]["executionStats"];
+    assert_eq!(stats["resultsReturned"], "2");
+    assert_eq!(stats["readOperations"], "2");
+    assert_eq!(stats["debugStats"]["documents_scanned"], "2");
+    assert!(stats["executionDuration"].is_string());
+
+    // Disjunctions use one index each; aggregations explain their nested query.
+    let (status, body) = emulator.post(
+        "runAggregationQuery",
+        json!({
+            "aggregationQuery": {
+                "nestedQuery": {"kind": [{"name": "A"}], "filter": composite("OR", vec![
+                    pf("c", "EQUAL", json!({"stringValue": "red"})),
+                    pf("n", "EQUAL", int(2)),
+                ])},
+                "aggregations": [{"count": {}, "alias": "c"}],
+            },
+            "explainOptions": {"analyze": true},
+        }),
+    );
+    assert_eq!(status, 200, "{body}");
+    assert_eq!(
+        body["explainMetrics"]["planSummary"]["indexesUsed"],
+        json!([
+            {"query_scope": "Kind", "properties": "(c ASC, __key__ ASC)"},
+            {"query_scope": "Kind", "properties": "(n ASC, __key__ ASC)"},
+        ])
+    );
+    assert_eq!(
+        body["explainMetrics"]["executionStats"]["resultsReturned"],
+        "1"
+    );
+    assert_eq!(
+        body["batch"]["aggregationResults"][0]["aggregateProperties"]["c"],
+        json!({"integerValue": "4"})
+    );
+}
