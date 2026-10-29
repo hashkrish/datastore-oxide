@@ -9,6 +9,7 @@ pub mod convert;
 pub mod explain;
 pub mod export;
 pub mod gql;
+pub mod operations;
 pub mod persist;
 pub mod query;
 pub mod rest;

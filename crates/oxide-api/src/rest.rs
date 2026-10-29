@@ -175,6 +175,9 @@ impl RestGateway {
                 }
             }
         }
+        if superset {
+            routes.extend(operation_routes());
+        }
         Ok(Self { routes, parse_pool })
     }
 
@@ -368,6 +371,67 @@ fn route_from_rule(
         input: input.into(),
         output: output.into(),
     })
+}
+
+/// Production's REST bindings for the Admin API's operations (superset; Java has no Operations
+/// service). The `google.longrunning` protos only bind `/v1/{name=operations/**}`.
+fn operation_routes() -> Vec<Route> {
+    const SERVICE: &str = "/google.longrunning.Operations";
+    [
+        (
+            "GET",
+            "/v1/{name=projects/*}/operations",
+            "ListOperations",
+            "ListOperationsRequest",
+            "ListOperationsResponse",
+        ),
+        (
+            "GET",
+            "/v1/{name=projects/*/operations/*}",
+            "GetOperation",
+            "GetOperationRequest",
+            "Operation",
+        ),
+        (
+            "DELETE",
+            "/v1/{name=projects/*/operations/*}",
+            "DeleteOperation",
+            "DeleteOperationRequest",
+            "google.protobuf.Empty",
+        ),
+        (
+            "POST",
+            "/v1/{name=projects/*/operations/*}:cancel",
+            "CancelOperation",
+            "CancelOperationRequest",
+            "google.protobuf.Empty",
+        ),
+    ]
+    .into_iter()
+    .map(|(method, template, rpc, input, output)| {
+        let (segments, verb) = parse_template(template).expect("valid template");
+        let qualify = |t: &str| {
+            if t.contains('.') {
+                t.to_string()
+            } else {
+                format!("google.longrunning.{t}")
+            }
+        };
+        Route {
+            method: Method::from_bytes(method.as_bytes()).expect("valid method"),
+            segments,
+            verb,
+            body: if method == "POST" {
+                "*".into()
+            } else {
+                String::new()
+            },
+            grpc_path: format!("{SERVICE}/{rpc}"),
+            input: qualify(input),
+            output: qualify(output),
+        }
+    })
+    .collect()
 }
 
 /// Parses `/v1/projects/{project_id}:lookup` or `/v1/{name=projects/*/operations/*}`.

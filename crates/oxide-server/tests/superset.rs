@@ -1052,3 +1052,167 @@ fn vector_search() {
         "Exclude from indexes cannot be set on a list value"
     );
 }
+
+impl Emulator {
+    fn call(&self, method: &str, path: &str, body: Option<Value>) -> (u16, Value) {
+        let agent: ureq::Agent = ureq::Agent::config_builder()
+            .http_status_as_error(false)
+            .build()
+            .into();
+        let url = format!("{}{path}", self.base);
+        let mut r = match (method, body) {
+            ("GET", _) => agent.get(&url).call(),
+            ("DELETE", _) => agent.delete(&url).call(),
+            (_, body) => agent
+                .post(&url)
+                .header("content-type", "application/json")
+                .send(body.unwrap_or(json!({})).to_string()),
+        }
+        .unwrap();
+        let status = r.status().as_u16();
+        let text = r.body_mut().read_to_string().unwrap();
+        (
+            status,
+            serde_json::from_str(&text).unwrap_or(Value::String(text)),
+        )
+    }
+}
+
+#[test]
+fn admin_indexes_and_operations() {
+    let emulator = start(&["--require_indexes"]);
+    let index = json!({
+        "kind": "A",
+        "ancestor": "NONE",
+        "properties": [
+            {"name": "c", "direction": "ASCENDING"},
+            {"name": "n", "direction": "DESCENDING"},
+        ],
+    });
+    let query = json!({"query": {
+        "kind": [{"name": "A"}],
+        "filter": pf("c", "EQUAL", json!({"stringValue": "x"})),
+        "order": [{"property": {"name": "n"}, "direction": "DESCENDING"}],
+    }});
+    let (status, body) = emulator.post("runQuery", query.clone());
+    assert_eq!(status, 400, "the query needs the composite index");
+    assert_eq!(body["error"]["status"], "FAILED_PRECONDITION");
+
+    let (status, op) = emulator.call("POST", "/v1/projects/p/indexes", Some(index.clone()));
+    assert_eq!(status, 200, "{op}");
+    assert_eq!(op["done"], true);
+    let index_id = op["response"]["indexId"].as_str().unwrap().to_string();
+    assert_eq!(op["response"]["state"], "READY");
+    assert_eq!(op["metadata"]["indexId"], index_id);
+    let name = op["name"].as_str().unwrap().to_string();
+    assert!(name.starts_with("projects/p/operations/"), "{name}");
+
+    let (status, _) = emulator.post("runQuery", query.clone());
+    assert_eq!(status, 200, "the created index serves the query");
+    let (status, _) = emulator.call("POST", "/v1/projects/p/indexes", Some(index));
+    assert_eq!(status, 409);
+
+    let (_, list) = emulator.call("GET", "/v1/projects/p/indexes", None);
+    assert_eq!(list["indexes"][0]["indexId"], index_id);
+    let (status, got) = emulator.call("GET", &format!("/v1/projects/p/indexes/{index_id}"), None);
+    assert_eq!(status, 200);
+    assert_eq!(got["properties"][1]["direction"], "DESCENDING");
+
+    // Operations.
+    let (status, got) = emulator.call("GET", &format!("/v1/{name}"), None);
+    assert_eq!(status, 200, "{got}");
+    assert_eq!(got["name"], name);
+    let (_, list) = emulator.call("GET", "/v1/projects/p/operations", None);
+    assert_eq!(list["operations"].as_array().unwrap().len(), 1);
+    let (status, _) = emulator.call("POST", &format!("/v1/{name}:cancel"), Some(json!({})));
+    assert_eq!(status, 200);
+
+    let (status, _) = emulator.call(
+        "DELETE",
+        &format!("/v1/projects/p/indexes/{index_id}"),
+        None,
+    );
+    assert_eq!(status, 200);
+    let (status, _) = emulator.call("GET", &format!("/v1/projects/p/indexes/{index_id}"), None);
+    assert_eq!(status, 404);
+    let (status, _) = emulator.call("DELETE", &format!("/v1/{name}"), None);
+    assert_eq!(status, 200);
+    let (status, _) = emulator.call("GET", &format!("/v1/{name}"), None);
+    assert_eq!(status, 404);
+
+    // Java has neither.
+    let java = start(&["--no_superset"]);
+    assert_eq!(java.call("GET", "/v1/projects/p/indexes", None).0, 501);
+    assert_eq!(java.call("GET", "/v1/projects/p/operations", None).0, 404);
+}
+
+#[test]
+fn gcs_export_and_import() {
+    let root = tempfile::tempdir().unwrap();
+    let mut child = std::process::Command::new(env!("CARGO_BIN_EXE_datastore-oxide"))
+        .args(["start", "--testing", "--port=0"])
+        .env("OXIDE_LOG", "off")
+        .env("DATASTORE_OXIDE_GCS_ROOT", root.path())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let mut lines = BufReader::new(child.stdout.take().unwrap()).lines();
+    let port: u16 = lines
+        .next()
+        .unwrap()
+        .unwrap()
+        .rsplit(':')
+        .next()
+        .unwrap()
+        .parse()
+        .unwrap();
+    std::thread::spawn(move || lines.for_each(drop));
+    let emulator = Emulator {
+        child,
+        base: format!("http://127.0.0.1:{port}"),
+    };
+    emulator.seed(&[int(1), int(2)]);
+
+    let (status, op) = emulator.call(
+        "POST",
+        "/v1/projects/p:export",
+        Some(json!({"outputUrlPrefix": "gs://bucket/backups", "labels": {"team": "x"}})),
+    );
+    assert_eq!(status, 200, "{op}");
+    let output_url = op["response"]["outputUrl"].as_str().unwrap().to_string();
+    assert!(
+        output_url.starts_with("gs://bucket/backups/")
+            && output_url.ends_with(".overall_export_metadata"),
+        "{output_url}"
+    );
+    assert_eq!(op["metadata"]["common"]["labels"], json!({"team": "x"}));
+    assert!(root.path().join("bucket/backups").is_dir());
+    // The same prefix can be exported to again.
+    let (status, _) = emulator.call(
+        "POST",
+        "/v1/projects/p:export",
+        Some(json!({"outputUrlPrefix": "gs://bucket/backups"})),
+    );
+    assert_eq!(status, 200);
+
+    let (status, op) = emulator.call(
+        "POST",
+        "/v1/projects/q:import",
+        Some(json!({"inputUrl": output_url})),
+    );
+    assert_eq!(status, 200, "{op}");
+    let (status, body) =
+        emulator.post_to("q", "runQuery", json!({"query": {"kind": [{"name": "A"}]}}));
+    assert_eq!(status, 200);
+    assert_eq!(body["batch"]["entityResults"].as_array().unwrap().len(), 2);
+}
+
+impl Emulator {
+    fn post_to(&self, project: &str, method: &str, body: Value) -> (u16, Value) {
+        self.call(
+            "POST",
+            &format!("/v1/projects/{project}:{method}"),
+            Some(body),
+        )
+    }
+}

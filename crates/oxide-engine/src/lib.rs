@@ -499,6 +499,25 @@ impl Engine {
             .map(index_files::IndexManager::indexes)
             .unwrap_or_default()
     }
+    /// Adds a composite index created through the Admin API (superset); false if it exists.
+    pub fn add_admin_index(&self, index: composite::CompositeIndex) -> bool {
+        self.indexes
+            .as_ref()
+            .is_some_and(|m| m.add_admin_index(index))
+    }
+    /// The defined composite indexes: from the index files and the Admin API.
+    pub fn defined_indexes(&self) -> Vec<composite::CompositeIndex> {
+        self.indexes
+            .as_ref()
+            .map(index_files::IndexManager::defined_indexes)
+            .unwrap_or_default()
+    }
+    /// Removes an index created through the Admin API; false if there is none.
+    pub fn remove_admin_index(&self, index: &composite::CompositeIndex) -> bool {
+        self.indexes
+            .as_ref()
+            .is_some_and(|m| m.remove_admin_index(index))
+    }
     /// Changes whenever the data is replaced by [`Engine::reset`] or [`Engine::restore`].
     pub fn generation(&self) -> u64 {
         self.generation.load(Ordering::SeqCst)

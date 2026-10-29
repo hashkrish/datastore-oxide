@@ -457,13 +457,15 @@ fn grpc_routes(
     firestore: bool,
     superset: bool,
 ) -> Result<Routes> {
+    // The superset keeps the Admin API's operations for the Operations service.
+    let operations = superset.then(oxide_api::operations::OperationStore::default);
     let reflection = tonic_reflection::server::Builder::configure()
         .register_encoded_file_descriptor_set(oxide_proto::FILE_DESCRIPTOR_SET)
         .build_v1()?;
     let reflection_alpha = tonic_reflection::server::Builder::configure()
         .register_encoded_file_descriptor_set(oxide_proto::FILE_DESCRIPTOR_SET)
         .build_v1alpha()?;
-    Ok(Routes::new(reflection)
+    let routes = Routes::new(reflection)
         .add_service(reflection_alpha)
         .add_service(
             DatastoreService::new(engine.clone())
@@ -474,9 +476,22 @@ fn grpc_routes(
             oxide_api::config::ConfigService::new(engine.clone(), stored_policy, firestore)
                 .into_server(),
         )
-        .add_service(oxide_api::admin::AdminService::new(engine.clone()).into_server())
-        .add_service(oxide_api::appengine::Service::new(engine.clone()).into_server())
-        .prepare())
+        .add_service({
+            let admin = oxide_api::admin::AdminService::new(engine.clone());
+            match &operations {
+                Some(store) => admin.with_operations(store.clone()),
+                None => admin,
+            }
+            .into_server()
+        })
+        .add_service(oxide_api::appengine::Service::new(engine.clone()).into_server());
+    let routes = match operations {
+        Some(store) => {
+            routes.add_service(oxide_api::operations::OperationsService::new(store).into_server())
+        }
+        None => routes,
+    };
+    Ok(routes.prepare())
 }
 
 async fn dispatch(

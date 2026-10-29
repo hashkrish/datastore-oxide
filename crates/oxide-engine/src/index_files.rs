@@ -175,6 +175,8 @@ struct State {
     history: Vec<(Option<CompositeIndex>, u64)>,
     /// The indexes queries are checked against, loaded once by the first check.
     known: Option<Vec<CompositeIndex>>,
+    /// Indexes created through the Admin API (superset), in creation order.
+    admin: Vec<CompositeIndex>,
 }
 
 impl State {
@@ -242,11 +244,9 @@ impl IndexManager {
         let read_files = is_new || (require && state.known.is_none());
         if !read_files {
             if require {
-                self.check(
-                    &query,
-                    needed.as_ref(),
-                    state.known.as_deref().unwrap_or(&[]),
-                )?;
+                let mut known = state.known.clone().unwrap_or_default();
+                known.extend(state.admin.iter().cloned());
+                self.check(&query, needed.as_ref(), &known)?;
             }
             return Ok(());
         }
@@ -255,10 +255,12 @@ impl IndexManager {
             Error::new(Code::Unknown, "")
         })?;
         if require || files.auto_disabled {
-            let known = state
+            let mut known = state
                 .known
-                .get_or_insert_with(|| files.all().map(Def::composite).collect());
-            self.check(&query, needed.as_ref(), known)?;
+                .get_or_insert_with(|| files.all().map(Def::composite).collect())
+                .clone();
+            known.extend(state.admin.iter().cloned());
+            self.check(&query, needed.as_ref(), &known)?;
         }
         if is_new && !files.auto_disabled && self.config.store {
             self.write(&state, &files);
@@ -282,13 +284,53 @@ impl IndexManager {
             defs
         };
         let mut out: Vec<CompositeIndex> = Vec::new();
-        for def in defs {
-            let index = def.composite();
+        for index in defs
+            .iter()
+            .map(Def::composite)
+            .chain(state.admin.iter().cloned())
+        {
             if !out.contains(&index) {
                 out.push(index);
             }
         }
         out
+    }
+
+    /// The defined indexes (the Admin API lists them): those in the index files, then those
+    /// created through the Admin API. Indexes the query history needs are not defined yet.
+    pub fn defined_indexes(&self) -> Vec<CompositeIndex> {
+        let files = self.read().unwrap_or_else(|e| {
+            tracing::warn!("reading index configuration: {e}");
+            Files::default()
+        });
+        let mut out: Vec<CompositeIndex> = Vec::new();
+        for index in files
+            .all()
+            .map(Def::composite)
+            .chain(self.lock().admin.iter().cloned())
+        {
+            if !out.contains(&index) {
+                out.push(index);
+            }
+        }
+        out
+    }
+
+    /// Adds an index created through the Admin API; false if it is already defined.
+    pub fn add_admin_index(&self, index: CompositeIndex) -> bool {
+        if self.defined_indexes().contains(&index) {
+            return false;
+        }
+        self.lock().admin.push(index);
+        true
+    }
+
+    /// Removes an index created through the Admin API; false if there is none.
+    pub fn remove_admin_index(&self, index: &CompositeIndex) -> bool {
+        let mut state = self.lock();
+        let before = state.admin.len();
+        state.admin.retain(|i| i != index);
+        state.admin.len() != before
     }
 
     fn lock(&self) -> std::sync::MutexGuard<'_, State> {

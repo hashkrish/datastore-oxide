@@ -23,6 +23,8 @@ With `--no_superset`, these behave exactly as Java does (the table rows below). 
 | Point-in-time reads | `ReadOptions.read_time` on Lookup, RunQuery and RunAggregationQuery, and read-only transactions with `read_time`, read the committed state as of that time; responses echo `read_time`. The engine keeps an hour of committed history (production's default retention; only with the superset on), keyed by the wall-clock time of each commit; an older `read_time` → 400 `The read_time is older than the one-hour version retention period.` |
 | Query explain | `explain_options` on RunQuery and RunAggregationQuery (`crates/oxide-api/src/explain.rs`). The plan summary lists one index per disjunction, as production prints them: `{"query_scope": "Kind", "properties": "(c ASC, n DESC, __key__ ASC)"}` (equality properties by name, then the query's orders). Without `analyze` the query is not run and there is no batch; with it, `execution_stats` reports results returned, duration, billed reads (one per result, at least one; aggregations one per 1000 entries) and `debug_stats` (`documents_scanned`, `index_entries_scanned`). The index names describe the emulator's plan, not production's planner. |
 | Vector values and vector search | A vector value is an array of 1–2048 doubles with `meaning: 31` (`exclude_from_indexes` allowed, components never indexed); Java rejects it. `Query.find_nearest` (`crates/oxide-api/src/vector.rs`) runs after the rest of the query (filters, cursors, offset, limit) and ranks entities whose property holds a vector of the query vector's dimension by `EUCLIDEAN`, `COSINE` (1 − cosine similarity) or `DOT_PRODUCT` (larger is nearer); `distance_threshold` keeps distances ≤ it (≥ for dot product), `limit` is 1–100, and `distance_result_property` adds the distance to each result. Full or keys-only results; no other projection or `DISTINCT ON`. |
+| Admin API indexes and operations | `CreateIndex`, `GetIndex`, `ListIndexes`, `DeleteIndex` manage composite indexes (`crates/oxide-api/src/admin.rs`): listed indexes are those in the index configuration files plus those created through the API (state `READY`, ids derived from the definition); created ones count as defined for `--require_indexes`; only API-created ones can be deleted. Admin operations get names (`projects/{p}/operations/{id}`) and are kept for the `google.longrunning.Operations` service (`crates/oxide-api/src/operations.rs`) over gRPC and REST (`GET /v1/projects/{p}/operations[/{id}]`, `DELETE …`, `POST …:cancel`); they are finished when returned, so cancelling has no effect. |
+| Export and import like production | `output_url` names the overall metadata file (`{prefix}/{name}/{name}.overall_export_metadata`), which `ImportEntities` takes as `input_url`; `labels` are kept in the operation metadata; `gs://bucket/path` URLs are stored under `DATASTORE_OXIDE_GCS_ROOT` (default `./gcs`), and a `gs://` prefix may be exported to again (each export gets its own folder). There is no Cloud Storage client. |
 
 ## Unknown to Java's protos (fields its descriptors do not define)
 
@@ -42,11 +44,11 @@ REST requests are parsed against Java's descriptors, so these fields fail with
 |---|---|
 | Aggregation queries: `COUNT` (with `up_to`), `SUM`, `AVG` (**implemented**; Java's behavior below is `--no_superset`) | `RunAggregationQuery` → 501 `Method google.datastore.v1.Datastore/RunAggregationQuery is unimplemented` (Datastore and Firestore-in-Datastore mode) |
 | GQL aggregations (`AGGREGATE COUNT(*) OVER (...)`, `SELECT COUNT(*)`) (**implemented**, in `runAggregationQuery`) | `runQuery` → bare 500 `UNKNOWN` |
-| Admin index CRUD (`ListIndexes`, `GetIndex`, `CreateIndex`, `DeleteIndex`) | 501 UNIMPLEMENTED |
-| Long-running operations (`GetOperation`, `ListOperations`, `CancelOperation`, `DeleteOperation`) | No Operations service: REST 404, gRPC UNIMPLEMENTED; export/import return finished operations |
-| Cloud Storage export/import (`gs://bucket/...`) | Treated as a local relative path |
-| `ExportEntitiesResponse.output_url` pointing at the overall metadata file | The bare prefix |
-| Export `labels` | Ignored |
+| Admin index CRUD (`ListIndexes`, `GetIndex`, `CreateIndex`, `DeleteIndex`) (**implemented**) | 501 UNIMPLEMENTED |
+| Long-running operations (`GetOperation`, `ListOperations`, `CancelOperation`, `DeleteOperation`) (**implemented**) | No Operations service: REST 404, gRPC UNIMPLEMENTED; export/import return finished operations |
+| Cloud Storage export/import (`gs://bucket/...`) (**implemented** as a local directory) | Treated as a local relative path |
+| `ExportEntitiesResponse.output_url` pointing at the overall metadata file (**implemented**) | The bare prefix |
+| Export `labels` (**implemented**) | Ignored |
 | `property_mask` on Commit, Lookup and RunQuery (**implemented**) | Accepted and ignored: full entities are written and returned |
 | `OR` composite filters (Datastore mode) (**implemented**) | 400 `unsupported composite property operator` |
 | `IN` with several values, `NOT_IN` (Datastore mode) (**implemented**) | 400 `Filter has N properties, expected 1` |
