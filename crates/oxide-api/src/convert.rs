@@ -24,6 +24,8 @@ pub(crate) fn invalid(message: impl Into<String>) -> Status {
 pub struct Scope {
     pub project_id: String,
     pub database_id: String,
+    /// Production values the Java emulator rejects (vectors) are accepted (superset).
+    pub superset: bool,
 }
 
 impl Scope {
@@ -49,6 +51,7 @@ impl Scope {
         Ok(Self {
             project_id: project_id.into(),
             database_id: database_id.into(),
+            superset: false,
         })
     }
 
@@ -303,6 +306,53 @@ pub(crate) fn single_value_from_proto(
     value_from_proto(name, value, scope)
 }
 
+/// The meaning of a vector value (an array of doubles).
+pub const VECTOR_MEANING: i32 = 31;
+/// Production's limit on vector dimensions.
+pub const MAX_VECTOR_DIMENSIONS: usize = 2048;
+
+/// A vector value (superset): an array of at most 2048 doubles, never indexed.
+fn vector_from_proto(name: &str, array: &pb::ArrayValue) -> Result<Value, Status> {
+    if array.values.is_empty() || array.values.len() > MAX_VECTOR_DIMENSIONS {
+        return Err(invalid(format!(
+            "The vector value \"{name}\" must have between 1 and {MAX_VECTOR_DIMENSIONS} dimensions."
+        )));
+    }
+    let values = array
+        .values
+        .iter()
+        .map(|v| match v.value_type {
+            Some(ValueType::DoubleValue(d)) => Ok(Value {
+                kind: ValueKind::Double(d),
+                meaning: 0,
+                exclude_from_indexes: true,
+            }),
+            _ => Err(invalid(format!(
+                "The vector value \"{name}\" must contain only double values."
+            ))),
+        })
+        .collect::<Result<_, _>>()?;
+    Ok(Value {
+        kind: ValueKind::Array(values),
+        meaning: VECTOR_MEANING,
+        exclude_from_indexes: true,
+    })
+}
+
+/// The components of a vector value.
+pub fn vector_components(value: &Value) -> Option<Vec<f64>> {
+    match &value.kind {
+        ValueKind::Array(values) if value.meaning == VECTOR_MEANING => values
+            .iter()
+            .map(|v| match v.kind {
+                ValueKind::Double(d) => Some(d),
+                _ => None,
+            })
+            .collect(),
+        _ => None,
+    }
+}
+
 /// Array elements are validated under the array's property name.
 fn value_from_proto(name: &str, value: &pb::Value, scope: &Scope) -> Result<Value, Status> {
     let Some(value_type) = &value.value_type else {
@@ -314,6 +364,9 @@ fn value_from_proto(name: &str, value: &pb::Value, scope: &Scope) -> Result<Valu
     let mut meaning = value.meaning;
 
     if let ValueType::ArrayValue(array) = value_type {
+        if scope.superset && meaning == VECTOR_MEANING {
+            return vector_from_proto(name, array);
+        }
         if value.exclude_from_indexes {
             return Err(invalid(
                 "Exclude from indexes cannot be set on a list value",
@@ -489,7 +542,17 @@ pub(crate) fn value_to_proto(value: &Value) -> pb::Value {
         }),
         ValueKind::Entity(e) => ValueType::EntityValue(entity_to_proto(e)),
         ValueKind::Array(values) => ValueType::ArrayValue(pb::ArrayValue {
-            values: values.iter().map(value_to_proto).collect(),
+            values: values
+                .iter()
+                .map(|v| {
+                    let mut v = value_to_proto(v);
+                    // A vector's components carry no flags of their own.
+                    if value.meaning == VECTOR_MEANING {
+                        v.exclude_from_indexes = false;
+                    }
+                    v
+                })
+                .collect(),
         }),
     };
     pb::Value {
@@ -560,7 +623,12 @@ fn stored_value_from_proto(value: &pb::Value) -> Option<Value> {
         ValueType::ArrayValue(a) => ValueKind::Array(
             a.values
                 .iter()
-                .map(stored_value_from_proto)
+                .map(|v| {
+                    let mut v = stored_value_from_proto(v)?;
+                    // Vector components are never indexed.
+                    v.exclude_from_indexes |= value.meaning == VECTOR_MEANING;
+                    Some(v)
+                })
                 .collect::<Option<_>>()?,
         ),
     };

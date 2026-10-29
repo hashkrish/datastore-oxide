@@ -933,3 +933,122 @@ fn query_explain() {
         json!({"integerValue": "4"})
     );
 }
+
+fn vector(components: &[f64]) -> Value {
+    json!({
+        "arrayValue": {"values": components.iter().map(|c| json!({"doubleValue": c})).collect::<Vec<_>>()},
+        "meaning": 31,
+        "excludeFromIndexes": true,
+    })
+}
+
+#[test]
+fn vector_search() {
+    let emulator = start(&[]);
+    seed_named(
+        &emulator,
+        &[
+            (
+                "x",
+                json!({"v": vector(&[1.0, 0.0]), "c": {"stringValue": "a"}}),
+            ),
+            (
+                "y",
+                json!({"v": vector(&[0.0, 2.0]), "c": {"stringValue": "a"}}),
+            ),
+            (
+                "z",
+                json!({"v": vector(&[3.0, 3.0]), "c": {"stringValue": "b"}}),
+            ),
+            (
+                "w",
+                json!({"v": vector(&[1.0, 2.0, 3.0]), "c": {"stringValue": "a"}}),
+            ),
+            ("n", json!({"c": {"stringValue": "a"}})),
+        ],
+    );
+    // Vectors round-trip.
+    let (_, body) = emulator.post(
+        "lookup",
+        json!({"keys": [{"path": [{"kind": "A", "name": "x"}]}]}),
+    );
+    assert_eq!(
+        body["found"][0]["entity"]["properties"]["v"],
+        vector(&[1.0, 0.0])
+    );
+
+    let search = |measure: &str, extra: Value, filter: Option<Value>| {
+        let mut nearest = json!({
+            "vectorProperty": {"name": "v"},
+            "queryVector": vector(&[1.0, 1.0]),
+            "distanceMeasure": measure,
+            "limit": 10,
+        });
+        for (k, v) in extra.as_object().unwrap() {
+            nearest[k] = v.clone();
+        }
+        let mut query = json!({"kind": [{"name": "A"}], "findNearest": nearest});
+        if let Some(f) = filter {
+            query["filter"] = f;
+        }
+        let (status, body) = run(&emulator, query);
+        assert_eq!(status, 200, "{body}");
+        body
+    };
+    // Euclidean: x (1), y (~1.41), z (~2.83); w has another dimension, n no vector.
+    let body = search("EUCLIDEAN", json!({"distanceResultProperty": "d"}), None);
+    assert_eq!(names(&body), ["x", "y", "z"]);
+    assert_eq!(
+        body["batch"]["entityResults"][0]["entity"]["properties"]["d"],
+        json!({"doubleValue": 1.0})
+    );
+    assert_eq!(body["batch"]["moreResults"], "NO_MORE_RESULTS");
+    // Dot product: larger is nearer; the threshold keeps distances >= 2.
+    assert_eq!(
+        names(&search(
+            "DOT_PRODUCT",
+            json!({"distanceThreshold": 2.0}),
+            None
+        )),
+        ["z", "y"]
+    );
+    // Cosine with a filter and a limit.
+    assert_eq!(
+        names(&search(
+            "COSINE",
+            json!({"limit": 1}),
+            Some(pf("c", "EQUAL", json!({"stringValue": "a"})))
+        )),
+        ["x"]
+    );
+
+    let (status, body) = run(
+        &emulator,
+        json!({"kind": [{"name": "A"}], "findNearest": {
+            "vectorProperty": {"name": "v"},
+            "queryVector": vector(&[1.0]),
+            "distanceMeasure": "EUCLIDEAN",
+            "limit": 101,
+        }}),
+    );
+    assert_eq!(status, 400);
+    assert_eq!(
+        body["error"]["message"],
+        "find_nearest.limit must be between 1 and 100."
+    );
+
+    // Java rejects vector values.
+    let java = start(&["--no_superset"]);
+    let (status, body) = java.post(
+        "commit",
+        json!({"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {
+            "key": {"path": [{"kind": "A", "name": "x"}]},
+            "properties": {"v": vector(&[1.0])},
+        }}]}),
+    );
+    assert_eq!(status, 400);
+    assert_eq!(
+        body["error"]["message"],
+        "Exclude from indexes cannot be set on a list value"
+    );
+}

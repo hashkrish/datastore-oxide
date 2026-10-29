@@ -30,6 +30,12 @@ impl DatastoreService {
         Self { superset, ..self }
     }
 
+    fn scope(&self, project_id: &str, database_id: &str) -> Result<Scope, Status> {
+        let mut scope = Scope::new(project_id, database_id)?;
+        scope.superset = self.superset;
+        Ok(scope)
+    }
+
     pub fn into_server(self) -> pb::datastore_server::DatastoreServer<Self> {
         pb::datastore_server::DatastoreServer::new(self)
             .max_decoding_message_size(usize::MAX)
@@ -82,6 +88,67 @@ impl DatastoreService {
             ));
         }
         Ok(())
+    }
+
+    /// A vector search: the query's rows, ranked by distance (see [`crate::vector`]).
+    fn find_nearest(
+        &self,
+        r: &pb::RunQueryRequest,
+        scope: &Scope,
+        query: oxide_engine::query::Query,
+        nearest: crate::vector::Nearest,
+    ) -> Result<Response<pb::RunQueryResponse>, Status> {
+        if !query.projection.is_empty() || !query.group_by.is_empty() {
+            return Err(invalid(
+                "find_nearest supports no projection other than __key__ and no DISTINCT ON.",
+            ));
+        }
+        let mut full = query.clone();
+        full.keys_only = false;
+        full.unbatched = true;
+        let (mode, transaction) = self.read_mode(r.read_options.as_ref(), scope)?;
+        let batch = self.engine.run_query(&full, mode).map_err(engine_status)?;
+        let rows = batch.results.into_iter().skip(full.offset).collect();
+        let selected = nearest.select(rows);
+        let distances: Vec<f64> = selected.iter().map(|(_, d)| *d).collect();
+        let results: Vec<_> = selected.into_iter().map(|(row, _)| row).collect();
+        let end_cursor = results.last().map(|r| r.cursor.clone()).unwrap_or_default();
+        let mut out = crate::query::batch_to_proto(
+            &query,
+            oxide_engine::query::QueryBatch {
+                results,
+                skipped_results: 0,
+                skipped_cursor: None,
+                end_cursor,
+                more_results: false,
+                snapshot_version: batch.snapshot_version,
+                matched: Vec::new(),
+            },
+        );
+        out.more_results = pb::query_result_batch::MoreResultsType::NoMoreResults as i32;
+        out.read_time = read_time_of(mode);
+        if let Some(property) = nearest
+            .result_property
+            .as_ref()
+            .filter(|_| !query.keys_only)
+        {
+            for (result, d) in out.entity_results.iter_mut().zip(distances) {
+                if let Some(e) = &mut result.entity {
+                    e.properties.insert(
+                        property.clone(),
+                        pb::Value {
+                            value_type: Some(pb::value::ValueType::DoubleValue(d)),
+                            ..Default::default()
+                        },
+                    );
+                }
+            }
+        }
+        Ok(Response::new(pb::RunQueryResponse {
+            batch: Some(out),
+            transaction: transaction.unwrap_or_default().into(),
+            ..Default::default()
+        }))
     }
 
     fn begin(
@@ -406,7 +473,7 @@ impl Datastore for DatastoreService {
         request: Request<pb::LookupRequest>,
     ) -> Result<Response<pb::LookupResponse>, Status> {
         let r = request.into_inner();
-        let scope = Scope::new(&r.project_id, &r.database_id)?;
+        let scope = self.scope(&r.project_id, &r.database_id)?;
         let keys = r
             .keys
             .iter()
@@ -459,7 +526,7 @@ impl Datastore for DatastoreService {
         request: Request<pb::RunQueryRequest>,
     ) -> Result<Response<pb::RunQueryResponse>, Status> {
         let r = request.into_inner();
-        let scope = Scope::new(&r.project_id, &r.database_id)?;
+        let scope = self.scope(&r.project_id, &r.database_id)?;
         let namespace = crate::query::query_namespace(r.partition_id.as_ref(), &scope)?;
         let (query, echo) = match &r.query_type {
             Some(pb::run_query_request::QueryType::Query(q)) => (
@@ -480,6 +547,17 @@ impl Datastore for DatastoreService {
             }
         };
         self.check_transactional_query(r.read_options.as_ref(), &query)?;
+        let nearest = match &r.query_type {
+            Some(pb::run_query_request::QueryType::Query(q)) if self.superset => q
+                .find_nearest
+                .as_ref()
+                .map(crate::vector::Nearest::from_proto)
+                .transpose()?,
+            _ => None,
+        };
+        if let Some(nearest) = nearest {
+            return self.find_nearest(&r, &scope, query, nearest);
+        }
         let mask = if self.superset {
             read_mask(r.property_mask.as_ref())?
         } else {
@@ -550,7 +628,7 @@ impl Datastore for DatastoreService {
             ));
         }
         let r = request.into_inner();
-        let scope = Scope::new(&r.project_id, &r.database_id)?;
+        let scope = self.scope(&r.project_id, &r.database_id)?;
         let namespace = crate::query::query_namespace(r.partition_id.as_ref(), &scope)?;
         let (aggregation_query, echo) = match r.query_type {
             Some(pb::run_aggregation_query_request::QueryType::AggregationQuery(q)) => (q, None),
@@ -620,7 +698,7 @@ impl Datastore for DatastoreService {
         request: Request<pb::BeginTransactionRequest>,
     ) -> Result<Response<pb::BeginTransactionResponse>, Status> {
         let r = request.into_inner();
-        let scope = Scope::new(&r.project_id, &r.database_id)?;
+        let scope = self.scope(&r.project_id, &r.database_id)?;
         let handle = self.begin(&scope, r.transaction_options.as_ref())?;
         Ok(Response::new(pb::BeginTransactionResponse {
             transaction: encode_handle(handle).into(),
@@ -633,7 +711,7 @@ impl Datastore for DatastoreService {
     ) -> Result<Response<pb::CommitResponse>, Status> {
         use pb::commit_request::{Mode, TransactionSelector};
         let r = request.into_inner();
-        let scope = Scope::new(&r.project_id, &r.database_id)?;
+        let scope = self.scope(&r.project_id, &r.database_id)?;
         let handle = match (&r.transaction_selector, r.mode()) {
             (Some(_), Mode::NonTransactional) => {
                 return Err(invalid(
@@ -706,7 +784,7 @@ impl Datastore for DatastoreService {
         request: Request<pb::RollbackRequest>,
     ) -> Result<Response<pb::RollbackResponse>, Status> {
         let r = request.into_inner();
-        let scope = Scope::new(&r.project_id, &r.database_id)?;
+        let scope = self.scope(&r.project_id, &r.database_id)?;
         if r.transaction.is_empty() {
             return Err(invalid("transaction required"));
         }
@@ -722,7 +800,7 @@ impl Datastore for DatastoreService {
         request: Request<pb::AllocateIdsRequest>,
     ) -> Result<Response<pb::AllocateIdsResponse>, Status> {
         let r = request.into_inner();
-        let scope = Scope::new(&r.project_id, &r.database_id)?;
+        let scope = self.scope(&r.project_id, &r.database_id)?;
         let keys = r
             .keys
             .iter()
@@ -739,7 +817,7 @@ impl Datastore for DatastoreService {
         request: Request<pb::ReserveIdsRequest>,
     ) -> Result<Response<pb::ReserveIdsResponse>, Status> {
         let r = request.into_inner();
-        let scope = Scope::new(&r.project_id, &r.database_id)?;
+        let scope = self.scope(&r.project_id, &r.database_id)?;
         let keys = r
             .keys
             .iter()

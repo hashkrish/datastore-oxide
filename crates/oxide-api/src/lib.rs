@@ -14,6 +14,7 @@ pub mod query;
 pub mod rest;
 pub mod service;
 pub mod v3;
+pub mod vector;
 
 pub use rest::RestGateway;
 pub use service::DatastoreService;
