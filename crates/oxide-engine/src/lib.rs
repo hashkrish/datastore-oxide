@@ -522,6 +522,22 @@ impl Engine {
     pub fn generation(&self) -> u64 {
         self.generation.load(Ordering::SeqCst)
     }
+    /// The wall-clock `(create, update)` times in microseconds of entities written since startup
+    /// (superset response timestamps); `None` for others.
+    pub fn entity_times(&self, project_id: &str, keys: &[Key]) -> Vec<Option<(i64, i64)>> {
+        let state = self.lock();
+        let project = state.projects.get(project_id);
+        keys.iter()
+            .map(|k| project.and_then(|p| p.times.get(k).copied()))
+            .collect()
+    }
+    /// The wall-clock time of commit `version` in microseconds, if recorded (superset).
+    pub fn version_time(&self, project_id: &str, version: i64) -> Option<i64> {
+        self.lock()
+            .projects
+            .get(project_id)
+            .and_then(|p| p.version_time(version))
+    }
     /// Every project with state, by name (the data viewer, superset).
     pub fn project_ids(&self) -> Vec<String> {
         let mut ids: Vec<String> = self.lock().projects.keys().cloned().collect();

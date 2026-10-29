@@ -4,8 +4,8 @@ datastore-oxide matches the Java emulator, and on top of that serves production 
 the emulator lacks: a **superset**, behavior that never changes a response the Java emulator gives
 successfully. The superset is on by default; `start --no_superset` turns it off, leaving exactly
 Java's behavior (the conformance tests run that way). This file lists the gaps: first how the
-superset fills them, then Java's behavior for each (what `--no_superset` keeps), then gaps found
-since that are still open.
+superset fills them, then Java's behavior for each (what `--no_superset` keeps). Every gap listed
+below is implemented.
 
 Each entry says how Java behaves today, so the superset can be checked against it.
 
@@ -28,6 +28,7 @@ With `--no_superset`, these behave exactly as Java does (the table rows below). 
 | Export and import like production | `output_url` names the overall metadata file (`{prefix}/{name}/{name}.overall_export_metadata`), which `ImportEntities` takes as `input_url`; `labels` are kept in the operation metadata; `gs://bucket/path` URLs are stored under `DATASTORE_OXIDE_GCS_ROOT` (default `./gcs`), and a `gs://` prefix may be exported to again (each export gets its own folder). There is no Cloud Storage client. |
 | App Engine v3 extras | `Touch` (checks the keys), `DeleteCursor` (forgets the live query), `CreateIndex` / `UpdateIndex` / `DeleteIndex` (composite indexes shared with the Admin API; `CreateIndex` returns an `Integer64Proto` id). Filters `IN` with several values, `NOT_EQUAL` (9) and `NOT_IN` (10) as in the v1 superset, and inequalities on several properties. Full-text `search_query`: rows whose string values (including arrays and embedded entities) contain every word, case-insensitively. `allow_deferred`: keys after 1 MiB of response are returned in `deferred` with `in_order: false`. `read_time_epoch_micros` / `read_time_us` read as of that time and are echoed. BAD_REQUEST with a message instead of a bare UNKNOWN for an empty or invalid app id, negative `count`/`limit`, incomplete parent keys, invalid embedded entities, and `Next` on an unknown project (`crates/oxide-api/src/appengine/`). |
 | Data viewer | `/_ah/admin/datastore` (`crates/oxide-server/src/viewer.rs`): HTML pages listing projects, their databases, namespaces and kinds with entity counts, and a kind's entities 50 per page with a delete button each. |
+| Response timestamps | `commit_time` on commits; `create_time` and `update_time` on mutation results (not after a delete), lookup results and query results; `read_time` on every Lookup, RunQuery and RunAggregationQuery response. Times are the wall clock of each commit, for entities written since startup (imported or reloaded entities have none). |
 
 ## Unknown to Java's protos (fields its descriptors do not define)
 
@@ -52,6 +53,7 @@ REST requests are parsed against Java's descriptors, so these fields fail with
 | Cloud Storage export/import (`gs://bucket/...`) (**implemented** as a local directory) | Treated as a local relative path |
 | `ExportEntitiesResponse.output_url` pointing at the overall metadata file (**implemented**) | The bare prefix |
 | Export `labels` (**implemented**) | Ignored |
+| Response timestamps (`create_time`, `update_time`, `commit_time`, `read_time` on every read) (**implemented**) | Not set |
 | `property_mask` on Commit, Lookup and RunQuery (**implemented**) | Accepted and ignored: full entities are written and returned |
 | `OR` composite filters (Datastore mode) (**implemented**) | 400 `unsupported composite property operator` |
 | `IN` with several values, `NOT_IN` (Datastore mode) (**implemented**) | 400 `Filter has N properties, expected 1` |
@@ -87,9 +89,3 @@ Production App Engine's datastore_v3 service does these; Java's emulator does no
 | Feature | Java emulator behavior |
 |---|---|
 | Data viewer at `/_ah/admin/datastore` (the old App Engine dev server's admin console) (**implemented**) | 404 `Not Found` |
-
-## Found later, still open
-
-| Feature | Java emulator and datastore-oxide behavior |
-|---|---|
-| Response timestamps: `EntityResult.create_time` / `update_time`, `MutationResult.create_time` / `update_time`, `CommitResponse.commit_time`, and `read_time` on every Lookup, RunQuery and RunAggregationQuery response | Not set (oxide sets `read_time` only for point-in-time reads). Needs a wall-clock time per stored version and per entity creation. |

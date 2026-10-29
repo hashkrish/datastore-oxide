@@ -207,6 +207,9 @@ pub(crate) struct Project {
     /// Committed states of written keys, `(version, entity or None for deleted)` ascending,
     /// starting with the state before the first recorded write.
     pub history: HashMap<Key, Vec<(i64, Option<Entity>)>>,
+    /// Wall-clock `(create, update)` times of entities written since startup, in microseconds
+    /// (superset response timestamps).
+    pub times: HashMap<Key, (i64, i64)>,
 }
 
 /// How a job is stored.
@@ -243,6 +246,7 @@ impl Default for Project {
             txns: HashMap::new(),
             commit_times: VecDeque::new(),
             history: HashMap::new(),
+            times: HashMap::new(),
         }
     }
 }
@@ -311,10 +315,12 @@ impl Project {
         self.last_commit
     }
 
-    /// Records the wall-clock time of commit `version` (once per version).
-    fn record_commit_time(&mut self, version: i64) {
-        if self.commit_times.back().is_some_and(|(v, _)| *v >= version) {
-            return;
+    /// Records the wall-clock time of commit `version` (once per version) and returns it.
+    fn record_commit_time(&mut self, version: i64) -> i64 {
+        if let Some(&(v, t)) = self.commit_times.back()
+            && v >= version
+        {
+            return t;
         }
         let now = now_micros().max(self.commit_times.back().map_or(0, |(_, t)| t + 1));
         self.commit_times.push_back((version, now));
@@ -323,6 +329,16 @@ impl Project {
         while self.commit_times.len() > 1 && self.commit_times[1].1 <= cutoff {
             self.commit_times.pop_front();
         }
+        now
+    }
+
+    /// The wall-clock time of commit `version`, if it is recorded.
+    pub fn version_time(&self, version: i64) -> Option<i64> {
+        self.commit_times
+            .iter()
+            .rev()
+            .find(|(v, _)| *v == version)
+            .map(|(_, t)| *t)
     }
 
     /// The last version committed at or before `micros` (point-in-time reads).
@@ -447,7 +463,22 @@ impl Project {
             versions.push(version_of[key]);
         }
         if history {
-            self.record_commit_time(timestamp);
+            let now = self.record_commit_time(timestamp);
+            for (key, before, after) in &recorded {
+                match after {
+                    Some(_) => {
+                        let created = self
+                            .times
+                            .get(key)
+                            .filter(|_| before.is_some())
+                            .map_or(now, |(c, _)| *c);
+                        self.times.insert(key.clone(), (created, now));
+                    }
+                    None => {
+                        self.times.remove(key);
+                    }
+                }
+            }
             for (key, before, after) in recorded {
                 self.record(&key, before, timestamp, after);
             }

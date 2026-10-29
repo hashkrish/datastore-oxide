@@ -1280,3 +1280,47 @@ fn data_viewer() {
     assert_eq!(r.status().as_u16(), 404);
     assert_eq!(r.body_mut().read_to_string().unwrap(), "Not Found\n");
 }
+
+#[test]
+fn response_timestamps() {
+    let emulator = start(&[]);
+    let commit = |mutation: Value| {
+        let (status, body) = emulator.post(
+            "commit",
+            json!({"mode": "NON_TRANSACTIONAL", "mutations": [mutation]}),
+        );
+        assert_eq!(status, 200, "{body}");
+        body
+    };
+    let created = commit(json!({"insert": {"key": key("t"), "properties": {"n": int(1)}}}));
+    assert!(created["commitTime"].is_string(), "{created}");
+    let first = &created["mutationResults"][0];
+    assert_eq!(first["createTime"], first["updateTime"]);
+    std::thread::sleep(std::time::Duration::from_millis(5));
+    let updated = commit(json!({"update": {"key": key("t"), "properties": {"n": int(2)}}}));
+    let second = &updated["mutationResults"][0];
+    assert_eq!(second["createTime"], first["createTime"]);
+    assert_ne!(second["updateTime"], first["updateTime"]);
+
+    let (_, found) = emulator.post("lookup", json!({"keys": [key("t")]}));
+    assert!(found["readTime"].is_string());
+    assert_eq!(found["found"][0]["createTime"], first["createTime"]);
+    assert_eq!(found["found"][0]["updateTime"], second["updateTime"]);
+    let (_, queried) = emulator.post("runQuery", json!({"query": {"kind": [{"name": "T"}]}}));
+    assert!(queried["batch"]["readTime"].is_string());
+    assert_eq!(
+        queried["batch"]["entityResults"][0]["updateTime"],
+        second["updateTime"]
+    );
+    // Deletes report no timestamps.
+    let deleted = commit(json!({"delete": key("t")}));
+    assert!(deleted["mutationResults"][0].get("updateTime").is_none());
+
+    let java = start(&["--no_superset"]);
+    let (_, body) = java.post(
+        "commit",
+        json!({"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": key("t")}}]}),
+    );
+    assert!(body.get("commitTime").is_none());
+    assert!(body["mutationResults"][0].get("updateTime").is_none());
+}

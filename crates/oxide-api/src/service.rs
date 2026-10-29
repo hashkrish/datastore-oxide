@@ -112,6 +112,7 @@ impl DatastoreService {
         let selected = nearest.select(rows);
         let distances: Vec<f64> = selected.iter().map(|(_, d)| *d).collect();
         let results: Vec<_> = selected.into_iter().map(|(row, _)| row).collect();
+        let keys: Vec<oxide_model::Key> = results.iter().map(|r| r.key.clone()).collect();
         let end_cursor = results.last().map(|r| r.cursor.clone()).unwrap_or_default();
         let mut out = crate::query::batch_to_proto(
             &query,
@@ -126,7 +127,8 @@ impl DatastoreService {
             },
         );
         out.more_results = pb::query_result_batch::MoreResultsType::NoMoreResults as i32;
-        out.read_time = read_time_of(mode);
+        out.read_time = self.read_time_or_now(read_time_of(mode));
+        self.stamp(&scope.project_id, &keys, &mut out.entity_results);
         if let Some(property) = nearest
             .result_property
             .as_ref()
@@ -178,6 +180,41 @@ impl DatastoreService {
         self.engine
             .begin_transaction(&scope.project_id, read_only, true, previous)
             .map_err(engine_status)
+    }
+}
+
+fn now_timestamp() -> prost_types::Timestamp {
+    std::time::SystemTime::now().into()
+}
+
+impl DatastoreService {
+    /// Production's entity timestamps (superset): `update_time` from the version's commit time
+    /// (else the entity's last write), `create_time` from its creation; known for entities
+    /// written since startup.
+    fn stamp(&self, project_id: &str, keys: &[oxide_model::Key], results: &mut [pb::EntityResult]) {
+        if !self.superset {
+            return;
+        }
+        let times = self.engine.entity_times(project_id, keys);
+        for (r, t) in results.iter_mut().zip(times) {
+            let update = (r.version > 0)
+                .then(|| self.engine.version_time(project_id, r.version))
+                .flatten()
+                .or(t.map(|(_, u)| u));
+            r.update_time = update.map(convert::micros_to_timestamp);
+            r.create_time = t.map(|(c, _)| convert::micros_to_timestamp(c));
+        }
+    }
+
+    /// Production reports a read time on every read (superset).
+    fn read_time_or_now(
+        &self,
+        read_time: Option<prost_types::Timestamp>,
+    ) -> Option<prost_types::Timestamp> {
+        match read_time {
+            None if self.superset => Some(now_timestamp()),
+            other => other,
+        }
     }
 }
 
@@ -486,9 +523,10 @@ impl Datastore for DatastoreService {
         };
         let (mode, transaction) = self.read_mode(r.read_options.as_ref(), &scope)?;
         let read_time = read_time_of(mode);
+        let mut found_keys = Vec::new();
         let mut response = pb::LookupResponse {
             transaction: transaction.unwrap_or_default().into(),
-            read_time,
+            read_time: self.read_time_or_now(read_time),
             ..Default::default()
         };
         for result in self
@@ -498,6 +536,7 @@ impl Datastore for DatastoreService {
         {
             match result {
                 LookupResult::Found { entity, version } => {
+                    found_keys.extend(entity.key.clone());
                     let mut entity = convert::entity_to_proto(&entity);
                     if let Some(mask) = &mask {
                         apply_read_mask(&mut entity, mask);
@@ -518,6 +557,7 @@ impl Datastore for DatastoreService {
                 }),
             }
         }
+        self.stamp(&scope.project_id, &found_keys, &mut response.found);
         Ok(Response::new(response))
     }
 
@@ -589,8 +629,10 @@ impl Datastore for DatastoreService {
         let started = std::time::Instant::now();
         let batch = self.engine.run_query(&query, mode).map_err(engine_status)?;
         let scanned = batch.matched.len();
+        let keys: Vec<oxide_model::Key> = batch.results.iter().map(|r| r.key.clone()).collect();
         let mut batch = crate::query::batch_to_proto(&query, batch);
-        batch.read_time = read_time;
+        batch.read_time = self.read_time_or_now(read_time);
+        self.stamp(&scope.project_id, &keys, &mut batch.entity_results);
         if let Some(mask) = &mask {
             for result in &mut batch.entity_results {
                 if let Some(e) = &mut result.entity {
@@ -685,7 +727,7 @@ impl Datastore for DatastoreService {
             batch: Some(pb::AggregationResultBatch {
                 aggregation_results: vec![result],
                 more_results: pb::query_result_batch::MoreResultsType::NoMoreResults as i32,
-                read_time,
+                read_time: self.read_time_or_now(read_time),
             }),
             query: echo,
             transaction: transaction.unwrap_or_default().into(),
@@ -742,6 +784,11 @@ impl Datastore for DatastoreService {
             .iter()
             .map(|m| mutation_from_proto(m, &scope, self.superset))
             .collect::<Result<Vec<_>, _>>()?;
+        // Each mutation's key (completed below when allocated) and whether it deletes.
+        let targets: Vec<(Option<oxide_model::Key>, bool)> = mutations
+            .iter()
+            .map(|m| (mutation_key(m).cloned(), matches!(m.op, Op::Delete(_))))
+            .collect();
         let result = match handle {
             Some(handle) => self.engine.commit_transaction(&scope.project_id, handle, mutations),
             None => {
@@ -757,24 +804,54 @@ impl Datastore for DatastoreService {
             }
         }
         .map_err(engine_status)?;
-        Ok(Response::new(pb::CommitResponse {
-            mutation_results: result
+        let mut mutation_results: Vec<pb::MutationResult> = result
+            .mutation_results
+            .iter()
+            .map(|r| pb::MutationResult {
+                key: r.key.as_ref().map(convert::key_to_proto),
+                version: r.version,
+                conflict_detected: r.conflict_detected,
+                transform_results: r
+                    .transform_results
+                    .iter()
+                    .map(convert::value_to_proto)
+                    .collect(),
+                ..Default::default()
+            })
+            .collect();
+        if self.superset {
+            // Production's timestamps; none after a delete.
+            let keys: Vec<oxide_model::Key> = result
                 .mutation_results
-                .into_iter()
-                .map(|r| pb::MutationResult {
-                    key: r.key.as_ref().map(convert::key_to_proto),
-                    version: r.version,
-                    conflict_detected: r.conflict_detected,
-                    transform_results: r
-                        .transform_results
-                        .iter()
-                        .map(convert::value_to_proto)
-                        .collect(),
-                    ..Default::default()
+                .iter()
+                .zip(&targets)
+                .map(|(r, (key, _))| {
+                    r.key
+                        .clone()
+                        .or(key.clone())
+                        .unwrap_or_else(|| oxide_model::Key {
+                            partition: Default::default(),
+                            path: Vec::new(),
+                        })
                 })
-                .collect(),
+                .collect();
+            let times = self.engine.entity_times(&scope.project_id, &keys);
+            for ((out, (_, delete)), t) in mutation_results.iter_mut().zip(&targets).zip(times) {
+                if *delete {
+                    continue;
+                }
+                out.update_time = self
+                    .engine
+                    .version_time(&scope.project_id, out.version)
+                    .or(t.map(|(_, u)| u))
+                    .map(convert::micros_to_timestamp);
+                out.create_time = t.map(|(c, _)| convert::micros_to_timestamp(c));
+            }
+        }
+        Ok(Response::new(pb::CommitResponse {
+            mutation_results,
             index_updates: i32::try_from(result.index_updates).unwrap_or(i32::MAX),
-            commit_time: None,
+            commit_time: self.superset.then(now_timestamp),
             commit_version: result.commit_version,
         }))
     }
