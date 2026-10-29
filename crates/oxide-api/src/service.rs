@@ -13,11 +13,20 @@ use crate::convert::{self, KeyUse, Scope, invalid};
 
 pub struct DatastoreService {
     engine: Arc<Engine>,
+    /// Production features the Java emulator lacks (`--superset`, docs/superset-backlog.md).
+    superset: bool,
 }
 
 impl DatastoreService {
     pub fn new(engine: Arc<Engine>) -> Self {
-        Self { engine }
+        Self {
+            engine,
+            superset: false,
+        }
+    }
+
+    pub fn with_superset(self, superset: bool) -> Self {
+        Self { superset, ..self }
     }
 
     pub fn into_server(self) -> pb::datastore_server::DatastoreServer<Self> {
@@ -47,6 +56,27 @@ impl DatastoreService {
             }
             _ => (ReadMode::Strong, None),
         })
+    }
+
+    /// Datastore mode only allows ancestor queries inside transactions.
+    fn check_transactional_query(
+        &self,
+        options: Option<&pb::ReadOptions>,
+        query: &oxide_engine::query::Query,
+    ) -> Result<(), Status> {
+        let transactional = matches!(
+            options.and_then(|o| o.consistency_type.as_ref()),
+            Some(
+                pb::read_options::ConsistencyType::Transaction(_)
+                    | pb::read_options::ConsistencyType::NewTransaction(_)
+            )
+        );
+        if transactional && query.ancestor.is_none() && !self.engine.firestore_mode() {
+            return Err(invalid(
+                "Only ancestor queries are allowed inside transactions.",
+            ));
+        }
+        Ok(())
     }
 
     fn begin(
@@ -240,20 +270,7 @@ impl Datastore for DatastoreService {
                 ));
             }
         };
-        let transactional = matches!(
-            r.read_options
-                .as_ref()
-                .and_then(|o| o.consistency_type.as_ref()),
-            Some(
-                pb::read_options::ConsistencyType::Transaction(_)
-                    | pb::read_options::ConsistencyType::NewTransaction(_)
-            )
-        );
-        if transactional && query.ancestor.is_none() && !self.engine.firestore_mode() {
-            return Err(invalid(
-                "Only ancestor queries are allowed inside transactions.",
-            ));
-        }
+        self.check_transactional_query(r.read_options.as_ref(), &query)?;
         let (mode, transaction) = self.read_mode(r.read_options.as_ref(), &scope)?;
         let batch = self.engine.run_query(&query, mode).map_err(engine_status)?;
         Ok(Response::new(pb::RunQueryResponse {
@@ -266,12 +283,51 @@ impl Datastore for DatastoreService {
 
     async fn run_aggregation_query(
         &self,
-        _: Request<pb::RunAggregationQueryRequest>,
+        request: Request<pb::RunAggregationQueryRequest>,
     ) -> Result<Response<pb::RunAggregationQueryResponse>, Status> {
-        // Like Java's emulator; see docs/superset-backlog.md.
-        Err(Status::unimplemented(
-            "Method google.datastore.v1.Datastore/RunAggregationQuery is unimplemented",
-        ))
+        use crate::aggregation;
+        if !self.superset {
+            // Like Java's emulator; see docs/superset-backlog.md.
+            return Err(Status::unimplemented(
+                "Method google.datastore.v1.Datastore/RunAggregationQuery is unimplemented",
+            ));
+        }
+        let r = request.into_inner();
+        let scope = Scope::new(&r.project_id, &r.database_id)?;
+        let namespace = crate::query::query_namespace(r.partition_id.as_ref(), &scope)?;
+        let (aggregation_query, echo) = match r.query_type {
+            Some(pb::run_aggregation_query_request::QueryType::AggregationQuery(q)) => (q, None),
+            Some(pb::run_aggregation_query_request::QueryType::GqlQuery(g)) => {
+                let q = crate::gql::parse_aggregation(&g, &scope)?;
+                (q.clone(), Some(q))
+            }
+            None => {
+                return Err(invalid(
+                    "one of fields Query.aggregation_query and Query.gql_query must be set",
+                ));
+            }
+        };
+        let (nested, aggregations) = aggregation::from_proto(&aggregation_query)?;
+        let mut query = crate::query::query_from_proto(nested, &scope, namespace)?;
+        self.check_transactional_query(r.read_options.as_ref(), &query)?;
+        // Every row up to offset + limit, in one batch; the offset is skipped below.
+        query.unbatched = true;
+        if !aggregation::needs_entities(&aggregations) {
+            query.keys_only = true;
+        }
+        let (mode, transaction) = self.read_mode(r.read_options.as_ref(), &scope)?;
+        let batch = self.engine.run_query(&query, mode).map_err(engine_status)?;
+        let result = aggregation::compute(&aggregations, batch.results.iter().skip(query.offset));
+        Ok(Response::new(pb::RunAggregationQueryResponse {
+            batch: Some(pb::AggregationResultBatch {
+                aggregation_results: vec![result],
+                more_results: pb::query_result_batch::MoreResultsType::NoMoreResults as i32,
+                read_time: None,
+            }),
+            query: echo,
+            transaction: transaction.unwrap_or_default().into(),
+            ..Default::default()
+        }))
     }
 
     async fn begin_transaction(

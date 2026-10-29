@@ -33,6 +33,7 @@ tracing-subscriber.workspace = true
 [dev-dependencies]
 prost.workspace = true
 ureq.workspace = true
+serde_json.workspace = true
 conformance.workspace = true
 tempfile = "3"
 tokio-stream = "0.1"

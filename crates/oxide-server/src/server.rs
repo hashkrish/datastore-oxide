@@ -271,7 +271,7 @@ pub async fn run(cfg: StartConfig) -> Result<i32> {
     let emulator = Arc::new(Emulator {
         store: cfg.storage_path(),
         shutdown: shutdown_tx,
-        grpc: grpc_routes(&engine, stored_policy, firestore)?,
+        grpc: grpc_routes(&engine, stored_policy, firestore, cfg.superset)?,
         rest: RestGateway::new()?,
         engine,
     });
@@ -452,6 +452,7 @@ fn grpc_routes(
     engine: &Arc<Engine>,
     stored_policy: StoredJobPolicy,
     firestore: bool,
+    superset: bool,
 ) -> Result<Routes> {
     let reflection = tonic_reflection::server::Builder::configure()
         .register_encoded_file_descriptor_set(oxide_proto::FILE_DESCRIPTOR_SET)
@@ -461,7 +462,11 @@ fn grpc_routes(
         .build_v1alpha()?;
     Ok(Routes::new(reflection)
         .add_service(reflection_alpha)
-        .add_service(DatastoreService::new(engine.clone()).into_server())
+        .add_service(
+            DatastoreService::new(engine.clone())
+                .with_superset(superset)
+                .into_server(),
+        )
         .add_service(
             oxide_api::config::ConfigService::new(engine.clone(), stored_policy, firestore)
                 .into_server(),

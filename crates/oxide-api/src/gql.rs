@@ -297,6 +297,7 @@ const EXPECT_RESULT: &[&str] = &[
     "<UNQUOTED_NAME>",
 ];
 const EXPECT_NAME: &[&str] = &["<UNQUOTED_NAME>", "<QUOTED_NAME>"];
+const EXPECT_AGGREGATION: &[&str] = &["\"avg\"", "\"count\"", "\"count_up_to\"", "\"sum\""];
 const EXPECT_CONDITION: &[&str] = &["\"(\""];
 const EXPECT_VALUE: &[&str] = &[
     "\"false\"",
@@ -678,6 +679,12 @@ impl Parser<'_> {
     fn query(&mut self) -> R<pb::Query> {
         let mut q = pb::Query::default();
         self.keyword("select", EXPECT_SELECT)?;
+        self.result(&mut q)?;
+        self.query_tail(q, false)
+    }
+
+    /// What a `SELECT` returns: `*`, `__key__`, properties, with `DISTINCT [ON (...)]`.
+    fn result(&mut self, q: &mut pb::Query) -> R<()> {
         let mut distinct = false;
         match &self.peek().tok {
             Tok::Punct("*") => {
@@ -701,9 +708,9 @@ impl Parser<'_> {
                     self.punct(")", &["\")\""])?;
                     distinct = false;
                 }
-                self.projection(&mut q)?;
+                self.projection(q)?;
             }
-            Tok::Unquoted(_) | Tok::Quoted(_) => self.projection(&mut q)?,
+            Tok::Unquoted(_) | Tok::Quoted(_) => self.projection(q)?,
             _ => return Err(self.error(EXPECT_RESULT)),
         }
         if distinct {
@@ -713,6 +720,12 @@ impl Parser<'_> {
                 .filter_map(|p| p.property.clone())
                 .collect();
         }
+        Ok(())
+    }
+
+    /// The clauses after the result, from `FROM` on. A `nested` query (in `AGGREGATE ... OVER`)
+    /// ends at its closing parenthesis instead of the end of input.
+    fn query_tail(&mut self, mut q: pb::Query, nested: bool) -> R<pb::Query> {
         if self.is_keyword("from") {
             self.next();
             q.kind.push(pb::KindExpression {
@@ -790,7 +803,7 @@ impl Parser<'_> {
                 Count::Cursor(c) => q.start_cursor = c.into(),
             }
         }
-        if self.peek().tok != Tok::Eof {
+        if self.peek().tok != Tok::Eof && !(nested && self.is_punct(")")) {
             let expected = if q.filter.is_some() {
                 EXPECT_AFTER_WHERE
             } else {
@@ -799,6 +812,104 @@ impl Parser<'_> {
             return Err(self.error(expected));
         }
         Ok(q)
+    }
+
+    /// An aggregation query (superset only):
+    ///
+    /// ```text
+    /// AGGREGATE aggregation [AS alias], ... OVER ( SELECT ... )
+    /// SELECT aggregation [AS alias], ... [FROM kind] [WHERE ...] ...
+    /// aggregation := COUNT(*) | COUNT_UP_TO(n) | SUM(prop) | AVG(prop)
+    /// ```
+    fn aggregation_query(&mut self) -> R<pb::AggregationQuery> {
+        let (aggregations, nested) = if self.is_word("aggregate") {
+            self.next();
+            let aggregations = self.aggregations()?;
+            if !self.is_word("over") {
+                return Err(self.error(&["\"over\"", "\",\""]));
+            }
+            self.next();
+            self.punct("(", &["\"(\""])?;
+            let mut q = pb::Query::default();
+            self.keyword("select", EXPECT_SELECT)?;
+            self.result(&mut q)?;
+            let q = self.query_tail(q, true)?;
+            self.punct(")", &["\")\""])?;
+            if self.peek().tok != Tok::Eof {
+                return Err(self.error(&["<EOF>"]));
+            }
+            (aggregations, q)
+        } else {
+            self.keyword("select", EXPECT_SELECT)?;
+            let aggregations = self.aggregations()?;
+            (aggregations, self.query_tail(pb::Query::default(), false)?)
+        };
+        Ok(pb::AggregationQuery {
+            aggregations,
+            query_type: Some(pb::aggregation_query::QueryType::NestedQuery(nested)),
+        })
+    }
+
+    /// An unquoted name spelled `word` in any case (`AGGREGATE` and `OVER` are not keywords, so
+    /// that plain queries parse exactly as before).
+    fn is_word(&self, word: &str) -> bool {
+        matches!(&self.peek().tok, Tok::Unquoted(n) if n.eq_ignore_ascii_case(word))
+    }
+
+    fn aggregations(&mut self) -> R<Vec<pb::aggregation_query::Aggregation>> {
+        use pb::aggregation_query::aggregation::{self as agg, Operator};
+        let mut out = Vec::new();
+        loop {
+            let operator = match self.peek().tok {
+                Tok::Keyword("count") => {
+                    self.next();
+                    self.punct("(", &["\"(\""])?;
+                    self.punct("*", &["\"*\""])?;
+                    self.punct(")", &["\")\""])?;
+                    Operator::Count(agg::Count { up_to: None })
+                }
+                Tok::Keyword("count_up_to") => {
+                    self.next();
+                    self.punct("(", &["\"(\""])?;
+                    let up_to = match self.count_or_cursor("COUNT_UP_TO")? {
+                        Count::Number(n) => i64::from(n),
+                        Count::Cursor(_) => {
+                            return Err(invalid("The COUNT_UP_TO value must be an integer."));
+                        }
+                    };
+                    self.punct(")", &["\")\""])?;
+                    Operator::Count(agg::Count { up_to: Some(up_to) })
+                }
+                Tok::Keyword(f @ ("sum" | "avg")) => {
+                    self.next();
+                    self.punct("(", &["\"(\""])?;
+                    let property = Some(pb::PropertyReference {
+                        name: self.name(EXPECT_NAME)?,
+                    });
+                    self.punct(")", &["\")\""])?;
+                    if f == "sum" {
+                        Operator::Sum(agg::Sum { property })
+                    } else {
+                        Operator::Avg(agg::Avg { property })
+                    }
+                }
+                _ => return Err(self.error(EXPECT_AGGREGATION)),
+            };
+            let alias = if self.is_keyword("as") {
+                self.next();
+                self.name(EXPECT_NAME)?
+            } else {
+                String::new()
+            };
+            out.push(pb::aggregation_query::Aggregation {
+                alias,
+                operator: Some(operator),
+            });
+            if !self.is_punct(",") {
+                return Ok(out);
+            }
+            self.next();
+        }
     }
 
     fn projection(&mut self, q: &mut pb::Query) -> R<()> {
@@ -969,6 +1080,20 @@ pub fn parse(gql: &pb::GqlQuery, _scope: &Scope) -> Result<pb::Query, Status> {
     parser.query()
 }
 
+/// Parses a GQL aggregation query (`RunAggregationQuery` with `--superset`).
+pub fn parse_aggregation(
+    gql: &pb::GqlQuery,
+    _scope: &Scope,
+) -> Result<pb::AggregationQuery, Status> {
+    let tokens = lex(&gql.query_string)?;
+    let mut parser = Parser {
+        tokens,
+        pos: 0,
+        gql,
+    };
+    parser.aggregation_query()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1009,6 +1134,59 @@ mod tests {
             gql("SELECT * FROM P LIMIT 2", false).unwrap_err().message(),
             "Disallowed literal: 2."
         );
+    }
+
+    fn agg(s: &str) -> Result<pb::AggregationQuery, Status> {
+        parse_aggregation(
+            &pb::GqlQuery {
+                query_string: s.into(),
+                allow_literals: true,
+                ..Default::default()
+            },
+            &Scope::new("p", "").unwrap(),
+        )
+    }
+
+    #[test]
+    fn aggregations() {
+        use pb::aggregation_query::aggregation::Operator;
+        let nested = |q: &pb::AggregationQuery| match &q.query_type {
+            Some(pb::aggregation_query::QueryType::NestedQuery(n)) => n.clone(),
+            None => panic!("no nested query"),
+        };
+        let q = agg(
+            "aggregate count(*) AS c, COUNT_UP_TO(5), SUM(n) AS s, AVG(`a b`) \
+             OVER (SELECT * FROM A WHERE n > 1 LIMIT 10)",
+        )
+        .unwrap();
+        let ops: Vec<_> = q
+            .aggregations
+            .iter()
+            .map(|a| (a.alias.as_str(), a.operator.clone().unwrap()))
+            .collect();
+        assert!(matches!(ops[0], ("c", Operator::Count(ref c)) if c.up_to.is_none()));
+        assert!(matches!(ops[1], ("", Operator::Count(ref c)) if c.up_to == Some(5)));
+        assert!(
+            matches!(ops[2], ("s", Operator::Sum(ref s)) if s.property.as_ref().unwrap().name == "n")
+        );
+        assert!(
+            matches!(ops[3], ("", Operator::Avg(ref s)) if s.property.as_ref().unwrap().name == "a b")
+        );
+        let n = nested(&q);
+        assert_eq!(n.kind[0].name, "A");
+        assert_eq!(n.limit, Some(10));
+        assert!(n.filter.is_some());
+
+        let simple = agg("SELECT COUNT(*) AS total FROM A WHERE x = 1").unwrap();
+        assert_eq!(simple.aggregations[0].alias, "total");
+        assert_eq!(nested(&simple).kind[0].name, "A");
+
+        assert!(agg("AGGREGATE COUNT(*) OVER (SELECT * FROM A").is_err());
+        assert!(agg("AGGREGATE COUNT(*) OVER (SELECT * FROM A) x").is_err());
+        assert!(agg("AGGREGATE OVER (SELECT * FROM A)").is_err());
+        assert!(agg("SELECT * FROM A").is_err());
+        // Plain queries still reject aggregation syntax.
+        assert!(gql("SELECT COUNT(*) FROM A", true).is_err());
     }
 
     #[test]

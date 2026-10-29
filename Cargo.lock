@@ -850,6 +850,7 @@ dependencies = [
  "oxide-engine",
  "oxide-proto",
  "prost",
+ "serde_json",
  "socket2",
  "tempfile",
  "tokio",

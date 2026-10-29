@@ -21,8 +21,11 @@ It serves everything the Java emulator serves, on one port:
 
 Every behavior is checked against the Java emulator: its recorded responses are replayed by
 `cargo test` (see `docs/reference-behavior.md`, including the known gaps). Features production
-Datastore has but the Java emulator lacks (aggregations, `OR` filters, …) are deliberately absent
-for now and listed in `docs/superset-backlog.md`.
+Datastore has but the Java emulator lacks are listed in `docs/superset-backlog.md`. They are off by
+default, so responses stay the Java emulator's; `--superset` turns on the ones implemented so far:
+
+- aggregation queries (`RunAggregationQuery`: `COUNT` with `up_to`, `SUM`, `AVG`, over gRPC and
+  REST, structured or GQL `AGGREGATE … OVER (…)` / `SELECT COUNT(*) …`).
 
 ## Usage
 
@@ -33,7 +36,8 @@ export DATASTORE_EMULATOR_HOST=localhost:8081
 ```
 
 The binary accepts the same actions and flags as the Java emulator (`create`, `start`, `help`,
-`license`; `--host`, `--port`, `--consistency`, `--store_on_disk`, `--testing`, …).
+`license`; `--host`, `--port`, `--consistency`, `--store_on_disk`, `--testing`, …), plus
+`start --superset` (above).
 
 ### Container image
 
@@ -113,7 +117,7 @@ Google LLC; they are used here only to describe what this software is compatible
 | `tools/scenario-gen` | Generators for the query, transaction, project and v3 scenarios |
 | `docs/reference-behavior.md` | Observed Java emulator behavior |
 | `docs/porting-notes` | Observed Java emulator behavior and the App Engine SDK code it shares (queries, transactions, indexes, export format, Firestore mode, App Engine v3) |
-| `docs/superset-backlog.md` | Production features missing from the Java emulator, for later |
+| `docs/superset-backlog.md` | Production features missing from the Java emulator; `--superset` and what it implements |
 
 ## Testing
 

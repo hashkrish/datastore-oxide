@@ -600,12 +600,13 @@ fn bytes_response(status: StatusCode, content_type: &'static str, body: Bytes) -
     resp
 }
 
-/// Map fields named `properties` (entity properties) are unordered; sort them for stable output.
+/// Map fields named `properties` (entity properties) or `aggregateProperties` are unordered;
+/// sort them for stable output.
 fn sort_property_maps(value: &mut serde_json::Value) {
     match value {
         serde_json::Value::Object(map) => {
             for (key, v) in map.iter_mut() {
-                if key == "properties"
+                if (key == "properties" || key == "aggregateProperties")
                     && let serde_json::Value::Object(props) = v
                 {
                     props.sort_keys();

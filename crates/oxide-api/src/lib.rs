@@ -2,6 +2,7 @@
 //! gateway that transcodes HTTP/JSON onto them.
 
 pub mod admin;
+pub mod aggregation;
 pub mod appengine;
 pub mod config;
 pub mod convert;

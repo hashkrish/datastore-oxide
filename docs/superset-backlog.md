@@ -6,6 +6,15 @@ superset**: behavior that never changes a response the Java emulator gives succe
 
 Each entry says how Java behaves today, so the superset can be checked against it.
 
+## Implemented with `start --superset`
+
+Without the flag, these behave exactly as Java does (the table rows below). Tests:
+`crates/oxide-server/tests/superset.rs`.
+
+| Feature | Behavior with `--superset` |
+|---|---|
+| Aggregation queries: `COUNT` (with `up_to`), `SUM`, `AVG`; GQL `AGGREGATE agg [AS a], … OVER (SELECT …)` and `SELECT agg [AS a], … FROM …` with `COUNT(*)`, `COUNT_UP_TO(n)`, `SUM(p)`, `AVG(p)` | `RunAggregationQuery` over gRPC and REST (`crates/oxide-api/src/aggregation.rs`). Aggregates every row of the nested query after cursors, offset and limit (no 300-row batches). SUM is an integer until a double appears or it overflows, 0 over no values; AVG is a double, null over no values; non-numeric, array and unindexed values are skipped; `a.b` reads an embedded entity. Up to 5 aggregations, unique aliases, unnamed ones get `property_1`, `property_2`, …; `up_to` must be positive; the nested query may only project `__key__` and has no `DISTINCT ON`. Same transaction rule as RunQuery (ancestor queries only, in Datastore mode). GQL requests echo the parsed query. `RunQuery` still rejects GQL aggregations, as production does. Error messages and edge cases were not checked against production. |
+
 ## Unknown to Java's protos (fields its descriptors do not define)
 
 REST requests are parsed against Java's descriptors, so these fields fail with
@@ -22,8 +31,8 @@ REST requests are parsed against Java's descriptors, so these fields fail with
 
 | Feature | Java emulator behavior |
 |---|---|
-| Aggregation queries: `COUNT` (with `up_to`), `SUM`, `AVG` | `RunAggregationQuery` → 501 `Method google.datastore.v1.Datastore/RunAggregationQuery is unimplemented` (Datastore and Firestore-in-Datastore mode) |
-| GQL aggregations (`AGGREGATE COUNT(*) OVER (...)`, `SELECT COUNT(*)`) | `runQuery` → bare 500 `UNKNOWN` |
+| Aggregation queries: `COUNT` (with `up_to`), `SUM`, `AVG` (**`--superset`**) | `RunAggregationQuery` → 501 `Method google.datastore.v1.Datastore/RunAggregationQuery is unimplemented` (Datastore and Firestore-in-Datastore mode) |
+| GQL aggregations (`AGGREGATE COUNT(*) OVER (...)`, `SELECT COUNT(*)`) (**`--superset`**, in `runAggregationQuery`) | `runQuery` → bare 500 `UNKNOWN` |
 | Admin index CRUD (`ListIndexes`, `GetIndex`, `CreateIndex`, `DeleteIndex`) | 501 UNIMPLEMENTED |
 | Long-running operations (`GetOperation`, `ListOperations`, `CancelOperation`, `DeleteOperation`) | No Operations service: REST 404, gRPC UNIMPLEMENTED; export/import return finished operations |
 | Cloud Storage export/import (`gs://bucket/...`) | Treated as a local relative path |
