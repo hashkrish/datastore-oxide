@@ -4,8 +4,8 @@ datastore-oxide matches the Java emulator, and on top of that serves production 
 the emulator lacks: a **superset**, behavior that never changes a response the Java emulator gives
 successfully. The superset is on by default; `start --no_superset` turns it off, leaving exactly
 Java's behavior (the conformance tests run that way). This file lists the gaps: first how the
-superset fills them, then Java's behavior for each (what `--no_superset` keeps). Every gap listed
-below is implemented.
+superset fills them, then Java's behavior for each (what `--no_superset` keeps), then gaps found
+since that are still open.
 
 Each entry says how Java behaves today, so the superset can be checked against it.
 
@@ -87,3 +87,9 @@ Production App Engine's datastore_v3 service does these; Java's emulator does no
 | Feature | Java emulator behavior |
 |---|---|
 | Data viewer at `/_ah/admin/datastore` (the old App Engine dev server's admin console) (**implemented**) | 404 `Not Found` |
+
+## Found later, still open
+
+| Feature | Java emulator and datastore-oxide behavior |
+|---|---|
+| Response timestamps: `EntityResult.create_time` / `update_time`, `MutationResult.create_time` / `update_time`, `CommitResponse.commit_time`, and `read_time` on every Lookup, RunQuery and RunAggregationQuery response | Not set (oxide sets `read_time` only for point-in-time reads). Needs a wall-clock time per stored version and per entity creation. |
