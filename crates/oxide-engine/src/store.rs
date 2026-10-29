@@ -372,10 +372,7 @@ impl Project {
     }
     /// Tries to apply `group`'s jobs in order, stopping at the first one the policy rejects.
     pub fn maybe_roll_forward(&mut self, group: &Key, decide: Decide) {
-        loop {
-            let Some(g) = self.groups.get_mut(group) else {
-                break;
-            };
+        while let Some(g) = self.groups.get_mut(group) {
             if g.jobs.is_empty() || !decide() {
                 break;
             }
