@@ -17,6 +17,7 @@ With `--no_superset`, these behave exactly as Java does (the table rows below). 
 |---|---|
 | Aggregation queries: `COUNT` (with `up_to`), `SUM`, `AVG`; GQL `AGGREGATE agg [AS a], … OVER (SELECT …)` and `SELECT agg [AS a], … FROM …` with `COUNT(*)`, `COUNT_UP_TO(n)`, `SUM(p)`, `AVG(p)` | `RunAggregationQuery` over gRPC and REST (`crates/oxide-api/src/aggregation.rs`). Aggregates every row of the nested query after cursors, offset and limit (no 300-row batches). SUM is an integer until a double appears or it overflows, 0 over no values; AVG is a double, null over no values; non-numeric, array and unindexed values are skipped; `a.b` reads an embedded entity. Up to 5 aggregations, unique aliases, unnamed ones get `property_1`, `property_2`, …; `up_to` must be positive; the nested query may only project `__key__` and has no `DISTINCT ON`. Same transaction rule as RunQuery (ancestor queries only, in Datastore mode). GQL requests echo the parsed query. `RunQuery` still rejects GQL aggregations, as production does. Error messages and edge cases were not checked against production. |
 | Production commit limits | More than 500 mutations in a commit → 400 `cannot write more than 500 entities in a single call`; an entity whose serialized v1 proto exceeds 1,048,572 bytes (1 MiB − 4) → 400 `entity is too big`. |
+| Production request fields over REST | REST requests parse against the full published schema, so `request_options` (request tags) is accepted and ignored, and `explain_options`, `property_transforms` and `find_nearest` reach the gRPC service. |
 
 ## Unknown to Java's protos (fields its descriptors do not define)
 
@@ -28,7 +29,7 @@ REST requests are parsed against Java's descriptors, so these fields fail with
 | Property transforms (`increment`, `maximum`, `minimum`, `set_to_server_value`, `append_missing_elements`, `remove_all_from_array`) | `Mutation.property_transforms`, `MutationResult.transform_results` |
 | Query explain (plan summary, execution stats) | `RunQueryRequest.explain_options`, `RunAggregationQueryRequest.explain_options`, `*Response.explain_metrics` |
 | Vector search | `Query.find_nearest` |
-| Request options (request tags, priorities) | `request_options` on every RPC |
+| Request options (request tags) (**implemented**: accepted, ignored) | `request_options` on every RPC |
 
 ## Defined in Java's protos but not implemented
 

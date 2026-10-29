@@ -272,7 +272,7 @@ pub async fn run(cfg: StartConfig) -> Result<i32> {
         store: cfg.storage_path(),
         shutdown: shutdown_tx,
         grpc: grpc_routes(&engine, stored_policy, firestore, cfg.superset)?,
-        rest: RestGateway::new()?,
+        rest: RestGateway::new(cfg.superset)?,
         engine,
     });
 

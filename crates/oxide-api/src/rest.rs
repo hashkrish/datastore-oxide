@@ -57,13 +57,15 @@ const JAVA_UNKNOWN_FIELDS: &[(&str, &str)] = &[
 ];
 
 /// Turns a published `google/datastore/v1` file into the schema the Java emulator uses for REST
-/// JSON: without [`JAVA_UNKNOWN_FIELDS`], with the `HAS_PARENT` (12) filter operator, which Java
-/// accepts by name and by number, and with `CommitResponse.commit_version`, which Java prints.
-fn java_schema(file: &mut prost_types::FileDescriptorProto) {
+/// JSON: without [`JAVA_UNKNOWN_FIELDS`] (kept with the superset), with the `HAS_PARENT` (12)
+/// filter operator, which Java accepts by name and by number, and with
+/// `CommitResponse.commit_version`, which Java prints.
+fn java_schema(file: &mut prost_types::FileDescriptorProto, superset: bool) {
     use prost_types::field_descriptor_proto::{Label, Type};
     for m in &mut file.message_type {
         m.field.retain(|f| {
-            !JAVA_UNKNOWN_FIELDS.contains(&(m.name.as_deref().unwrap_or_default(), f.name()))
+            superset
+                || !JAVA_UNKNOWN_FIELDS.contains(&(m.name.as_deref().unwrap_or_default(), f.name()))
         });
         if m.name() == "CommitResponse" {
             m.field.push(prost_types::FieldDescriptorProto {
@@ -123,7 +125,8 @@ pub struct RestGateway {
 }
 
 impl RestGateway {
-    pub fn new() -> Result<Self, prost_reflect::DescriptorError> {
+    /// With `superset`, requests may also carry the production fields Java's schema lacks.
+    pub fn new(superset: bool) -> Result<Self, prost_reflect::DescriptorError> {
         let print_pool = DescriptorPool::decode(oxide_proto::FILE_DESCRIPTOR_SET)?;
 
         let mut parse_pool = DescriptorPool::new();
@@ -132,7 +135,7 @@ impl RestGateway {
                 if f.name() == "google/datastore/v1/datastore.proto"
                     || f.name() == "google/datastore/v1/query.proto"
                 {
-                    java_schema(&mut f);
+                    java_schema(&mut f, superset);
                 }
                 f
             },
@@ -689,7 +692,7 @@ mod tests {
 
     #[test]
     fn gateway_routes_datastore_methods() {
-        let gw = RestGateway::new().unwrap();
+        let gw = RestGateway::new(false).unwrap();
         let (route, vars) = gw
             .match_route(&Method::POST, "/v1/projects/p:lookup")
             .unwrap();

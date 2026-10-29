@@ -294,3 +294,16 @@ fn base64(n: usize) -> String {
     }
     s
 }
+
+#[test]
+fn rest_accepts_production_request_fields() {
+    let lookup = json!({
+        "keys": [{"path": [{"kind": "A", "name": "a"}]}],
+        "requestOptions": {"requestTags": ["t"]},
+    });
+    let (status, _) = start(&[]).post("lookup", lookup.clone());
+    assert_eq!(status, 200);
+    let (status, body) = start(&["--no_superset"]).post("lookup", lookup);
+    assert_eq!(status, 400);
+    assert_eq!(body["error"]["message"], "Payload isn't valid for request.");
+}
