@@ -90,6 +90,20 @@ pub enum Op {
 pub struct Mutation {
     pub op: Op,
     pub base_version: Option<i64>,
+    pub on_conflict: OnConflict,
+}
+
+/// `Mutation.conflict_resolution_strategy`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum OnConflict {
+    /// `SERVER_VALUE` (or unset): the conflict is reported in the mutation result.
+    #[default]
+    ServerValue,
+    /// `FAIL`: the commit fails.
+    Fail,
+    /// An unrecognized strategy: reported like `SERVER_VALUE`, but Java's non-transactional
+    /// commit still uses up a version.
+    Unrecognized,
 }
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct MutationResult {
@@ -800,7 +814,11 @@ impl Engine {
                     project.logical(&key, &group).map(|(_, v, _)| v),
                     &write,
                     mutation.base_version,
+                    mutation.on_conflict == OnConflict::Fail,
                 )? {
+                    if mutation.on_conflict == OnConflict::Unrecognized {
+                        project.next_timestamp();
+                    }
                     result.mutation_results.push(MutationResult {
                         key: allocated,
                         ..conflict
@@ -869,7 +887,12 @@ impl Engine {
                     Some((_, w)) => w.as_ref().map(|_| 0),
                     None => self.txn_read(project, handle, &key).map(|(_, v)| v),
                 };
-                if let Some(conflict) = check_mutation(seen, &write, mutation.base_version)? {
+                if let Some(conflict) = check_mutation(
+                    seen,
+                    &write,
+                    mutation.base_version,
+                    mutation.on_conflict == OnConflict::Fail,
+                )? {
                     results.push((
                         key,
                         MutationResult {
@@ -1150,28 +1173,33 @@ fn check_mutation(
     existing: Option<i64>,
     write: &Write,
     base_version: Option<i64>,
+    fail_on_conflict: bool,
 ) -> Result<Option<MutationResult>> {
     if let Some(base) = base_version {
+        let conflict = |version: i64| {
+            if fail_on_conflict {
+                Err(Error::new(
+                    Code::FailedPrecondition,
+                    format!(
+                        "the stored version ({version}) does not match the required base version ({base})"
+                    ),
+                ))
+            } else {
+                Ok(Some(MutationResult {
+                    key: None,
+                    version,
+                    conflict_detected: true,
+                }))
+            }
+        };
         match existing {
             Some(v) if base > v => {
                 return Err(Error::invalid_argument(
                     "Invalid base version, it is greater than the stored version",
                 ));
             }
-            Some(v) if base < v => {
-                return Ok(Some(MutationResult {
-                    key: None,
-                    version: v,
-                    conflict_detected: true,
-                }));
-            }
-            None if base > 0 => {
-                return Ok(Some(MutationResult {
-                    key: None,
-                    version: 0,
-                    conflict_detected: true,
-                }));
-            }
+            Some(v) if base < v => return conflict(v),
+            None if base > 0 => return conflict(0),
             _ => {}
         }
     }
@@ -1253,6 +1281,7 @@ mod tests {
         Mutation {
             op: Op::Upsert(e),
             base_version: None,
+            on_conflict: OnConflict::ServerValue,
         }
     }
     #[test]
@@ -1315,6 +1344,7 @@ mod tests {
         let insert = |k| Mutation {
             op: Op::Insert(Entity::new(k)),
             base_version: None,
+            on_conflict: OnConflict::ServerValue,
         };
         engine
             .commit_non_transactional("p", vec![insert(named("x"))])

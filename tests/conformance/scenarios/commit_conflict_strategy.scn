@@ -1,0 +1,55 @@
+# Mutation.conflict_resolution_strategy: FAIL turns a detected conflict into a failed commit.
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}}}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}}, "baseVersion": "1", "conflictResolutionStrategy": "FAIL"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}}, "baseVersion": "1", "conflictResolutionStrategy": "SERVER_VALUE"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}}, "baseVersion": "1", "conflictResolutionStrategy": 2}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "missing"}]}}, "baseVersion": "5", "conflictResolutionStrategy": "FAIL"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "y"}]}}}, {"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}}, "baseVersion": "1", "conflictResolutionStrategy": "FAIL"}]}
+
+POST /v1/projects/p:lookup
+{"keys": [{"path": [{"kind": "K", "name": "y"}]}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"delete": {"path": [{"kind": "K", "name": "x"}]}, "baseVersion": "1", "conflictResolutionStrategy": "FAIL"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}}, "updateTime": "1970-01-01T00:00:00.000001Z", "conflictResolutionStrategy": "FAIL"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}}, "baseVersion": "9", "conflictResolutionStrategy": "FAIL"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}}, "conflictResolutionStrategy": "FAIL"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "K", "name": "z"}]}}, "conflictResolutionStrategy": "FAIL"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"insert": {"key": {"path": [{"kind": "K", "name": "z"}]}}, "baseVersion": "3", "conflictResolutionStrategy": "FAIL"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}}, "baseVersion": "2", "conflictResolutionStrategy": "FAIL"}]}
+
+POST /v1/projects/p:commit
+{"mode": "NON_TRANSACTIONAL", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}}, "baseVersion": "0", "conflictResolutionStrategy": "FAIL"}]}
+
+POST /v1/projects/p:beginTransaction
+{}
+> t = transaction
+
+POST /v1/projects/p:commit
+{"transaction": "{t}", "mutations": [{"upsert": {"key": {"path": [{"kind": "K", "name": "x"}]}}, "baseVersion": "1", "conflictResolutionStrategy": "FAIL"}]}
+
+POST /v1/projects/p:commit
+{"transaction": "{t}", "mutations": []}

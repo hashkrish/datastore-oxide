@@ -1,0 +1,114 @@
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }],
+  "indexUpdates": 1
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"the stored version (2) does not match the required base version (1)","status":"FAILED_PRECONDITION"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2",
+    "conflictDetected": true
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2",
+    "conflictDetected": true
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"the stored version (0) does not match the required base version (5)","status":"FAILED_PRECONDITION"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"the stored version (2) does not match the required base version (1)","status":"FAILED_PRECONDITION"}}
+<<< END
+>>> POST /v1/projects/p:lookup
+<<< 200
+{
+  "found": [{
+    "entity": {
+      "key": {
+        "partitionId": {
+          "projectId": "p"
+        },
+        "path": [{
+          "kind": "K",
+          "name": "y"
+        }]
+      }
+    },
+    "version": "4"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"the stored version (2) does not match the required base version (1)","status":"FAILED_PRECONDITION"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"the stored version (2) does not match the required base version (1)","status":"FAILED_PRECONDITION"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Invalid base version, it is greater than the stored version","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"cannot set a conflict resolution strategy if no detection strategy was set","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"cannot set a conflict resolution strategy if no detection strategy was set","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Cannot insert an entity with a base version greater than zero","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 200
+{
+  "mutationResults": [{
+    "version": "2"
+  }]
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"the stored version (2) does not match the required base version (0)","status":"FAILED_PRECONDITION"}}
+<<< END
+>>> POST /v1/projects/p:beginTransaction
+<<< 200
+{
+  "transaction": "ERAAAAAAAAAA"
+}
+
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END
+>>> POST /v1/projects/p:commit
+<<< 400
+{"error":{"code":400,"message":"Payload isn't valid for request.","status":"INVALID_ARGUMENT"}}
+<<< END

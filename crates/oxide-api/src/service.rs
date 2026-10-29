@@ -3,7 +3,7 @@
 use std::collections::HashSet;
 use std::sync::Arc;
 
-use oxide_engine::{Code, Engine, LookupResult, Mutation, Op, ReadMode};
+use oxide_engine::{Code, Engine, LookupResult, Mutation, OnConflict, Op, ReadMode};
 use oxide_model::Entity;
 use oxide_proto::google::datastore::v1 as pb;
 use pb::datastore_server::Datastore;
@@ -195,7 +195,22 @@ fn mutation_from_proto(m: &pb::Mutation, scope: &Scope) -> Result<Mutation, Stat
             "Cannot insert an entity with a base version greater than zero",
         ));
     }
-    Ok(Mutation { op, base_version })
+    if m.conflict_resolution_strategy != 0 && base_version.is_none() {
+        return Err(invalid(
+            "cannot set a conflict resolution strategy if no detection strategy was set",
+        ));
+    }
+    Ok(Mutation {
+        op,
+        base_version,
+        on_conflict: match pb::mutation::ConflictResolutionStrategy::try_from(
+            m.conflict_resolution_strategy,
+        ) {
+            Ok(pb::mutation::ConflictResolutionStrategy::Fail) => OnConflict::Fail,
+            Ok(_) => OnConflict::ServerValue,
+            Err(_) => OnConflict::Unrecognized,
+        },
+    })
 }
 
 /// Production's limits on a commit, which the Java emulator does not enforce.
