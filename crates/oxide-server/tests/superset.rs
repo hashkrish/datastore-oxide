@@ -243,3 +243,54 @@ fn transactions_need_ancestor_queries() {
     assert_eq!(status, 200, "{body}");
     assert!(body["transaction"].is_string());
 }
+
+#[test]
+fn production_commit_limits() {
+    let commit = |n: usize, blob_bytes: usize| {
+        let mutations: Vec<Value> = (0..n)
+            .map(|i| {
+                json!({"upsert": {
+                    "key": {"path": [{"kind": "L", "id": (i + 1).to_string()}]},
+                    "properties": {"b": {
+                        "blobValue": base64(blob_bytes),
+                        "excludeFromIndexes": true,
+                    }},
+                }})
+            })
+            .collect();
+        json!({"mode": "NON_TRANSACTIONAL", "mutations": mutations})
+    };
+    for (flags, limited) in [(&[][..], true), (&["--no_superset"][..], false)] {
+        let emulator = start(flags);
+        assert_eq!(emulator.post("commit", commit(500, 1)).0, 200);
+        let (status, body) = emulator.post("commit", commit(501, 1));
+        if limited {
+            assert_eq!(status, 400);
+            assert_eq!(
+                body["error"]["message"],
+                "cannot write more than 500 entities in a single call"
+            );
+        } else {
+            assert_eq!(status, 200);
+        }
+        assert_eq!(emulator.post("commit", commit(1, 1_000_000)).0, 200);
+        let (status, body) = emulator.post("commit", commit(1, 1_048_576));
+        if limited {
+            assert_eq!(status, 400);
+            assert_eq!(body["error"]["message"], "entity is too big");
+        } else {
+            assert_eq!(status, 200);
+        }
+    }
+}
+
+/// Base64 of `n` zero bytes.
+fn base64(n: usize) -> String {
+    let mut s = "AAAA".repeat(n / 3);
+    match n % 3 {
+        1 => s.push_str("AA=="),
+        2 => s.push_str("AAA="),
+        _ => {}
+    }
+    s
+}

@@ -198,6 +198,30 @@ fn mutation_from_proto(m: &pb::Mutation, scope: &Scope) -> Result<Mutation, Stat
     Ok(Mutation { op, base_version })
 }
 
+/// Production's limits on a commit, which the Java emulator does not enforce.
+fn check_production_limits(mutations: &[pb::Mutation]) -> Result<(), Status> {
+    use pb::mutation::Operation;
+    use prost::Message as _;
+    /// Mutations per commit.
+    const MAX_MUTATIONS: usize = 500;
+    /// Serialized entity size: 1 MiB minus 4 bytes.
+    const MAX_ENTITY_BYTES: usize = 1_048_572;
+    if mutations.len() > MAX_MUTATIONS {
+        return Err(invalid(format!(
+            "cannot write more than {MAX_MUTATIONS} entities in a single call"
+        )));
+    }
+    for m in mutations {
+        if let Some(Operation::Insert(e) | Operation::Update(e) | Operation::Upsert(e)) =
+            &m.operation
+            && e.encoded_len() > MAX_ENTITY_BYTES
+        {
+            return Err(invalid("entity is too big"));
+        }
+    }
+    Ok(())
+}
+
 fn mutation_key(m: &Mutation) -> Option<&oxide_model::Key> {
     match &m.op {
         Op::Insert(e) | Op::Update(e) | Op::Upsert(e) => e.key.as_ref(),
@@ -372,6 +396,9 @@ impl Datastore for DatastoreService {
             }
         };
 
+        if self.superset {
+            check_production_limits(&r.mutations)?;
+        }
         let mutations = r
             .mutations
             .iter()

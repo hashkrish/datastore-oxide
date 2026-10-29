@@ -16,6 +16,7 @@ With `--no_superset`, these behave exactly as Java does (the table rows below). 
 | Feature | Superset behavior |
 |---|---|
 | Aggregation queries: `COUNT` (with `up_to`), `SUM`, `AVG`; GQL `AGGREGATE agg [AS a], … OVER (SELECT …)` and `SELECT agg [AS a], … FROM …` with `COUNT(*)`, `COUNT_UP_TO(n)`, `SUM(p)`, `AVG(p)` | `RunAggregationQuery` over gRPC and REST (`crates/oxide-api/src/aggregation.rs`). Aggregates every row of the nested query after cursors, offset and limit (no 300-row batches). SUM is an integer until a double appears or it overflows, 0 over no values; AVG is a double, null over no values; non-numeric, array and unindexed values are skipped; `a.b` reads an embedded entity. Up to 5 aggregations, unique aliases, unnamed ones get `property_1`, `property_2`, …; `up_to` must be positive; the nested query may only project `__key__` and has no `DISTINCT ON`. Same transaction rule as RunQuery (ancestor queries only, in Datastore mode). GQL requests echo the parsed query. `RunQuery` still rejects GQL aggregations, as production does. Error messages and edge cases were not checked against production. |
+| Production commit limits | More than 500 mutations in a commit → 400 `cannot write more than 500 entities in a single call`; an entity whose serialized v1 proto exceeds 1,048,572 bytes (1 MiB − 4) → 400 `entity is too big`. |
 
 ## Unknown to Java's protos (fields its descriptors do not define)
 
@@ -51,8 +52,8 @@ Java's Firestore-in-Datastore mode rejects these filters too (and multiple inequ
 
 | Limit | Java emulator behavior |
 |---|---|
-| 500 mutations per commit | accepted |
-| 1 MiB entity size | accepted |
+| 500 mutations per commit (**implemented**) | accepted |
+| 1 MiB entity size (**implemented**) | accepted |
 
 ## App Engine v3 API server
 
