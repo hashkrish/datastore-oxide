@@ -470,7 +470,7 @@ pub fn entity_to_proto(entity: &Entity) -> pb::Entity {
     }
 }
 
-fn value_to_proto(value: &Value) -> pb::Value {
+pub(crate) fn value_to_proto(value: &Value) -> pb::Value {
     let value_type = match &value.kind {
         ValueKind::Null => ValueType::NullValue(0),
         ValueKind::Boolean(b) => ValueType::BooleanValue(*b),

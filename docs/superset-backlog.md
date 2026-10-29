@@ -19,6 +19,7 @@ With `--no_superset`, these behave exactly as Java does (the table rows below). 
 | Production commit limits | More than 500 mutations in a commit → 400 `cannot write more than 500 entities in a single call`; an entity whose serialized v1 proto exceeds 1,048,572 bytes (1 MiB − 4) → 400 `entity is too big`. |
 | Production request fields over REST | REST requests parse against the full published schema, so `request_options` (request tags) is accepted and ignored, and `explain_options`, `property_transforms` and `find_nearest` reach the gRPC service. |
 | Production filters: `OR`, `IN` with several values, `NOT_IN`, `!=`, inequalities on several properties | Structured and GQL queries (and the nested query of an aggregation). Filters are expanded into disjunctive normal form (`crates/oxide-api/src/query.rs`); each branch is checked as a query of its own and a row matches when it matches any branch (`crates/oxide-engine/src/query.rs`). `IN` matches any value; `!=` and `NOT_IN` match a non-null value outside the excluded ones (an array matches through any element) and exclude null and missing values. Inequality properties not ordered explicitly are ordered after the explicit orders, by name, in the direction of the last explicit order, and must exist. Limits: 30 disjunctions, 10 `NOT_IN` values, one `!=`/`NOT_IN` per query, `NOT_IN` not with `OR` or `IN`, the same ancestor in every disjunction. |
+| Property transforms and property masks | `Mutation.property_transforms` (`increment`, `maximum`, `minimum`, `set_to_server_value: REQUEST_TIME`, `append_missing_elements`, `remove_all_from_array`) apply in order after the write, with production's numeric rules (saturating integer increments, doubles win, NaN, equivalent numbers); `MutationResult.transform_results` reports each result (null for array transforms). `Mutation.property_mask` merges the written entity into the stored one (masked paths written or removed, others kept; Java ignores the mask). `LookupRequest.property_mask` and `RunQueryRequest.property_mask` return only the referenced properties (Java returns all). Paths use dots for embedded entities, with backslash escapes. Transactions see their own earlier writes (`crates/oxide-engine/src/transform.rs`). |
 
 ## Unknown to Java's protos (fields its descriptors do not define)
 
@@ -27,7 +28,7 @@ REST requests are parsed against Java's descriptors, so these fields fail with
 
 | Feature | Production API surface |
 |---|---|
-| Property transforms (`increment`, `maximum`, `minimum`, `set_to_server_value`, `append_missing_elements`, `remove_all_from_array`) | `Mutation.property_transforms`, `MutationResult.transform_results` |
+| Property transforms (`increment`, `maximum`, `minimum`, `set_to_server_value`, `append_missing_elements`, `remove_all_from_array`) (**implemented**) | `Mutation.property_transforms`, `MutationResult.transform_results` |
 | Query explain (plan summary, execution stats) | `RunQueryRequest.explain_options`, `RunAggregationQueryRequest.explain_options`, `*Response.explain_metrics` |
 | Vector search | `Query.find_nearest` |
 | Request options (request tags) (**implemented**: accepted, ignored) | `request_options` on every RPC |
@@ -43,6 +44,7 @@ REST requests are parsed against Java's descriptors, so these fields fail with
 | Cloud Storage export/import (`gs://bucket/...`) | Treated as a local relative path |
 | `ExportEntitiesResponse.output_url` pointing at the overall metadata file | The bare prefix |
 | Export `labels` | Ignored |
+| `property_mask` on Commit, Lookup and RunQuery (**implemented**) | Accepted and ignored: full entities are written and returned |
 | `OR` composite filters (Datastore mode) (**implemented**) | 400 `unsupported composite property operator` |
 | `IN` with several values, `NOT_IN` (Datastore mode) (**implemented**) | 400 `Filter has N properties, expected 1` |
 | `!=` (Datastore mode) (**implemented**) | bare 500 |

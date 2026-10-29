@@ -590,3 +590,142 @@ fn multiple_inequality_properties() {
         "Only one inequality filter per query is supported.  Encountered both n and c"
     );
 }
+
+fn key(name: &str) -> Value {
+    json!({"path": [{"kind": "T", "name": name}]})
+}
+
+fn lookup_properties(emulator: &Emulator, name: &str, mask: Option<Value>) -> Value {
+    let mut request = json!({"keys": [key(name)]});
+    if let Some(m) = mask {
+        request["propertyMask"] = m;
+    }
+    let (status, body) = emulator.post("lookup", request);
+    assert_eq!(status, 200, "{body}");
+    body["found"][0]["entity"]["properties"].clone()
+}
+
+#[test]
+fn property_transforms_and_masks() {
+    let emulator = start(&[]);
+    let commit = |mutations: Value| {
+        let (status, body) = emulator.post(
+            "commit",
+            json!({"mode": "NON_TRANSACTIONAL", "mutations": mutations}),
+        );
+        assert_eq!(status, 200, "{body}");
+        body["mutationResults"].clone()
+    };
+    commit(json!([{"insert": {"key": key("t"), "properties": {
+        "n": int(5),
+        "keep": {"stringValue": "k"},
+        "tags": {"arrayValue": {"values": [{"stringValue": "a"}]}},
+    }}}]));
+
+    // Masked upsert with transforms: unmasked properties are kept, the counter is incremented
+    // from its stored value.
+    let results = commit(json!([{
+        "upsert": {"key": key("t"), "properties": {"note": {"stringValue": "hi"}}},
+        "propertyMask": {"paths": ["note"]},
+        "propertyTransforms": [
+            {"property": "n", "increment": int(2)},
+            {"property": "n", "maximum": {"doubleValue": 6.5}},
+            {"property": "tags", "appendMissingElements": {"values": [{"stringValue": "a"}, {"stringValue": "b"}]}},
+            {"property": "seen", "setToServerValue": "REQUEST_TIME"},
+        ],
+    }]));
+    let transform_results = results[0]["transformResults"].as_array().unwrap();
+    assert_eq!(transform_results[0], int(7));
+    assert_eq!(transform_results[1], json!({"integerValue": "7"}));
+    assert_eq!(transform_results[2], json!({"nullValue": null}));
+    assert!(transform_results[3]["timestampValue"].is_string());
+
+    let properties = lookup_properties(&emulator, "t", None);
+    assert_eq!(properties["n"], int(7));
+    assert_eq!(properties["keep"], json!({"stringValue": "k"}));
+    assert_eq!(properties["note"], json!({"stringValue": "hi"}));
+    assert_eq!(
+        properties["tags"],
+        json!({"arrayValue": {"values": [{"stringValue": "a"}, {"stringValue": "b"}]}})
+    );
+    assert_eq!(properties["seen"], transform_results[3]);
+
+    // A masked path the written entity lacks is removed.
+    commit(json!([{"update": {"key": key("t")}, "propertyMask": {"paths": ["keep"]}}]));
+    assert!(
+        lookup_properties(&emulator, "t", None)
+            .get("keep")
+            .is_none()
+    );
+
+    // Read masks on lookup and queries.
+    assert_eq!(
+        lookup_properties(&emulator, "t", Some(json!({"paths": ["n", "missing"]}))),
+        json!({"n": int(7)})
+    );
+    let (status, body) = emulator.post(
+        "runQuery",
+        json!({"query": {"kind": [{"name": "T"}]}, "propertyMask": {"paths": ["note"]}}),
+    );
+    assert_eq!(status, 200, "{body}");
+    assert_eq!(
+        body["batch"]["entityResults"][0]["entity"]["properties"],
+        json!({"note": {"stringValue": "hi"}})
+    );
+
+    // Transforms in a transaction see the transaction's own writes.
+    let (_, begin) = emulator.post("beginTransaction", json!({}));
+    let (status, body) = emulator.post(
+        "commit",
+        json!({
+            "transaction": begin["transaction"],
+            "mutations": [
+                {"upsert": {"key": key("u"), "properties": {"n": int(1)}}},
+                {"update": {"key": key("u")}, "propertyMask": {"paths": []},
+                 "propertyTransforms": [{"property": "n", "increment": {"doubleValue": 0.5}}]},
+            ],
+        }),
+    );
+    assert_eq!(status, 200, "{body}");
+    assert_eq!(
+        body["mutationResults"][1]["transformResults"][0],
+        json!({"doubleValue": 1.5})
+    );
+    assert_eq!(
+        lookup_properties(&emulator, "u", None)["n"],
+        json!({"doubleValue": 1.5})
+    );
+
+    let (status, body) = emulator.post(
+        "commit",
+        json!({"mode": "NON_TRANSACTIONAL", "mutations": [{
+            "upsert": {"key": key("t")},
+            "propertyTransforms": [{"property": "n", "increment": {"stringValue": "x"}}],
+        }]}),
+    );
+    assert_eq!(status, 400);
+    assert_eq!(
+        body["error"]["message"],
+        "The increment value must be an integer or a double."
+    );
+}
+
+#[test]
+fn no_superset_ignores_masks() {
+    let emulator = start(&["--no_superset"]);
+    let commit = |mutation: Value| {
+        let (status, _) = emulator.post(
+            "commit",
+            json!({"mode": "NON_TRANSACTIONAL", "mutations": [mutation]}),
+        );
+        assert_eq!(status, 200);
+    };
+    commit(json!({"insert": {"key": key("t"), "properties": {"a": int(1), "b": int(2)}}}));
+    commit(
+        json!({"upsert": {"key": key("t"), "properties": {"a": int(9)}}, "propertyMask": {"paths": ["a"]}}),
+    );
+    assert_eq!(
+        lookup_properties(&emulator, "t", Some(json!({"paths": ["b"]}))),
+        json!({"a": int(9)})
+    );
+}

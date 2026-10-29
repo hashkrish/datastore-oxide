@@ -10,7 +10,8 @@ pub mod pseudo;
 pub mod query;
 pub mod random;
 mod store;
-use oxide_model::{Entity, IdOrName, Key, PathElement};
+pub mod transform;
+use oxide_model::{Entity, IdOrName, Key, PathElement, Value};
 use random::JavaRandom;
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -91,6 +92,8 @@ pub struct Mutation {
     pub op: Op,
     pub base_version: Option<i64>,
     pub on_conflict: OnConflict,
+    /// Property mask and transforms (superset only).
+    pub partial: transform::PartialWrite,
 }
 
 /// `Mutation.conflict_resolution_strategy`.
@@ -112,6 +115,8 @@ pub struct MutationResult {
     /// 0 when there is no version to report (a conflict on a missing entity).
     pub version: i64,
     pub conflict_detected: bool,
+    /// One value per property transform of the mutation.
+    pub transform_results: Vec<Value>,
 }
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct CommitResult {
@@ -804,6 +809,7 @@ impl Engine {
         mutations: Vec<Mutation>,
     ) -> Result<CommitResult> {
         let indexes = self.composite_indexes();
+        let request_time = now_micros();
         self.with_state(|state, decide| {
             let mut result = CommitResult::default();
             for mutation in mutations {
@@ -825,13 +831,19 @@ impl Engine {
                     });
                     continue;
                 }
+                let (entity, transform_results) = apply_partial(
+                    &mutation.partial,
+                    project.logical(&key, &group).map(|(e, _, _)| e),
+                    write.into_entity(),
+                    request_time,
+                );
                 project.bump_group(&group);
                 let timestamp = project.next_timestamp();
                 let scatter = self.config().auto_id_policy == AutoIdPolicy::Sequential;
                 let (cost, versions) = project.add_job(
                     &group,
                     timestamp,
-                    &[(key, write.into_entity())],
+                    &[(key, entity)],
                     scatter,
                     &indexes,
                     decide,
@@ -842,6 +854,7 @@ impl Engine {
                     key: allocated,
                     version: versions[0],
                     conflict_detected: false,
+                    transform_results,
                 });
             }
             Ok(result)
@@ -860,6 +873,7 @@ impl Engine {
             if !state.projects.contains_key(project_id) {
                 return Err(Error::new(Code::Unknown, ""));
             }
+            let request_time = now_micros();
             let mut results: Vec<(Key, MutationResult)> = Vec::new();
             for mutation in mutations {
                 let (key, write, allocated) = self.resolve(state, mutation.op);
@@ -902,17 +916,32 @@ impl Engine {
                     ));
                     continue;
                 }
+                let (entity, transform_results) = if mutation.partial.is_empty() {
+                    (write.into_entity(), Vec::new())
+                } else {
+                    let existing = match txn.writes.iter().find(|(k, _)| *k == key) {
+                        Some((_, w)) => w.clone(),
+                        None => self.txn_read(project, handle, &key).map(|(e, _)| e),
+                    };
+                    apply_partial(
+                        &mutation.partial,
+                        existing.as_ref(),
+                        write.into_entity(),
+                        request_time,
+                    )
+                };
                 project
                     .txns
                     .get_mut(&handle)
                     .expect("tracked")
-                    .buffer(key.clone(), write.into_entity());
+                    .buffer(key.clone(), entity);
                 results.push((
                     key,
                     MutationResult {
                         key: allocated,
                         version: 0,
                         conflict_detected: false,
+                        transform_results,
                     },
                 ));
             }
@@ -1153,6 +1182,28 @@ impl Engine {
     /// Reserving ids has no effect in the Java emulator: the shared counter is not advanced.
     pub fn reserve_ids(&self, _keys: &[Key]) {}
 }
+/// Applies a mutation's mask and transforms to the entity it writes.
+fn apply_partial(
+    partial: &transform::PartialWrite,
+    existing: Option<&Entity>,
+    written: Option<Entity>,
+    request_time: i64,
+) -> (Option<Entity>, Vec<Value>) {
+    match written {
+        Some(e) if !partial.is_empty() => {
+            let (e, results) = partial.apply(existing, e, request_time);
+            (Some(e), results)
+        }
+        other => (other, Vec::new()),
+    }
+}
+
+fn now_micros() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| d.as_micros() as i64)
+}
+
 enum Write {
     Insert(Entity),
     Update(Entity),
@@ -1189,6 +1240,7 @@ fn check_mutation(
                     key: None,
                     version,
                     conflict_detected: true,
+                    transform_results: Vec::new(),
                 }))
             }
         };
@@ -1282,6 +1334,7 @@ mod tests {
             op: Op::Upsert(e),
             base_version: None,
             on_conflict: OnConflict::ServerValue,
+            partial: Default::default(),
         }
     }
     #[test]
@@ -1345,6 +1398,7 @@ mod tests {
             op: Op::Insert(Entity::new(k)),
             base_version: None,
             on_conflict: OnConflict::ServerValue,
+            partial: Default::default(),
         };
         engine
             .commit_non_transactional("p", vec![insert(named("x"))])
@@ -1376,7 +1430,8 @@ mod tests {
             MutationResult {
                 key: None,
                 version: 2,
-                conflict_detected: true
+                conflict_detected: true,
+                transform_results: vec![],
             }
         );
         assert_eq!(

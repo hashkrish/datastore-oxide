@@ -155,8 +155,13 @@ fn decode_handle(bytes: &[u8]) -> Result<u64, Status> {
     Ok(handle)
 }
 
-/// Validates one mutation and turns it into an engine mutation.
-fn mutation_from_proto(m: &pb::Mutation, scope: &Scope) -> Result<Mutation, Status> {
+/// Validates one mutation and turns it into an engine mutation. With `superset`, its property mask
+/// and property transforms apply (Java ignores both).
+fn mutation_from_proto(
+    m: &pb::Mutation,
+    scope: &Scope,
+    superset: bool,
+) -> Result<Mutation, Status> {
     use pb::mutation::{ConflictDetectionStrategy, Operation};
     let entity = |e: &pb::Entity, allow_incomplete: bool| -> Result<Entity, Status> {
         if e.key.is_none() {
@@ -200,9 +205,15 @@ fn mutation_from_proto(m: &pb::Mutation, scope: &Scope) -> Result<Mutation, Stat
             "cannot set a conflict resolution strategy if no detection strategy was set",
         ));
     }
+    let partial = if superset {
+        partial_write_from_proto(m, &op, scope)?
+    } else {
+        Default::default()
+    };
     Ok(Mutation {
         op,
         base_version,
+        partial,
         on_conflict: match pb::mutation::ConflictResolutionStrategy::try_from(
             m.conflict_resolution_strategy,
         ) {
@@ -211,6 +222,130 @@ fn mutation_from_proto(m: &pb::Mutation, scope: &Scope) -> Result<Mutation, Stat
             Err(_) => OnConflict::Unrecognized,
         },
     })
+}
+
+/// The paths of a read's property mask (superset; Java returns every property).
+fn read_mask(mask: Option<&pb::PropertyMask>) -> Result<Option<Vec<Vec<String>>>, Status> {
+    mask.map(|m| {
+        m.paths
+            .iter()
+            .map(|p| {
+                oxide_engine::transform::parse_path(p)
+                    .ok_or_else(|| invalid(format!("Invalid property mask path \"{p}\".")))
+            })
+            .collect()
+    })
+    .transpose()
+}
+
+/// Keeps only the properties `paths` reference (a path into an embedded entity keeps that
+/// entity with only the referenced properties).
+fn apply_read_mask(entity: &mut pb::Entity, paths: &[Vec<String>]) {
+    use pb::value::ValueType;
+    let mut nested: std::collections::HashMap<&str, Vec<Vec<String>>> = Default::default();
+    let mut whole: HashSet<&str> = HashSet::new();
+    for p in paths {
+        match p.split_first() {
+            Some((first, [])) => {
+                whole.insert(first);
+            }
+            Some((first, rest)) => nested.entry(first).or_default().push(rest.to_vec()),
+            None => {}
+        }
+    }
+    entity.properties.retain(|name, value| {
+        if whole.contains(name.as_str()) {
+            return true;
+        }
+        match (nested.get(name.as_str()), &mut value.value_type) {
+            (Some(sub), Some(ValueType::EntityValue(e))) => {
+                apply_read_mask(e, sub);
+                true
+            }
+            _ => false,
+        }
+    });
+}
+
+/// A mutation's property mask and property transforms (superset).
+fn partial_write_from_proto(
+    m: &pb::Mutation,
+    op: &Op,
+    scope: &Scope,
+) -> Result<oxide_engine::transform::PartialWrite, Status> {
+    use oxide_engine::transform::{Number, PartialWrite, Transform, TransformOp, parse_path};
+    use pb::property_transform::{ServerValue, TransformType};
+    let is_delete = matches!(op, Op::Delete(_));
+    let mask = match &m.property_mask {
+        Some(mask) if !is_delete => {
+            let mut paths = Vec::with_capacity(mask.paths.len());
+            for p in &mask.paths {
+                let path = parse_path(p)
+                    .ok_or_else(|| invalid(format!("Invalid property mask path \"{p}\".")))?;
+                if p == "__key__" {
+                    continue;
+                }
+                if path
+                    .iter()
+                    .any(|n| n.starts_with("__") && n.ends_with("__"))
+                {
+                    return Err(invalid(format!(
+                        "The property mask path \"{p}\" has a reserved name."
+                    )));
+                }
+                paths.push(path);
+            }
+            Some(paths)
+        }
+        _ => None,
+    };
+    if is_delete && !m.property_transforms.is_empty() {
+        return Err(invalid(
+            "Property transforms can only be used with insert, update or upsert.",
+        ));
+    }
+    let number = |what: &str, v: &pb::Value| match v.value_type {
+        Some(pb::value::ValueType::IntegerValue(i)) => Ok(Number::Integer(i)),
+        Some(pb::value::ValueType::DoubleValue(d)) => Ok(Number::Double(d)),
+        _ => Err(invalid(format!(
+            "The {what} value must be an integer or a double."
+        ))),
+    };
+    let values = |property: &str, a: &pb::ArrayValue| {
+        a.values
+            .iter()
+            .map(|v| convert::single_value_from_proto(property, v, scope))
+            .collect::<Result<Vec<_>, _>>()
+    };
+    let mut transforms = Vec::with_capacity(m.property_transforms.len());
+    for t in &m.property_transforms {
+        let property = parse_path(&t.property).ok_or_else(|| {
+            invalid(format!(
+                "Invalid property path \"{}\" in a property transform.",
+                t.property
+            ))
+        })?;
+        let op = match &t.transform_type {
+            None => return Err(invalid("A property transform must set a transformation.")),
+            Some(TransformType::SetToServerValue(v)) => {
+                if *v != ServerValue::RequestTime as i32 {
+                    return Err(invalid("set_to_server_value must be REQUEST_TIME."));
+                }
+                TransformOp::RequestTime
+            }
+            Some(TransformType::Increment(v)) => TransformOp::Increment(number("increment", v)?),
+            Some(TransformType::Maximum(v)) => TransformOp::Maximum(number("maximum", v)?),
+            Some(TransformType::Minimum(v)) => TransformOp::Minimum(number("minimum", v)?),
+            Some(TransformType::AppendMissingElements(a)) => {
+                TransformOp::AppendMissing(values(&t.property, a)?)
+            }
+            Some(TransformType::RemoveAllFromArray(a)) => {
+                TransformOp::RemoveAll(values(&t.property, a)?)
+            }
+        };
+        transforms.push(Transform { property, op });
+    }
+    Ok(PartialWrite { mask, transforms })
 }
 
 /// Production's limits on a commit, which the Java emulator does not enforce.
@@ -257,6 +392,11 @@ impl Datastore for DatastoreService {
             .iter()
             .map(|k| convert::key_from_proto(k, &scope, KeyUse::Read))
             .collect::<Result<Vec<_>, _>>()?;
+        let mask = if self.superset {
+            read_mask(r.property_mask.as_ref())?
+        } else {
+            None
+        };
         let (mode, transaction) = self.read_mode(r.read_options.as_ref(), &scope)?;
         let mut response = pb::LookupResponse {
             transaction: transaction.unwrap_or_default().into(),
@@ -268,11 +408,17 @@ impl Datastore for DatastoreService {
             .map_err(engine_status)?
         {
             match result {
-                LookupResult::Found { entity, version } => response.found.push(pb::EntityResult {
-                    entity: Some(convert::entity_to_proto(&entity)),
-                    version,
-                    ..Default::default()
-                }),
+                LookupResult::Found { entity, version } => {
+                    let mut entity = convert::entity_to_proto(&entity);
+                    if let Some(mask) = &mask {
+                        apply_read_mask(&mut entity, mask);
+                    }
+                    response.found.push(pb::EntityResult {
+                        entity: Some(entity),
+                        version,
+                        ..Default::default()
+                    })
+                }
                 LookupResult::Missing { key, version } => response.missing.push(pb::EntityResult {
                     entity: Some(pb::Entity {
                         key: Some(convert::key_to_proto(&key)),
@@ -312,10 +458,28 @@ impl Datastore for DatastoreService {
             }
         };
         self.check_transactional_query(r.read_options.as_ref(), &query)?;
+        let mask = if self.superset {
+            read_mask(r.property_mask.as_ref())?
+        } else {
+            None
+        };
+        if mask.is_some() && (query.keys_only || !query.projection.is_empty()) {
+            return Err(invalid(
+                "The property mask must not be set for a projection query.",
+            ));
+        }
         let (mode, transaction) = self.read_mode(r.read_options.as_ref(), &scope)?;
         let batch = self.engine.run_query(&query, mode).map_err(engine_status)?;
+        let mut batch = crate::query::batch_to_proto(&query, batch);
+        if let Some(mask) = &mask {
+            for result in &mut batch.entity_results {
+                if let Some(e) = &mut result.entity {
+                    apply_read_mask(e, mask);
+                }
+            }
+        }
         Ok(Response::new(pb::RunQueryResponse {
-            batch: Some(crate::query::batch_to_proto(&query, batch)),
+            batch: Some(batch),
             query: echo,
             transaction: transaction.unwrap_or_default().into(),
             ..Default::default()
@@ -418,7 +582,7 @@ impl Datastore for DatastoreService {
         let mutations = r
             .mutations
             .iter()
-            .map(|m| mutation_from_proto(m, &scope))
+            .map(|m| mutation_from_proto(m, &scope, self.superset))
             .collect::<Result<Vec<_>, _>>()?;
         let result = match handle {
             Some(handle) => self.engine.commit_transaction(&scope.project_id, handle, mutations),
@@ -443,6 +607,11 @@ impl Datastore for DatastoreService {
                     key: r.key.as_ref().map(convert::key_to_proto),
                     version: r.version,
                     conflict_detected: r.conflict_detected,
+                    transform_results: r
+                        .transform_results
+                        .iter()
+                        .map(convert::value_to_proto)
+                        .collect(),
                     ..Default::default()
                 })
                 .collect(),
