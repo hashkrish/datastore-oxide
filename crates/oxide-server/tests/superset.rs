@@ -307,3 +307,286 @@ fn rest_accepts_production_request_fields() {
     assert_eq!(status, 400);
     assert_eq!(body["error"]["message"], "Payload isn't valid for request.");
 }
+
+/// Names of the `A` entities a query returns, in order.
+fn names(body: &Value) -> Vec<String> {
+    body["batch"]["entityResults"]
+        .as_array()
+        .map(|rs| {
+            rs.iter()
+                .map(|r| {
+                    r["entity"]["key"]["path"][0]["name"]
+                        .as_str()
+                        .unwrap()
+                        .to_string()
+                })
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+fn seed_named(emulator: &Emulator, rows: &[(&str, Value)]) {
+    let mutations: Vec<Value> = rows
+        .iter()
+        .map(|(name, props)| {
+            json!({"insert": {"key": {"path": [{"kind": "A", "name": name}]}, "properties": props}})
+        })
+        .collect();
+    let (status, body) = emulator.post(
+        "commit",
+        json!({"mode": "NON_TRANSACTIONAL", "mutations": mutations}),
+    );
+    assert_eq!(status, 200, "{body}");
+}
+
+fn int(n: i64) -> Value {
+    json!({"integerValue": n.to_string()})
+}
+
+fn pf(name: &str, op: &str, value: Value) -> Value {
+    json!({"propertyFilter": {"property": {"name": name}, "op": op, "value": value}})
+}
+
+fn composite(op: &str, filters: Vec<Value>) -> Value {
+    json!({"compositeFilter": {"op": op, "filters": filters}})
+}
+
+fn run(emulator: &Emulator, query: Value) -> (u16, Value) {
+    emulator.post("runQuery", json!({"query": query}))
+}
+
+fn filter_fixture(flags: &[&str]) -> Emulator {
+    let emulator = start(flags);
+    seed_named(
+        &emulator,
+        &[
+            ("a", json!({"n": int(1), "c": {"stringValue": "red"}})),
+            ("b", json!({"n": int(2), "c": {"stringValue": "blue"}})),
+            ("c", json!({"n": int(3), "c": {"stringValue": "red"}})),
+            (
+                "d",
+                json!({"n": {"nullValue": null}, "c": {"stringValue": "green"}}),
+            ),
+            ("e", json!({"c": {"stringValue": "blue"}})),
+            (
+                "f",
+                json!({"n": {"arrayValue": {"values": [int(2), int(9)]}}}),
+            ),
+        ],
+    );
+    emulator
+}
+
+#[test]
+fn disjunctive_filters() {
+    let emulator = filter_fixture(&[]);
+    let kind = json!([{"name": "A"}]);
+    let query = |filter: Value| json!({"kind": kind, "filter": filter});
+    let ok = |q: Value| {
+        let (status, body) = run(&emulator, q);
+        assert_eq!(status, 200, "{body}");
+        names(&body)
+    };
+
+    // OR, deduplicated and in key order.
+    assert_eq!(
+        ok(query(composite(
+            "OR",
+            vec![
+                pf("c", "EQUAL", json!({"stringValue": "red"})),
+                pf("n", "EQUAL", int(2))
+            ]
+        ))),
+        ["a", "b", "c", "f"]
+    );
+    // AND of an OR.
+    assert_eq!(
+        ok(query(composite(
+            "AND",
+            vec![
+                composite(
+                    "OR",
+                    vec![pf("n", "EQUAL", int(1)), pf("n", "EQUAL", int(3))]
+                ),
+                pf("c", "EQUAL", json!({"stringValue": "red"})),
+            ]
+        ))),
+        ["a", "c"]
+    );
+    // IN with several values; an array matches through any element.
+    assert_eq!(
+        ok(query(pf(
+            "n",
+            "IN",
+            json!({"arrayValue": {"values": [int(2), int(3)]}})
+        ))),
+        ["b", "c", "f"]
+    );
+    // NOT_EQUAL and NOT_IN: ordered by the property, nulls and missing values excluded; an
+    // array matches when some element is not excluded.
+    assert_eq!(ok(query(pf("n", "NOT_EQUAL", int(2)))), ["a", "c", "f"]);
+    assert_eq!(
+        ok(query(pf(
+            "n",
+            "NOT_IN",
+            json!({"arrayValue": {"values": [int(1), int(9)]}})
+        ))),
+        ["b", "f", "c"]
+    );
+    assert_eq!(
+        ok(query(pf("n", "NOT_EQUAL", json!({"nullValue": null})))),
+        ["a", "b", "f", "c"]
+    );
+    // An inequality in one branch orders everything by that property, descending here.
+    let ordered = json!({
+        "kind": kind,
+        "filter": composite("OR", vec![pf("n", "GREATER_THAN", int(2)), pf("n", "EQUAL", int(1))]),
+        "order": [{"property": {"name": "n"}, "direction": "DESCENDING"}],
+    });
+    assert_eq!(ok(ordered), ["f", "c", "a"]);
+}
+
+#[test]
+fn disjunctive_filters_page_with_cursors() {
+    let emulator = filter_fixture(&[]);
+    let query = |cursor: Option<&str>| {
+        let mut q = json!({
+            "kind": [{"name": "A"}],
+            "filter": composite(
+                "OR",
+                vec![pf("c", "EQUAL", json!({"stringValue": "blue"})), pf("n", "LESS_THAN", int(3))],
+            ),
+            "limit": 2,
+        });
+        if let Some(c) = cursor {
+            q["startCursor"] = json!(c);
+        }
+        q
+    };
+    let mut seen = Vec::new();
+    let mut cursor: Option<String> = None;
+    for _ in 0..4 {
+        let (status, body) = run(&emulator, query(cursor.as_deref()));
+        assert_eq!(status, 200, "{body}");
+        let page = names(&body);
+        if page.is_empty() {
+            break;
+        }
+        seen.extend(page);
+        cursor = body["batch"]["endCursor"].as_str().map(str::to_string);
+    }
+    // Ordered by n, the inequality property (null sorts first and is < 3). The implicit order on
+    // n requires the property, so `e` (blue, without n) is left out, as in production.
+    assert_eq!(seen, ["d", "a", "b", "f"]);
+}
+
+#[test]
+fn disjunctive_filter_errors() {
+    let emulator = filter_fixture(&[]);
+    let kind = json!([{"name": "A"}]);
+    let err = |filter: Value| {
+        let (status, body) = run(&emulator, json!({"kind": kind, "filter": filter}));
+        assert_eq!(status, 400, "{body}");
+        body["error"]["message"].as_str().unwrap().to_string()
+    };
+    let array = |n: i64| json!({"arrayValue": {"values": (0..n).map(int).collect::<Vec<_>>()}});
+    assert_eq!(
+        err(pf("n", "NOT_IN", array(11))),
+        "'NOT_IN' supports up to 10 comparison values."
+    );
+    assert_eq!(
+        err(pf("n", "IN", array(31))),
+        "The query contains more than the maximum 30 disjunctions."
+    );
+    assert_eq!(
+        err(composite(
+            "OR",
+            vec![pf("n", "NOT_IN", array(2)), pf("c", "EQUAL", int(1))]
+        )),
+        "'NOT_IN' cannot be used in the same query with 'OR', 'IN' or 'NOT_EQUAL' filters."
+    );
+
+    // Java's behavior without the superset.
+    let java = filter_fixture(&["--no_superset"]);
+    let (status, body) = run(
+        &java,
+        json!({"kind": kind, "filter": composite("OR", vec![pf("n", "EQUAL", int(1))])}),
+    );
+    assert_eq!(status, 400);
+    assert_eq!(
+        body["error"]["message"],
+        "unsupported composite property operator"
+    );
+}
+
+#[test]
+fn gql_disjunctive_filters() {
+    let emulator = filter_fixture(&[]);
+    let ok = |q: &str| {
+        let (status, body) = emulator.post("runQuery", gql(q));
+        assert_eq!(status, 200, "{body}");
+        names(&body)
+    };
+    assert_eq!(
+        ok("SELECT * FROM A WHERE n = 1 OR c = 'blue'"),
+        ["a", "b", "e"]
+    );
+    assert_eq!(ok("SELECT * FROM A WHERE n IN ARRAY(1, 3)"), ["a", "c"]);
+    assert_eq!(ok("SELECT * FROM A WHERE n != 2"), ["a", "c", "f"]);
+    assert_eq!(ok("SELECT * FROM A WHERE n NOT IN ARRAY(1, 2, 3)"), ["f"]);
+    assert_eq!(
+        emulator.aggregate(gql(
+            "AGGREGATE COUNT(*) AS c OVER (SELECT * FROM A WHERE c = 'red' OR c = 'green')"
+        )),
+        json!({"c": {"integerValue": "3"}})
+    );
+}
+
+#[test]
+fn multiple_inequality_properties() {
+    let emulator = filter_fixture(&[]);
+    let kind = json!([{"name": "A"}]);
+    let ok = |q: Value| {
+        let (status, body) = run(&emulator, q);
+        assert_eq!(status, 200, "{body}");
+        names(&body)
+    };
+    let both = composite(
+        "AND",
+        vec![
+            pf("n", "GREATER_THAN", int(1)),
+            pf("c", "GREATER_THAN", json!({"stringValue": "a"})),
+        ],
+    );
+    // Implicit orders: c then n (by name), ascending.
+    assert_eq!(ok(json!({"kind": kind, "filter": both})), ["b", "c"]);
+    // An explicit order on another property comes first; the rest follow its direction.
+    assert_eq!(
+        ok(json!({
+            "kind": kind,
+            "filter": both,
+            "order": [{"property": {"name": "n"}, "direction": "DESCENDING"}],
+        })),
+        ["c", "b"]
+    );
+    // Inequalities on different properties in different branches. Both are ordered implicitly,
+    // so both must exist: `e` (no n) and `f` (no c) are left out, as in production.
+    assert_eq!(
+        ok(json!({
+            "kind": kind,
+            "filter": composite(
+                "OR",
+                vec![pf("n", "GREATER_THAN", int(2)), pf("c", "LESS_THAN", json!({"stringValue": "c"}))],
+            ),
+        })),
+        ["b", "c"]
+    );
+
+    let java = filter_fixture(&["--no_superset"]);
+    let (status, body) = run(&java, json!({"kind": kind, "filter": both}));
+    assert_eq!(status, 400);
+    assert_eq!(
+        body["error"]["message"],
+        "Only one inequality filter per query is supported.  Encountered both n and c"
+    );
+}

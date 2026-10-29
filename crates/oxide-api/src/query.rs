@@ -49,8 +49,14 @@ pub fn decode_cursor(bytes: &[u8]) -> Result<Option<Position>, Status> {
         .map_err(|_| invalid("Error parsing protocol message"))
 }
 
-/// Converts a structured v1 query.
-pub fn query_from_proto(q: &pb::Query, scope: &Scope, namespace: String) -> Result<Query, Status> {
+/// Converts a structured v1 query. With `superset`, filters may also use production's `OR`,
+/// multi-value `IN`, `NOT_IN` and `NOT_EQUAL` (see [`add_disjunctive_filter`]).
+pub fn query_from_proto(
+    q: &pb::Query,
+    scope: &Scope,
+    namespace: String,
+    superset: bool,
+) -> Result<Query, Status> {
     let mut out = Query {
         project_id: scope.project_id.clone(),
         database_id: scope.database_id.clone(),
@@ -70,9 +76,14 @@ pub fn query_from_proto(q: &pb::Query, scope: &Scope, namespace: String) -> Resu
         }
         _ => return Err(invalid("multiple kinds not supported")),
     }
+    out.multiple_inequalities = superset;
     if let Some(filter) = &q.filter {
-        check_filter_counts(filter)?;
-        add_filter(filter, scope, &mut out)?;
+        if superset {
+            add_disjunctive_filter(filter, scope, &mut out)?;
+        } else {
+            check_filter_counts(filter)?;
+            add_filter(filter, scope, &mut out)?;
+        }
     }
     for o in &q.order {
         let property = property_name(o.property.as_ref())?;
@@ -257,6 +268,275 @@ fn add_filter(filter: &pb::Filter, scope: &Scope, out: &mut Query) -> Result<(),
             Ok(())
         }
     }
+}
+
+/// Production's limit on disjunctions (branches after expanding `OR` and `IN`).
+const MAX_DISJUNCTIONS: usize = 30;
+/// Production's limit on `NOT_IN` values.
+const MAX_NOT_IN_VALUES: usize = 10;
+
+/// One AND-branch of a filter in disjunctive normal form, with its ancestor constraint
+/// (`Some(None)` is `HAS_PARENT null`: root entities).
+#[derive(Clone, Default)]
+struct Branch {
+    filters: Vec<Filter>,
+    ancestor: Option<Option<Key>>,
+    shallow: bool,
+}
+
+impl Branch {
+    fn and(&self, other: &Branch) -> Result<Branch, Status> {
+        let mut out = self.clone();
+        out.filters.extend(other.filters.iter().cloned());
+        if other.ancestor.is_some() {
+            if out.ancestor.is_some() {
+                return Err(invalid(if out.shallow || other.shallow {
+                    "duplicate ancestor or parent constraint"
+                } else {
+                    "All disjunctions must have a common and unique ancestor constraint."
+                }));
+            }
+            out.ancestor = other.ancestor.clone();
+            out.shallow = other.shallow;
+        }
+        Ok(out)
+    }
+}
+
+/// Production's filters (superset): the filter is expanded into disjunctive normal form. `IN`
+/// becomes one branch per value; `NOT_EQUAL` and `NOT_IN` become the ranges between the excluded
+/// values, which like production also excludes null. Every branch must have the same ancestor.
+fn add_disjunctive_filter(
+    filter: &pb::Filter,
+    scope: &Scope,
+    out: &mut Query,
+) -> Result<(), Status> {
+    check_superset_filter_counts(filter)?;
+    let mut branches = dnf(filter, scope, out)?;
+    let first = branches[0].clone();
+    if branches
+        .iter()
+        .any(|b| b.ancestor != first.ancestor || b.shallow != first.shallow)
+    {
+        return Err(invalid(
+            "All disjunctions must have a common and unique ancestor constraint.",
+        ));
+    }
+    if let Some(ancestor) = first.ancestor {
+        out.ancestor = ancestor;
+        out.shallow = first.shallow;
+    }
+    if branches.len() == 1 {
+        out.filters = branches.remove(0).filters;
+    } else {
+        out.disjunction = branches.into_iter().map(|b| b.filters).collect();
+    }
+    Ok(())
+}
+
+/// The per-query rules on production's operators.
+fn check_superset_filter_counts(filter: &pb::Filter) -> Result<(), Status> {
+    fn walk(f: &pb::Filter, ops: &mut Vec<pb::property_filter::Operator>, or: &mut bool) {
+        match &f.filter_type {
+            Some(pb::filter::FilterType::CompositeFilter(c)) => {
+                *or |= c.op() == pb::composite_filter::Operator::Or;
+                c.filters.iter().for_each(|f| walk(f, ops, or))
+            }
+            Some(pb::filter::FilterType::PropertyFilter(p)) => ops.push(p.op()),
+            None => {}
+        }
+    }
+    use pb::property_filter::Operator::*;
+    let (mut ops, mut or) = (Vec::new(), false);
+    walk(filter, &mut ops, &mut or);
+    if ops.iter().filter(|o| matches!(o, NotEqual | NotIn)).count() > 1 {
+        return Err(invalid(
+            "Only a single 'NOT_EQUAL' or 'NOT_IN' is allowed per query.",
+        ));
+    }
+    if ops.contains(&NotIn) && (or || ops.contains(&In)) {
+        return Err(invalid(
+            "'NOT_IN' cannot be used in the same query with 'OR', 'IN' or 'NOT_EQUAL' filters.",
+        ));
+    }
+    Ok(())
+}
+
+fn too_many_disjunctions() -> Status {
+    invalid(format!(
+        "The query contains more than the maximum {MAX_DISJUNCTIONS} disjunctions."
+    ))
+}
+
+fn dnf(filter: &pb::Filter, scope: &Scope, out: &Query) -> Result<Vec<Branch>, Status> {
+    use pb::property_filter::Operator;
+    let leaf = |filters: Vec<Filter>| Branch {
+        filters,
+        ..Default::default()
+    };
+    match &filter.filter_type {
+        None => Err(invalid("a filter must have exactly one of its fields set")),
+        Some(pb::filter::FilterType::CompositeFilter(c)) => {
+            if c.filters.is_empty() {
+                return Err(invalid(
+                    "A composite filter must have at least one sub-filter.",
+                ));
+            }
+            match c.op() {
+                pb::composite_filter::Operator::And => {
+                    let mut acc = vec![Branch::default()];
+                    for f in &c.filters {
+                        let sub = dnf(f, scope, out)?;
+                        if acc.len() * sub.len() > MAX_DISJUNCTIONS {
+                            return Err(too_many_disjunctions());
+                        }
+                        acc = acc
+                            .iter()
+                            .flat_map(|a| sub.iter().map(move |b| a.and(b)))
+                            .collect::<Result<_, _>>()?;
+                    }
+                    Ok(acc)
+                }
+                pb::composite_filter::Operator::Or => {
+                    let mut acc = Vec::new();
+                    for f in &c.filters {
+                        acc.extend(dnf(f, scope, out)?);
+                        if acc.len() > MAX_DISJUNCTIONS {
+                            return Err(too_many_disjunctions());
+                        }
+                    }
+                    Ok(acc)
+                }
+                _ => Err(invalid("a composite filter must specify an operator")),
+            }
+        }
+        Some(pb::filter::FilterType::PropertyFilter(p)) => {
+            let property = property_name(p.property.as_ref())?;
+            let value_type = p.value.as_ref().and_then(|v| v.value_type.as_ref());
+            if p.op == HAS_PARENT || p.op() == Operator::HasAncestor {
+                if property != KEY_PROPERTY {
+                    return Err(invalid("property must be __key__"));
+                }
+                let shallow = p.op == HAS_PARENT;
+                let key = match value_type {
+                    Some(ValueType::KeyValue(k)) => {
+                        Some(convert::key_from_proto(k, scope, KeyUse::Value)?)
+                    }
+                    Some(ValueType::NullValue(_)) if shallow => None,
+                    _ if shallow => return Err(invalid("HAS_PARENT requires a key value or null")),
+                    _ => return Err(invalid("HAS_ANCESTOR requires a key value")),
+                };
+                if let Some(k) = &key
+                    && !shallow
+                    && k.partition.namespace_id != out.namespace_id
+                {
+                    return Err(invalid(format!(
+                        "The query namespace is {} but ancestor namespace is {}",
+                        out.namespace_id, k.partition.namespace_id
+                    )));
+                }
+                return Ok(vec![Branch {
+                    filters: Vec::new(),
+                    ancestor: Some(key),
+                    shallow,
+                }]);
+            }
+            let simple = |op| -> Result<Vec<Branch>, Status> {
+                let value = filter_value(
+                    &property,
+                    p.value.as_ref().unwrap_or(&pb::Value::default()),
+                    scope,
+                )?;
+                Ok(vec![leaf(vec![Filter {
+                    property: property.clone(),
+                    op,
+                    value,
+                }])])
+            };
+            let array = |name: &str| match value_type {
+                Some(ValueType::ArrayValue(a)) if !a.values.is_empty() => Ok(&a.values),
+                _ => Err(invalid(format!(
+                    "'{name}' property filter for '{property}' requires a non-empty ArrayValue"
+                ))),
+            };
+            match p.op() {
+                Operator::Unspecified => Err(invalid("a property filter must specify an operator")),
+                Operator::LessThan => simple(FilterOp::LessThan),
+                Operator::LessThanOrEqual => simple(FilterOp::LessThanOrEqual),
+                Operator::GreaterThan => simple(FilterOp::GreaterThan),
+                Operator::GreaterThanOrEqual => simple(FilterOp::GreaterThanOrEqual),
+                Operator::Equal => simple(FilterOp::Equal),
+                Operator::In => {
+                    let values = array("IN")?;
+                    if values.len() > MAX_DISJUNCTIONS {
+                        return Err(too_many_disjunctions());
+                    }
+                    values
+                        .iter()
+                        .map(|v| {
+                            Ok(leaf(vec![Filter {
+                                property: property.clone(),
+                                op: FilterOp::Equal,
+                                value: filter_value(&property, v, scope)?,
+                            }]))
+                        })
+                        .collect()
+                }
+                Operator::NotEqual => {
+                    let value = filter_value(
+                        &property,
+                        p.value.as_ref().unwrap_or(&pb::Value::default()),
+                        scope,
+                    )?;
+                    Ok(excluding(&property, vec![value]))
+                }
+                Operator::NotIn => {
+                    let values = array("NOT_IN")?;
+                    if values.len() > MAX_NOT_IN_VALUES {
+                        return Err(invalid(format!(
+                            "'NOT_IN' supports up to {MAX_NOT_IN_VALUES} comparison values."
+                        )));
+                    }
+                    let values = values
+                        .iter()
+                        .map(|v| filter_value(&property, v, scope))
+                        .collect::<Result<_, _>>()?;
+                    Ok(excluding(&property, values))
+                }
+                Operator::HasAncestor => unreachable!("handled above"),
+            }
+        }
+    }
+}
+
+/// Branches matching a non-null value of `property` other than `values`: the open ranges
+/// between the sorted excluded values.
+fn excluding(property: &str, mut values: Vec<IndexValue>) -> Vec<Branch> {
+    values.retain(|v| *v != IndexValue::Null);
+    values.sort();
+    values.dedup();
+    let bound = |op, value: &IndexValue| Filter {
+        property: property.to_string(),
+        op,
+        value: value.clone(),
+    };
+    let mut lower = IndexValue::Null;
+    let mut branches = Vec::with_capacity(values.len() + 1);
+    for v in &values {
+        branches.push(Branch {
+            filters: vec![
+                bound(FilterOp::GreaterThan, &lower),
+                bound(FilterOp::LessThan, v),
+            ],
+            ..Default::default()
+        });
+        lower = v.clone();
+    }
+    branches.push(Branch {
+        filters: vec![bound(FilterOp::GreaterThan, &lower)],
+        ..Default::default()
+    });
+    branches
 }
 
 fn filter_value(property: &str, value: &pb::Value, scope: &Scope) -> Result<IndexValue, Status> {

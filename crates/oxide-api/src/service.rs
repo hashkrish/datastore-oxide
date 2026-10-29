@@ -279,13 +279,14 @@ impl Datastore for DatastoreService {
         let scope = Scope::new(&r.project_id, &r.database_id)?;
         let namespace = crate::query::query_namespace(r.partition_id.as_ref(), &scope)?;
         let (query, echo) = match &r.query_type {
-            Some(pb::run_query_request::QueryType::Query(q)) => {
-                (crate::query::query_from_proto(q, &scope, namespace)?, None)
-            }
+            Some(pb::run_query_request::QueryType::Query(q)) => (
+                crate::query::query_from_proto(q, &scope, namespace, self.superset)?,
+                None,
+            ),
             Some(pb::run_query_request::QueryType::GqlQuery(g)) => {
                 let q = crate::gql::parse(g, &scope)?;
                 (
-                    crate::query::query_from_proto(&q, &scope, namespace)?,
+                    crate::query::query_from_proto(&q, &scope, namespace, self.superset)?,
                     Some(q),
                 )
             }
@@ -333,7 +334,7 @@ impl Datastore for DatastoreService {
             }
         };
         let (nested, aggregations) = aggregation::from_proto(&aggregation_query)?;
-        let mut query = crate::query::query_from_proto(nested, &scope, namespace)?;
+        let mut query = crate::query::query_from_proto(nested, &scope, namespace, self.superset)?;
         self.check_transactional_query(r.read_options.as_ref(), &query)?;
         // Every row up to offset + limit, in one batch; the offset is skipped below.
         query.unbatched = true;

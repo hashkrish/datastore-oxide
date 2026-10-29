@@ -67,6 +67,13 @@ pub struct Query {
     /// `HAS_PARENT`: only direct children of `ancestor` (or, without one, root entities).
     pub shallow: bool,
     pub filters: Vec<Filter>,
+    /// Disjunctive normal form beyond `filters` (superset only): when not empty, a result must
+    /// also match every filter of at least one branch.
+    pub disjunction: Vec<Vec<Filter>>,
+    /// Production's rules (superset): inequality filters on several properties, none of which has
+    /// to be the first order; those not ordered explicitly are ordered after the explicit orders,
+    /// by name, in the direction of the last explicit order.
+    pub multiple_inequalities: bool,
     pub orders: Vec<Order>,
     pub projection: Vec<String>,
     pub keys_only: bool,
@@ -171,6 +178,8 @@ impl Matcher {
 /// The normalized query: filters grouped per property, and the adjusted sort orders.
 struct Plan {
     matchers: BTreeMap<String, Matcher>,
+    /// Per-branch matchers of a disjunctive query; a row must match one branch.
+    branches: Vec<BTreeMap<String, Matcher>>,
     /// Adjusted orders, ending with `__key__` ascending.
     orders: Vec<Order>,
     first_descending: bool,
@@ -278,7 +287,7 @@ fn normalize_and_validate(q: &Query) -> Result<Plan> {
     }
 
     let mut inequality_property: Option<&str> = None;
-    for f in &filters {
+    for f in filters.iter().filter(|_| !q.multiple_inequalities) {
         if f.op.is_inequality() {
             match inequality_property {
                 None => inequality_property = Some(&f.property),
@@ -306,6 +315,22 @@ fn normalize_and_validate(q: &Query) -> Result<Plan> {
             ));
         }
     }
+    let mut inequalities: Vec<&str> = filters
+        .iter()
+        .filter(|f| f.op.is_inequality())
+        .map(|f| f.property.as_str())
+        .collect();
+    inequalities.sort();
+    inequalities.dedup();
+    if q.multiple_inequalities {
+        for p in &inequalities {
+            if !q.group_by.is_empty() && !q.group_by.iter().any(|g| g == p) {
+                return Err(bad_request(format!(
+                    "Inequality filter on {p} must also be a group by property when group by properties are set."
+                )));
+            }
+        }
+    }
     if let Some(p) = inequality_property {
         if !q.group_by.is_empty() && !q.group_by.iter().any(|g| g == p) {
             return Err(bad_request(format!(
@@ -320,22 +345,14 @@ fn normalize_and_validate(q: &Query) -> Result<Plan> {
         }
     }
 
-    let mut matchers: BTreeMap<String, Matcher> = BTreeMap::new();
-    for f in &filters {
-        let value = match &f.value {
-            IndexValue::Key(k) if f.property == KEY_PROPERTY => IndexValue::Key(query_key(k)),
-            v => v.clone(),
-        };
-        matchers
-            .entry(f.property.clone())
-            .or_default()
-            .add(f.op, value);
-    }
+    let mut matchers = build_matchers(filters.iter().copied());
 
     // Adjusted orders: explicit orders, else the first inequality property; then EXISTS orders for
     // projected / grouped properties without filters (by name); then `__key__` ascending.
     let mut adjusted = orders.clone();
-    if adjusted.is_empty()
+    if q.multiple_inequalities {
+        add_inequality_orders(&mut adjusted, &inequalities);
+    } else if adjusted.is_empty()
         && let Some(p) = inequality_property
     {
         adjusted.push(Order {
@@ -380,9 +397,113 @@ fn normalize_and_validate(q: &Query) -> Result<Plan> {
         .is_some_and(|o| o.direction == Direction::Descending);
     Ok(Plan {
         matchers,
+        branches: Vec::new(),
         orders: adjusted,
         first_descending,
     })
+}
+
+/// Orders the inequality properties that are not ordered yet, by name, in the direction of the
+/// last order (ascending without one).
+fn add_inequality_orders(orders: &mut Vec<Order>, inequalities: &[&str]) {
+    let direction = orders
+        .iter()
+        .rfind(|o| o.property != KEY_PROPERTY)
+        .map_or(Direction::Ascending, |o| o.direction);
+    let at = orders
+        .iter()
+        .position(|o| o.property == KEY_PROPERTY)
+        .unwrap_or(orders.len());
+    let missing: Vec<Order> = inequalities
+        .iter()
+        .filter(|p| !orders.iter().any(|o| o.property == **p))
+        .map(|p| Order {
+            property: p.to_string(),
+            direction,
+        })
+        .collect();
+    orders.splice(at..at, missing);
+}
+
+fn build_matchers<'a>(filters: impl Iterator<Item = &'a Filter>) -> BTreeMap<String, Matcher> {
+    let mut matchers: BTreeMap<String, Matcher> = BTreeMap::new();
+    for f in filters {
+        let value = match &f.value {
+            IndexValue::Key(k) if f.property == KEY_PROPERTY => IndexValue::Key(query_key(k)),
+            v => v.clone(),
+        };
+        matchers
+            .entry(f.property.clone())
+            .or_default()
+            .add(f.op, value);
+    }
+    matchers
+}
+
+/// Plans a disjunctive query: each branch is validated as a query of its own (with the base
+/// filters), all branches share at most one inequality property, which is the implicit first
+/// order, and rows are ordered by the base query's orders.
+fn normalize_disjunction(q: &Query) -> Result<Plan> {
+    let mut inequality: Option<&str> = None;
+    let mut inequalities: Vec<&str> = Vec::new();
+    let mut branches = Vec::with_capacity(q.disjunction.len());
+    for branch in &q.disjunction {
+        let mut single = q.clone();
+        single.disjunction.clear();
+        single.filters.extend(branch.iter().cloned());
+        normalize_and_validate(&single)?;
+        for f in branch.iter().filter(|f| f.op.is_inequality()) {
+            inequalities.push(&f.property);
+            if q.multiple_inequalities {
+                continue;
+            }
+            match inequality {
+                None => inequality = Some(&f.property),
+                Some(p) if p != f.property => {
+                    return Err(bad_request(format!(
+                        "Only one inequality filter per query is supported.  Encountered both {p} and {}",
+                        f.property
+                    )));
+                }
+                _ => {}
+            }
+        }
+        branches.push(build_matchers(branch.iter()));
+    }
+    let mut base = q.clone();
+    base.disjunction.clear();
+    let mut plan = normalize_and_validate(&base)?;
+    if q.multiple_inequalities {
+        inequalities.sort();
+        inequalities.dedup();
+        let explicit = plan.orders.len();
+        add_inequality_orders(&mut plan.orders, &inequalities);
+        for o in &plan.orders[..] {
+            if o.property != KEY_PROPERTY {
+                plan.matchers.entry(o.property.clone()).or_default();
+            }
+        }
+        if explicit != plan.orders.len() {
+            plan.first_descending = plan
+                .orders
+                .first()
+                .is_some_and(|o| o.direction == Direction::Descending);
+        }
+    } else if let Some(p) = inequality
+        && !plan.orders.iter().any(|o| o.property == p)
+    {
+        plan.orders.insert(
+            0,
+            Order {
+                property: p.to_string(),
+                direction: Direction::Ascending,
+            },
+        );
+        plan.matchers.entry(p.to_string()).or_default();
+        plan.first_descending = false;
+    }
+    plan.branches = branches;
+    Ok(plan)
 }
 
 /// `key` as queries compare it: Java's queries ignore the database (they see every database of
@@ -411,9 +532,17 @@ impl Plan {
         }
         let values = row.values.get(&order.property)?;
         let matcher = self.matchers.get(&order.property);
+        let in_some_branch = |v: &IndexValue| {
+            let mut constrained = self
+                .branches
+                .iter()
+                .filter_map(|b| b.get(&order.property))
+                .peekable();
+            constrained.peek().is_none() || constrained.any(|m| m.in_range(v))
+        };
         let relevant = values
             .iter()
-            .filter(|v| matcher.is_none_or(|m| m.in_range(v)));
+            .filter(|v| matcher.is_none_or(|m| m.in_range(v)) && in_some_branch(v));
         match order.direction {
             Direction::Ascending => relevant.min().cloned(),
             Direction::Descending => relevant.max().cloned(),
@@ -442,25 +571,31 @@ impl Plan {
     /// False if a filter on a plain top-level property (no `.`, not `__key__` or another special
     /// property) cannot match `entity`; true otherwise (then [`Plan::matches`] decides).
     fn may_match(&self, entity: &Entity) -> bool {
-        self.matchers.iter().all(|(name, m)| {
-            if name.contains('.') || name.starts_with("__") {
-                return true;
-            }
-            match entity.properties.get(name) {
-                Some(v) if matches!(v.kind, oxide_model::ValueKind::Entity(_)) => true,
-                _ => m.matches(&property_index_values(entity, name)),
-            }
-        })
+        let all = |matchers: &BTreeMap<String, Matcher>| {
+            matchers.iter().all(|(name, m)| {
+                if name.contains('.') || name.starts_with("__") {
+                    return true;
+                }
+                match entity.properties.get(name) {
+                    Some(v) if matches!(v.kind, oxide_model::ValueKind::Entity(_)) => true,
+                    _ => m.matches(&property_index_values(entity, name)),
+                }
+            })
+        };
+        all(&self.matchers) && (self.branches.is_empty() || self.branches.iter().any(all))
     }
 
     fn matches(&self, row: &Row) -> bool {
-        self.matchers.iter().all(|(name, m)| {
-            if name == KEY_PROPERTY {
-                m.matches(&[IndexValue::Key(query_key(&row.key))])
-            } else {
-                row.values.get(name).is_some_and(|v| m.matches(v))
-            }
-        })
+        let all = |matchers: &BTreeMap<String, Matcher>| {
+            matchers.iter().all(|(name, m)| {
+                if name == KEY_PROPERTY {
+                    m.matches(&[IndexValue::Key(query_key(&row.key))])
+                } else {
+                    row.values.get(name).is_some_and(|v| m.matches(v))
+                }
+            })
+        };
+        all(&self.matchers) && (self.branches.is_empty() || self.branches.iter().any(all))
     }
 
     /// The cursor position just after `row`.
@@ -602,7 +737,11 @@ pub fn run<'a>(
     entities: impl Iterator<Item = (&'a Key, &'a Entity, i64, Form)>,
     read_timestamp: i64,
 ) -> Result<QueryBatch> {
-    let plan = normalize_and_validate(q)?;
+    let plan = if q.disjunction.is_empty() {
+        normalize_and_validate(q)?
+    } else {
+        normalize_disjunction(q)?
+    };
     let projecting = !q.projection.is_empty();
 
     let mut rows: Vec<Row> = entities
