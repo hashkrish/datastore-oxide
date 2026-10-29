@@ -83,6 +83,8 @@ struct Emulator {
     engine: Arc<Engine>,
     grpc: Routes,
     rest: RestGateway,
+    /// Serve the superset's extra HTTP pages (the data viewer).
+    superset: bool,
 }
 
 impl Emulator {
@@ -276,6 +278,7 @@ pub async fn run(cfg: StartConfig) -> Result<i32> {
         shutdown: shutdown_tx,
         grpc: grpc_routes(&engine, stored_policy, firestore, cfg.superset)?,
         rest: RestGateway::new(cfg.superset)?,
+        superset: cfg.superset,
         engine,
     });
 
@@ -527,6 +530,17 @@ fn is_grpc<B>(req: &Request<B>) -> bool {
 /// goes to the REST gateway (which answers 404 for unknown paths).
 fn handle_control<B>(req: &Request<B>, emulator: &Emulator) -> Option<Response<Body>> {
     let method = req.method();
+    if emulator.superset && req.uri().path().starts_with(crate::viewer::PATH) {
+        let viewer = crate::viewer::handle(
+            method,
+            req.uri().path(),
+            req.uri().query().unwrap_or(""),
+            &emulator.engine,
+        );
+        if viewer.is_some() {
+            return viewer;
+        }
+    }
     Some(match (method, req.uri().path()) {
         (&Method::OPTIONS, _) => text(StatusCode::OK, ""),
         (&Method::GET, "/") => text(StatusCode::OK, "Ok\n"),

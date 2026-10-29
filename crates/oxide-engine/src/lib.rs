@@ -13,7 +13,7 @@ mod store;
 pub mod transform;
 use oxide_model::{Entity, IdOrName, Key, PathElement, Value};
 use random::JavaRandom;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, Ordering};
 pub use store::JobCost;
@@ -521,6 +521,37 @@ impl Engine {
     /// Changes whenever the data is replaced by [`Engine::reset`] or [`Engine::restore`].
     pub fn generation(&self) -> u64 {
         self.generation.load(Ordering::SeqCst)
+    }
+    /// Every project with state, by name (the data viewer, superset).
+    pub fn project_ids(&self) -> Vec<String> {
+        let mut ids: Vec<String> = self.lock().projects.keys().cloned().collect();
+        ids.sort();
+        ids
+    }
+    /// `(database, namespace, kind, entity count)` of a project's applied entities, sorted; kinds
+    /// with reserved names (`__x__`) are left out (the data viewer, superset).
+    pub fn kind_summary(&self, project_id: &str) -> Vec<(String, String, String, usize)> {
+        let state = self.lock();
+        let mut counts: BTreeMap<(String, String, String), usize> = BTreeMap::new();
+        if let Some(project) = state.projects.get(project_id) {
+            for key in project.entities.keys() {
+                let kind = key.kind();
+                if kind.starts_with("__") && kind.ends_with("__") {
+                    continue;
+                }
+                *counts
+                    .entry((
+                        key.partition.database_id.clone(),
+                        key.partition.namespace_id.clone(),
+                        kind.to_string(),
+                    ))
+                    .or_default() += 1;
+            }
+        }
+        counts
+            .into_iter()
+            .map(|((d, n, k), c)| (d, n, k, c))
+            .collect()
     }
     /// Whether `project_id` has state (Java's profile): it was read or written since the last
     /// reset.

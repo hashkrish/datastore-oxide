@@ -3,6 +3,7 @@
 mod cli;
 mod create;
 mod server;
+mod viewer;
 
 use std::io::IsTerminal;
 use std::process::ExitCode;

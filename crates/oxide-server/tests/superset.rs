@@ -1216,3 +1216,67 @@ impl Emulator {
         )
     }
 }
+
+#[test]
+fn data_viewer() {
+    let emulator = start(&[]);
+    seed_named(
+        &emulator,
+        &[
+            ("a", json!({"n": int(1), "s": {"stringValue": "<b>hi</b>"}})),
+            ("b", json!({"n": int(2)})),
+        ],
+    );
+    let agent: ureq::Agent = ureq::Agent::config_builder()
+        .http_status_as_error(false)
+        .build()
+        .into();
+    let get = |path: &str| {
+        let mut r = agent
+            .get(format!("{}{path}", emulator.base))
+            .call()
+            .unwrap();
+        (r.status().as_u16(), r.body_mut().read_to_string().unwrap())
+    };
+    let (status, projects) = get("/_ah/admin/datastore");
+    assert_eq!(status, 200);
+    assert!(projects.contains("?project=p"), "{projects}");
+    let (_, kinds) = get("/_ah/admin/datastore?project=p");
+    assert!(kinds.contains(">A</a></td><td>2</td>"), "{kinds}");
+    let (_, entities) = get("/_ah/admin/datastore?project=p&kind=A");
+    assert!(
+        entities.contains("&lt;b&gt;hi&lt;/b&gt;"),
+        "values are escaped"
+    );
+    assert!(entities.contains("[A: a]"));
+
+    // Delete `a` through its form, then the viewer shows only `b`.
+    let action = entities
+        .split("action=\"")
+        .nth(1)
+        .and_then(|rest| rest.split('"').next())
+        .unwrap()
+        .replace("&amp;", "&");
+    let mut r = agent
+        .post(format!("{}{action}", emulator.base))
+        .send_empty()
+        .unwrap();
+    assert_eq!(
+        r.status().as_u16(),
+        200,
+        "redirected back to the kind's page"
+    );
+    let page = r.body_mut().read_to_string().unwrap();
+    assert!(
+        !page.contains("[A: a]") && page.contains("[A: b]"),
+        "{page}"
+    );
+
+    let java = start(&["--no_superset"]);
+    let mut r = agent
+        .get(format!("{}/_ah/admin/datastore", java.base))
+        .call()
+        .unwrap();
+    assert_eq!(r.status().as_u16(), 404);
+    assert_eq!(r.body_mut().read_to_string().unwrap(), "Not Found\n");
+}

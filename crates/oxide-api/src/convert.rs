@@ -579,7 +579,7 @@ pub fn stored_entity_from_proto(entity: &pb::Entity) -> Option<Entity> {
     })
 }
 
-fn stored_key_from_proto(key: &pb::Key) -> Option<Key> {
+pub fn stored_key_from_proto(key: &pb::Key) -> Option<Key> {
     let partition = key.partition_id.clone().unwrap_or_default();
     Some(Key {
         partition: PartitionId {
