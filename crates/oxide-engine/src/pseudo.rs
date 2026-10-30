@@ -232,8 +232,10 @@ fn collections_or_documents<'a>(
                         .insert(name.into(), Value::new(ValueKind::Integer(*version)));
                 }
             }
-            e.properties
-                .insert("document_key".into(), Value::new(ValueKind::Key(document)));
+            e.properties.insert(
+                "document_key".into(),
+                Value::new(ValueKind::Key(Box::new(document))),
+            );
             e
         })
         .collect())

@@ -51,7 +51,7 @@ impl IndexValue {
                 latitude: *latitude,
                 longitude: *longitude,
             },
-            ValueKind::Key(k) => IndexValue::Key(k.clone()),
+            ValueKind::Key(k) => IndexValue::Key((**k).clone()),
             ValueKind::Array(a) if a.is_empty() => IndexValue::Null,
             ValueKind::Array(_) | ValueKind::Entity(_) => return None,
         })

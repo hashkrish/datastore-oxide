@@ -315,7 +315,7 @@ fn value_of(p: &os::Property, excluded: bool, project: &str) -> Value {
                 })
                 .collect(),
         };
-        (ValueKind::Key(key), 0)
+        (ValueKind::Key(Box::new(key)), 0)
     } else if meaning == EMPTY_LIST {
         (ValueKind::Array(Vec::new()), 0)
     } else {

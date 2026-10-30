@@ -425,7 +425,9 @@ fn value_from_proto(name: &str, value: &pb::Value, scope: &Scope) -> Result<Valu
         // Java stores -0.0 as 0.0.
         ValueType::DoubleValue(d) => ValueKind::Double(if *d == 0.0 { 0.0 } else { *d }),
         ValueType::TimestampValue(ts) => ValueKind::Timestamp(timestamp_to_micros(ts)?),
-        ValueType::KeyValue(k) => ValueKind::Key(key_from_proto(k, scope, KeyUse::Value)?),
+        ValueType::KeyValue(k) => {
+            ValueKind::Key(Box::new(key_from_proto(k, scope, KeyUse::Value)?))
+        }
         ValueType::StringValue(s) => {
             if indexed && s.len() > MAX_STRING_BYTES {
                 return Err(too_long(name));
@@ -613,7 +615,7 @@ fn stored_value_from_proto(value: &pb::Value) -> Option<Value> {
                 .checked_mul(1_000_000)?
                 .checked_add(i64::from(t.nanos / 1000))?,
         ),
-        ValueType::KeyValue(k) => ValueKind::Key(stored_key_from_proto(k)?),
+        ValueType::KeyValue(k) => ValueKind::Key(Box::new(stored_key_from_proto(k)?)),
         ValueType::StringValue(s) => ValueKind::String(s.clone()),
         ValueType::BlobValue(b) => ValueKind::Blob(b.to_vec()),
         ValueType::GeoPointValue(g) => ValueKind::GeoPoint {

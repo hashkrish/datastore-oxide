@@ -201,7 +201,7 @@ mod tests {
         for (name, kind) in [
             ("ts", ValueKind::Timestamp(-1)),
             ("d", ValueKind::Double(-0.0)),
-            ("k", ValueKind::Key(key)),
+            ("k", ValueKind::Key(Box::new(key))),
             (
                 "arr",
                 ValueKind::Array(vec![

@@ -323,7 +323,7 @@ fn value(property: &os::Property, excluded: bool, project: Option<&str>) -> R<Va
                 .map(|e| path_element(&e.r#type, e.id, e.name.as_ref()))
                 .collect(),
         };
-        (ValueKind::Key(key), meaning)
+        (ValueKind::Key(Box::new(key)), meaning)
     } else {
         (ValueKind::Null, meaning)
     };
@@ -448,11 +448,11 @@ mod tests {
                 ),
                 (
                     "key2",
-                    ValueKind::Key(key(
+                    ValueKind::Key(Box::new(key(
                         "p",
                         "ns",
                         &[("X", IdOrName::Name("n".into())), ("Y", IdOrName::Id(1))],
-                    ))
+                    )))
                     .into(),
                 ),
                 ("ts6", ValueKind::Timestamp(MIN_TIMESTAMP_MICROS).into()),
@@ -516,7 +516,7 @@ mod tests {
                 ("pt", pt),
                 ("u", u),
                 ("text", text),
-                ("k", ValueKind::Key(k).into()),
+                ("k", ValueKind::Key(Box::new(k)).into()),
                 ("big", ValueKind::Integer(i64::MIN).into()),
                 ("nan", ValueKind::Double(f64::NAN).into()),
                 ("ts", ValueKind::Timestamp(-1).into()),
@@ -627,16 +627,22 @@ mod tests {
         let src = |path: &[(&str, IdOrName)]| key("src", "", path);
         let inner = entity(
             Some(src(&[("E", IdOrName::Id(1))])),
-            vec![("r", ValueKind::Key(src(&[("R", IdOrName::Id(2))])).into())],
+            vec![(
+                "r",
+                ValueKind::Key(Box::new(src(&[("R", IdOrName::Id(2))]))).into(),
+            )],
         );
         let keyless = entity(None, vec![]);
         let e = entity(
             Some(src(&[("K", IdOrName::Id(1))])),
             vec![
-                ("ri", ValueKind::Key(src(&[("R", IdOrName::Id(3))])).into()),
+                (
+                    "ri",
+                    ValueKind::Key(Box::new(src(&[("R", IdOrName::Id(3))]))).into(),
+                ),
                 (
                     "ru",
-                    excluded(ValueKind::Key(src(&[("R", IdOrName::Id(4))]))),
+                    excluded(ValueKind::Key(Box::new(src(&[("R", IdOrName::Id(4))])))),
                 ),
                 ("ei", ValueKind::Entity(Box::new(inner.clone())).into()),
                 ("eu", excluded(ValueKind::Entity(Box::new(inner)))),

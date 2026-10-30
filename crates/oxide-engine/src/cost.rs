@@ -98,7 +98,7 @@ fn add_value(
             if let Some(key) = &entity.key {
                 out.entry(format!("{name}.__key__"))
                     .or_default()
-                    .insert(IndexValue::Value(ValueKind::Key(key.clone()), 0));
+                    .insert(IndexValue::Value(ValueKind::Key(Box::new(key.clone())), 0));
             }
             for (sub, v) in &entity.properties {
                 add_value(out, &format!("{name}.{sub}"), v, true);

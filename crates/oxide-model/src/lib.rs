@@ -95,7 +95,7 @@ pub enum ValueKind {
     Double(f64),
     /// Microseconds since the Unix epoch.
     Timestamp(i64),
-    Key(Key),
+    Key(Box<Key>),
     String(String),
     Blob(Vec<u8>),
     GeoPoint {
