@@ -334,11 +334,11 @@ impl Project {
 
     /// The wall-clock time of commit `version`, if it is recorded.
     pub fn version_time(&self, version: i64) -> Option<i64> {
+        // Versions are ascending: every lookup and query result is stamped, so don't scan.
         self.commit_times
-            .iter()
-            .rev()
-            .find(|(v, _)| *v == version)
-            .map(|(_, t)| *t)
+            .binary_search_by_key(&version, |(v, _)| *v)
+            .ok()
+            .map(|i| self.commit_times[i].1)
     }
 
     /// The last version committed at or before `micros` (point-in-time reads).
