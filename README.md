@@ -100,9 +100,13 @@ workload, `n = ?` queries matching about 10 entities at every size
 | Entities | Query p50, 1 client | Queries/s, 1 client | Queries/s, 16 clients (p50) | Lookups/s, 16 clients | Commits/s, 16 clients | Memory (RSS) |
 |---|---|---|---|---|---|---|
 | 1,000 | 0.24 ms | 3,639 | 4,866 (3.2 ms) | 40,927 | 38,774 | 41 MB |
-| 10,000 | 1.9 ms | 491 | 526 (30 ms) | 42,550 | 39,591 | 97 MB |
-| 100,000 | 35 ms | 28 | 28 (532 ms) | 40,016 | 37,897 | 665 MB |
-| 1,000,000 | 446 ms | 2 | 3 (5.8 s) | 38,496 | 36,412 | 6.5 GB |
+| 10,000 | 1.9 ms | 491 | 526 (30 ms) | 42,550 | 39,591 | 61 MB |
+| 100,000 | 35 ms | 28 | 28 (532 ms) | 40,016 | 37,897 | 257 MB |
+| 1,000,000 | 446 ms | 2 | 3 (5.8 s) | 38,496 | 36,412 | 2.4 GB |
+
+Memory is from v0.3.3, which stores entities about 2.3× more compactly than earlier versions;
+the throughput columns predate v0.3.1 (back-to-back runs show v0.3.3 about 20% faster on
+queries and on par for lookups and commits).
 
 Queries hold the store's single lock while they scan: more clients don't add query throughput,
 and other requests wait. With 4 clients querying 100,000 entities, 16 concurrent lookup clients
