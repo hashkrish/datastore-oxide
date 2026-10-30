@@ -146,6 +146,7 @@ Google LLC; they are used here only to describe what this software is compatible
 | `tools/conformance` | Scenario runner (REST and App Engine v3 `V3` steps), `record-conformance`, `record-projects` |
 | `tools/bench` | Load generator and startup timer |
 | `tools/scenario-gen` | Generators for the query, transaction, project and v3 scenarios |
+| `docs/architecture.md` | Crates, request path, engine internals (storage, consistency, transactions), persistence |
 | `docs/reference-behavior.md` | Observed Java emulator behavior |
 | `docs/porting-notes` | Observed Java emulator behavior and the App Engine SDK code it shares (queries, transactions, indexes, export format, Firestore mode, App Engine v3) |
 | `docs/superset-backlog.md` | Production features missing from the Java emulator: what is implemented (off with `--no_superset`) and what is left |
