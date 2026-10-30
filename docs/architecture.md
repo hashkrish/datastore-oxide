@@ -99,6 +99,10 @@ the lock: runtime `Config` (its own mutex), the transaction handle counter (an a
 `reset` does not clear, as in Java), and the `generation` counter that tells layers holding
 per-dataset state (v3 query handles) that the data was replaced.
 
+The binary uses jemalloc as its global allocator. Query snapshots (v3 `RunQuery` copies every
+matching row) can briefly take gigabytes; glibc keeps that memory after it is freed, jemalloc
+returns it to the OS.
+
 `Stored` holds the entity, its version, a creation sequence number (Java keeps insertion-ordered
 maps, and some tie-breaks depend on it) and a `Form`, which records the hidden `__scatter__`
 property and export side effects.

@@ -32,6 +32,7 @@ tonic-reflection = "0.14"
 tower.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
+tikv-jemallocator = { version = "0.6", features = ["background_threads"] }
 
 [dev-dependencies]
 prost.workspace = true

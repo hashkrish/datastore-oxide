@@ -10,6 +10,10 @@ use std::process::ExitCode;
 
 use cli::Command;
 
+/// jemalloc returns freed memory to the OS (glibc keeps most of it after large query snapshots).
+#[global_allocator]
+static ALLOCATOR: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+
 fn main() -> ExitCode {
     tracing_subscriber::fmt()
         .with_writer(std::io::stderr)

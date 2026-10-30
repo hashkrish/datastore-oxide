@@ -5,7 +5,7 @@
 #   podman run --rm -p 8081:8081 datastore-oxide start --host=0.0.0.0 --port=8081 --testing
 FROM docker.io/library/rust:1.93-slim-bookworm AS build
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends protobuf-compiler libprotobuf-dev \
+    && apt-get install -y --no-install-recommends protobuf-compiler libprotobuf-dev make \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
 COPY . .

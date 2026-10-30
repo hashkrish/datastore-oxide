@@ -9,6 +9,8 @@ import json, os, re, subprocess, sys
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 OUT = os.path.join(ROOT, "crates", "oxide-server", "src", "third_party_licenses.txt")
 FILES = re.compile(r"^(licen[cs]e|copying|notice|unlicense)([-._].*)?$", re.I)
+# Crates that compile a bundled C library, and the directory holding its license files.
+BUNDLED_C = {"tikv-jemalloc-sys": "jemalloc"}
 
 
 def bundled():
@@ -34,12 +36,13 @@ def main():
     for p in sorted(meta["packages"], key=lambda p: (p["name"], p["version"])):
         if (p["name"], p["version"]) not in wanted or p["source"] is None:
             continue
-        d = os.path.dirname(p["manifest_path"])
+        root = os.path.dirname(p["manifest_path"])
         texts = []
-        for f in sorted(os.listdir(d)):
-            if FILES.match(f) and os.path.isfile(os.path.join(d, f)):
-                with open(os.path.join(d, f), encoding="utf-8", errors="replace") as fh:
-                    texts.append(fh.read().strip())
+        for d in [root] + ([os.path.join(root, BUNDLED_C[p["name"]])] if p["name"] in BUNDLED_C else []):
+            for f in sorted(os.listdir(d)):
+                if FILES.match(f) and os.path.isfile(os.path.join(d, f)):
+                    with open(os.path.join(d, f), encoding="utf-8", errors="replace") as fh:
+                        texts.append(fh.read().strip())
         text = "\n\n".join(texts) or f"(The package ships no license file; its license is {p['license']}.)"
         groups.setdefault(text, []).append((p["name"], p["version"], p["license"] or "?"))
     lines = ["Third-party software compiled into datastore-oxide, grouped by license text.", ""]
