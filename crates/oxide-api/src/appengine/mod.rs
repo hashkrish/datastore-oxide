@@ -13,6 +13,7 @@ pub mod wire;
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
 
 use bytes::Bytes;
 use oxide_engine::composite::CompositeIndex;
@@ -85,11 +86,17 @@ fn bad_request(message: impl Into<String>) -> Fail {
 type Outcome = Result<Vec<u8>, Fail>;
 
 /// Live query snapshots by project and handle, valid for one generation of the engine's data.
-#[derive(Default)]
 struct Queries {
     generation: u64,
-    live: HashMap<(String, u64), LiveQuery>,
+    /// Each query with the time it was run.
+    live: HashMap<(String, u64), (Instant, LiveQuery)>,
+    /// When queries past their lifetime were last dropped.
+    swept: Instant,
 }
+
+/// How long a live query lasts (Java's `datastore.max_query_lifetime`). Java drops older ones in
+/// a sweep every five lifetimes.
+pub const QUERY_LIFETIME: Duration = Duration::from_secs(30);
 
 pub struct Service {
     engine: Arc<Engine>,
@@ -97,6 +104,7 @@ pub struct Service {
     superset: bool,
     resolver: Resolver,
     queries: Mutex<Queries>,
+    query_lifetime: Duration,
     /// Query handles: one counter for all projects that survives `/reset`.
     next_query: AtomicU64,
 }
@@ -107,13 +115,25 @@ impl Service {
             engine,
             superset: false,
             resolver: Resolver::default(),
-            queries: Mutex::new(Queries::default()),
+            queries: Mutex::new(Queries {
+                generation: 0,
+                live: HashMap::new(),
+                swept: Instant::now(),
+            }),
+            query_lifetime: QUERY_LIFETIME,
             next_query: AtomicU64::new(0),
         }
     }
 
     pub fn with_superset(self, superset: bool) -> Self {
         Self { superset, ..self }
+    }
+
+    pub fn with_query_lifetime(self, query_lifetime: Duration) -> Self {
+        Self {
+            query_lifetime,
+            ..self
+        }
     }
 
     /// Java's uncaught exception (bare UNKNOWN), or with the superset a BAD_REQUEST saying why.
@@ -168,6 +188,11 @@ impl Service {
         if queries.generation != generation {
             queries.live.clear();
             queries.generation = generation;
+        }
+        if queries.swept.elapsed() >= self.query_lifetime * 5 {
+            let lifetime = self.query_lifetime;
+            queries.live.retain(|_, (run, _)| run.elapsed() < lifetime);
+            queries.swept = Instant::now();
         }
         queries
     }
@@ -479,7 +504,9 @@ impl Service {
         }
         if batch.more {
             let handle = self.next_query.fetch_add(1, Ordering::SeqCst);
-            self.queries().live.insert((project, handle), live);
+            self.queries()
+                .live
+                .insert((project, handle), (Instant::now(), live));
             batch.result.cursor = Some(v3::Cursor {
                 cursor: handle,
                 app: Some(app.into()),
@@ -503,7 +530,7 @@ impl Service {
         }
         let mut queries = self.queries();
         let key = (project.clone(), r.cursor.cursor);
-        let Some(live) = queries.live.get_mut(&key) else {
+        let Some((_, live)) = queries.live.get_mut(&key) else {
             return Err(bad_request(
                 "query has expired or is invalid. Please restart it with the last cursor to read more results.",
             ));

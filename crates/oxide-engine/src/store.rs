@@ -210,6 +210,14 @@ pub(crate) struct Project {
     /// Wall-clock `(create, update)` times of entities written since startup, in microseconds
     /// (superset response timestamps).
     pub times: HashMap<Key, (i64, i64)>,
+    /// When `history` was last swept, in wall-clock microseconds.
+    history_swept: i64,
+}
+
+/// Drops the states of a key's history (ascending) that no version from `oldest` on reads.
+fn trim_states(states: &mut Vec<(i64, Option<Entity>)>, oldest: i64) {
+    let unreachable = states[1..].iter().take_while(|(v, _)| *v <= oldest).count();
+    states.drain(..unreachable);
 }
 
 /// How a job is stored.
@@ -227,6 +235,8 @@ type HistoryWrite = (Key, Option<(Entity, i64)>, Option<Entity>);
 
 /// How long point-in-time reads reach back (production's default retention).
 pub(crate) const HISTORY_RETENTION_MICROS: i64 = 3_600_000_000;
+/// How often commits sweep the history of states no read can reach any more.
+const HISTORY_SWEEP_MICROS: i64 = 60_000_000;
 
 pub(crate) fn now_micros() -> i64 {
     std::time::SystemTime::now()
@@ -247,6 +257,7 @@ impl Default for Project {
             commit_times: VecDeque::new(),
             history: HashMap::new(),
             times: HashMap::new(),
+            history_swept: 0,
         }
     }
 }
@@ -368,25 +379,43 @@ impl Project {
         }
     }
 
-    /// Records a committed write of `key` in its history.
+    /// The oldest version a read inside the retention window can resolve to at `now`.
+    fn oldest_readable(&self, now: i64) -> i64 {
+        self.version_at(now - HISTORY_RETENTION_MICROS)
+    }
+
+    /// Records a committed write of `key`, committed at `now`, in its history.
     fn record(
         &mut self,
         key: &Key,
         before: Option<(Entity, i64)>,
         version: i64,
         after: Option<Entity>,
+        now: i64,
     ) {
-        let oldest = self.commit_times.front().map_or(i64::MIN, |(v, _)| *v);
+        let oldest = self.oldest_readable(now);
         let states = self.history.entry(key.clone()).or_insert_with(|| {
             before
                 .map(|(e, v)| vec![(v, Some(e))])
                 .unwrap_or_else(|| vec![(0, None)])
         });
         states.push((version, after));
-        // Drop states that no retained version can read.
-        while states.len() > 1 && states[1].0 <= oldest {
-            states.remove(0);
+        trim_states(states, oldest);
+    }
+
+    /// Drops the history no read inside the retention window can reach at `now`. A key left
+    /// with only its current state loses its history: reads fall back to the stored entity.
+    pub fn prune_history(&mut self, now: i64) {
+        let cutoff = now - HISTORY_RETENTION_MICROS;
+        while self.commit_times.len() > 1 && self.commit_times[1].1 <= cutoff {
+            self.commit_times.pop_front();
         }
+        let oldest = self.oldest_readable(now);
+        self.history.retain(|_, states| {
+            trim_states(states, oldest);
+            states.len() > 1
+        });
+        self.history_swept = now;
     }
     /// Creates a job for `group` from writes (`None` = delete) and adds it. Returns the job's
     /// cost and each key's resulting version, in the order given. Unchanged puts (including the
@@ -480,7 +509,10 @@ impl Project {
                 }
             }
             for (key, before, after) in recorded {
-                self.record(&key, before, timestamp, after);
+                self.record(&key, before, timestamp, after, now);
+            }
+            if now - self.history_swept >= HISTORY_SWEEP_MICROS {
+                self.prune_history(now);
             }
         }
         let group_state = self.groups.entry(group.clone()).or_default();
@@ -582,5 +614,73 @@ mod tests {
                 "a", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "Q"
             ]
         );
+    }
+    fn key(name: &str) -> Key {
+        Key {
+            partition: Default::default(),
+            path: vec![oxide_model::PathElement::new(
+                "K",
+                Some(oxide_model::IdOrName::Name(name.into())),
+            )],
+        }
+    }
+    fn entity(name: &str, v: i64) -> Entity {
+        let mut e = Entity::new(key(name));
+        e.properties.insert(
+            "v".into(),
+            oxide_model::Value::new(oxide_model::ValueKind::Integer(v)),
+        );
+        e
+    }
+    /// Commits `writes` with history, each key its own group.
+    fn commit(p: &mut Project, writes: &[(&str, Option<i64>)]) -> i64 {
+        let t = p.next_timestamp();
+        for (name, v) in writes {
+            let options = JobOptions {
+                scatter: false,
+                indexes: &[],
+                history: true,
+            };
+            let write = [(key(name), v.map(|v| entity(name, v)))];
+            p.add_job(&key(name), t, &write, options, &mut || true);
+        }
+        t
+    }
+    /// Moves every recorded commit `micros` into the past.
+    fn age(p: &mut Project, micros: i64) {
+        for (_, t) in p.commit_times.iter_mut() {
+            *t -= micros;
+        }
+    }
+    #[test]
+    fn history_is_swept_past_the_retention_window() {
+        let mut p = Project::default();
+        let v1 = commit(&mut p, &[("a", Some(1)), ("b", Some(1)), ("c", Some(1))]);
+        commit(&mut p, &[("a", Some(2)), ("c", None)]);
+        assert_eq!(p.history.len(), 3);
+        // Inside the window every state stays readable.
+        p.prune_history(now_micros());
+        assert_eq!(p.history.len(), 3);
+        assert_eq!(
+            p.entity_at(&key("a"), &key("a"), v1).unwrap().0,
+            entity("a", 1)
+        );
+        assert!(p.entity_at(&key("a"), &key("a"), v1 - 1).is_none());
+        // Once both commits are older than the window, only current states can be read, and
+        // keys written once lose their history too.
+        age(&mut p, HISTORY_RETENTION_MICROS + 1);
+        let v3 = commit(&mut p, &[("d", Some(1))]);
+        p.prune_history(now_micros());
+        assert_eq!(p.history.keys().collect::<Vec<_>>(), [&key("d")]);
+        assert_eq!(
+            p.entity_at(&key("a"), &key("a"), v3).unwrap().0,
+            entity("a", 2)
+        );
+        assert_eq!(
+            p.entity_at(&key("b"), &key("b"), v3).unwrap().0,
+            entity("b", 1)
+        );
+        assert!(p.entity_at(&key("c"), &key("c"), v3).is_none());
+        assert!(p.entity_at(&key("d"), &key("d"), v3 - 1).is_none());
     }
 }

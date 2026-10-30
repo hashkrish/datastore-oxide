@@ -88,6 +88,7 @@ State
      ├─ txns:     HashMap<u64, Txn>       open transactions
      ├─ kinds:    KindTable               Java's HashMap iteration order (decides export order)
      └─ commit_times, history, times      superset: point-in-time reads, response timestamps
+                                          (history past the one-hour window is swept each minute)
 ```
 
 Each engine operation runs inside `with_state`, which holds the lock for the whole operation
@@ -206,7 +207,8 @@ The golden tests run with `--no_superset`.
 a generic envelope, running against the same `Engine`. `wire.rs` parses requests as leniently as
 Java's proto1 runtime does, `appid.rs` maps app ids (`s~p`, `e~p`, `dev~p`) to project ids,
 `entity.rs`/`v3.rs` convert between v3 `EntityProto` and the model, `query.rs` holds query
-snapshots for `Next`, and `actions.rs` delivers transactional tasks to the caller's callback
+snapshots for `Next` (dropped 30 s after the query runs, by a sweep every 150 s as in Java;
+`OXIDE_QUERY_LIFETIME_MS` overrides the lifetime for tests), and `actions.rs` delivers transactional tasks to the caller's callback
 host on commit. See `docs/porting-notes/appengine-v3.md`.
 
 ## How correctness is checked

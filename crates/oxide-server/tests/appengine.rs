@@ -23,10 +23,15 @@ fn start() -> Emulator {
 }
 
 fn start_with(flags: &[&str]) -> Emulator {
+    start_with_env(flags, &[])
+}
+
+fn start_with_env(flags: &[&str], env: &[(&str, &str)]) -> Emulator {
     let mut child = Command::new(env!("CARGO_BIN_EXE_datastore-oxide"))
         .args(["start", "--testing", "--port=0"])
         .args(flags)
         .env("OXIDE_LOG", "off")
+        .envs(env.iter().copied())
         .stdout(Stdio::piped())
         .spawn()
         .unwrap();
@@ -417,5 +422,49 @@ mod superset {
         .unwrap();
         assert!(got.entity.iter().all(|e| e.entity.is_none()));
         assert_eq!(got.read_time_epoch_micros, Some(micros));
+    }
+
+    /// Live queries expire like Java's (`datastore.max_query_lifetime`): a sweep every five
+    /// lifetimes drops the snapshots of queries that were never read to the end.
+    #[tokio::test]
+    async fn unfinished_queries_expire() {
+        let emulator = start_with_env(&["--no_superset"], &[("OXIDE_QUERY_LIFETIME_MS", "100")]);
+        let mut client = connect(&emulator).await;
+        client
+            .ok(
+                "Put",
+                v3::PutRequest {
+                    entity: vec![entity("a", 1, ""), entity("b", 2, ""), entity("c", 3, "")],
+                    ..Default::default()
+                }
+                .encode_to_vec(),
+            )
+            .await;
+        async fn run(client: &mut Client) -> v3::Cursor {
+            let q = v3::Query {
+                count: Some(1),
+                ..query(vec![], None)
+            };
+            let result = client.ok("RunQuery", q.encode_to_vec()).await;
+            v3::QueryResult::decode(result).unwrap().cursor.unwrap()
+        }
+        let next = |cursor: &v3::Cursor| {
+            v3::NextRequest {
+                cursor: cursor.clone(),
+                count: Some(1),
+                ..Default::default()
+            }
+            .encode_to_vec()
+        };
+
+        let fresh = run(&mut client).await;
+        client.ok("Next", next(&fresh)).await;
+        tokio::time::sleep(std::time::Duration::from_millis(600)).await;
+        let r = client.call("Next", next(&fresh)).await;
+        let error = r.application_error.expect("expired");
+        assert!(error.detail.starts_with("query has expired"), "{error:?}");
+        // Queries run since the sweep still work.
+        let fresh = run(&mut client).await;
+        client.ok("Next", next(&fresh)).await;
     }
 }

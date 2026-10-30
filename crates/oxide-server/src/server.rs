@@ -490,6 +490,12 @@ fn grpc_routes(
         .add_service(
             oxide_api::appengine::Service::new(engine.clone())
                 .with_superset(superset)
+                .with_query_lifetime(
+                    std::env::var("OXIDE_QUERY_LIFETIME_MS")
+                        .ok()
+                        .and_then(|ms| ms.parse().ok())
+                        .map_or(oxide_api::appengine::QUERY_LIFETIME, Duration::from_millis),
+                )
                 .into_server(),
         );
     let routes = match operations {
