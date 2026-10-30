@@ -229,7 +229,7 @@ fn entities(
         .collect();
     let more = rows.len() > PAGE;
     let rows = &rows[..rows.len().min(PAGE)];
-    let columns: BTreeSet<&String> = rows.iter().flat_map(|e| e.properties.keys()).collect();
+    let columns: BTreeSet<&str> = rows.iter().flat_map(|e| e.properties.keys()).collect();
     let here = link(&[
         ("project", project),
         ("database", database),

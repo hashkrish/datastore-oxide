@@ -205,7 +205,7 @@ pub fn view_of(e: &os::EntityProto) -> Entity {
     entity
 }
 
-fn properties_of(e: &os::EntityProto, project: &str) -> std::collections::BTreeMap<String, Value> {
+fn properties_of(e: &os::EntityProto, project: &str) -> oxide_model::Properties {
     let mut grouped: Vec<(String, Vec<Value>, bool)> = Vec::new();
     let all = e
         .property

@@ -3,9 +3,12 @@
 //! Values compare and hash doubles by bit pattern (so `NaN == NaN` and `0.0 != -0.0`), matching
 //! how the Java emulator compares stored entity protos.
 
-use std::collections::BTreeMap;
+mod properties;
+
 use std::fmt;
 use std::hash::{Hash, Hasher};
+
+pub use properties::Properties;
 
 /// Identifies a partition: project, database (`""` is the default database) and namespace.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -186,7 +189,7 @@ impl From<ValueKind> for Value {
 #[derive(Clone, Debug, Default, PartialEq, Eq, Hash)]
 pub struct Entity {
     pub key: Option<Key>,
-    pub properties: BTreeMap<String, Value>,
+    pub properties: Properties,
     /// For entities written through the App Engine v3 API: the stored `EntityProto` (with project
     /// ids for app ids), which v3 reads return as is. `properties` is its v1 view. `None` for
     /// entities written through v1.
@@ -197,7 +200,7 @@ impl Entity {
     pub fn new(key: Key) -> Self {
         Self {
             key: Some(key),
-            properties: BTreeMap::new(),
+            properties: Properties::new(),
             v3: None,
         }
     }

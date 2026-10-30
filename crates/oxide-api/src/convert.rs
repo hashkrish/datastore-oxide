@@ -247,6 +247,7 @@ pub fn entity_from_proto(
     names.sort();
     let mut out = Entity {
         key,
+        properties: oxide_model::Properties::with_capacity(names.len()),
         ..Default::default()
     };
     for name in names {
@@ -518,7 +519,7 @@ pub fn entity_to_proto(entity: &Entity) -> pb::Entity {
         properties: entity
             .properties
             .iter()
-            .map(|(k, v)| (k.clone(), value_to_proto(v)))
+            .map(|(k, v)| (k.to_string(), value_to_proto(v)))
             .collect(),
     }
 }

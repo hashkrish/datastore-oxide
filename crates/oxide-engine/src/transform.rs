@@ -228,10 +228,9 @@ fn set(entity: &mut Entity, path: &[String], value: Value) {
         entity.properties.insert(first.clone(), value);
         return;
     }
-    let slot = entity
-        .properties
-        .entry(first.clone())
-        .or_insert_with(|| Value::new(ValueKind::Entity(Box::default())));
+    let slot = entity.properties.get_or_insert_with(first.clone(), || {
+        Value::new(ValueKind::Entity(Box::default()))
+    });
     if !matches!(slot.kind, ValueKind::Entity(_)) {
         *slot = Value::new(ValueKind::Entity(Box::default()));
     }
