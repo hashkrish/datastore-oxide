@@ -7,12 +7,12 @@
 use std::fmt;
 use std::ops::Index;
 
-use crate::Value;
+use crate::{Name, Value};
 
 #[derive(Clone, Default, PartialEq, Eq, Hash)]
 pub struct Properties {
     /// Sorted by name, names unique.
-    entries: Vec<(String, Value)>,
+    entries: Vec<(Name, Value)>,
 }
 
 impl Properties {
@@ -31,7 +31,7 @@ impl Properties {
     }
 
     /// Sets `name` to `value`, returning the value it replaces.
-    pub fn insert(&mut self, name: String, value: Value) -> Option<Value> {
+    pub fn insert(&mut self, name: Name, value: Value) -> Option<Value> {
         // Names usually arrive in order: appending needs no search.
         if self.entries.last().is_none_or(|(last, _)| *last < name) {
             self.entries.push((name, value));
@@ -49,7 +49,7 @@ impl Properties {
     /// The value of `name`, inserting `default()` first if there is none.
     pub fn get_or_insert_with(
         &mut self,
-        name: String,
+        name: Name,
         default: impl FnOnce() -> Value,
     ) -> &mut Value {
         let i = match self.find(&name) {
@@ -139,14 +139,14 @@ impl fmt::Debug for Properties {
 }
 
 /// Later values win for repeated names, as with `BTreeMap`.
-impl<N: Into<String>> FromIterator<(N, Value)> for Properties {
+impl<N: Into<Name>> FromIterator<(N, Value)> for Properties {
     fn from_iter<I: IntoIterator<Item = (N, Value)>>(iter: I) -> Self {
-        let mut entries: Vec<(String, Value)> =
+        let mut entries: Vec<(Name, Value)> =
             iter.into_iter().map(|(n, v)| (n.into(), v)).collect();
         if !entries.is_sorted_by(|a, b| a.0 < b.0) {
             // Stable: equal names stay in arrival order, so the last one is kept.
             entries.sort_by(|a, b| a.0.cmp(&b.0));
-            let mut deduped: Vec<(String, Value)> = Vec::with_capacity(entries.len());
+            let mut deduped: Vec<(Name, Value)> = Vec::with_capacity(entries.len());
             for entry in entries {
                 match deduped.last_mut() {
                     Some(last) if last.0 == entry.0 => *last = entry,
@@ -159,7 +159,7 @@ impl<N: Into<String>> FromIterator<(N, Value)> for Properties {
     }
 }
 
-impl<N: Into<String>> Extend<(N, Value)> for Properties {
+impl<N: Into<Name>> Extend<(N, Value)> for Properties {
     fn extend<I: IntoIterator<Item = (N, Value)>>(&mut self, iter: I) {
         for (n, v) in iter {
             self.insert(n.into(), v);
@@ -168,8 +168,8 @@ impl<N: Into<String>> Extend<(N, Value)> for Properties {
 }
 
 impl IntoIterator for Properties {
-    type Item = (String, Value);
-    type IntoIter = std::vec::IntoIter<(String, Value)>;
+    type Item = (Name, Value);
+    type IntoIter = std::vec::IntoIter<(Name, Value)>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.entries.into_iter()
@@ -179,8 +179,8 @@ impl IntoIterator for Properties {
 impl<'a> IntoIterator for &'a Properties {
     type Item = (&'a str, &'a Value);
     type IntoIter = std::iter::Map<
-        std::slice::Iter<'a, (String, Value)>,
-        fn(&'a (String, Value)) -> (&'a str, &'a Value),
+        std::slice::Iter<'a, (Name, Value)>,
+        fn(&'a (Name, Value)) -> (&'a str, &'a Value),
     >;
 
     fn into_iter(self) -> Self::IntoIter {

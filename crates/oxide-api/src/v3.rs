@@ -344,9 +344,9 @@ fn partition(
     namespace: Option<&Bytes>,
 ) -> PartitionId {
     PartitionId {
-        project_id,
-        database_id: database.map(|d| text(d)).unwrap_or_default(),
-        namespace_id: namespace.map(|n| text(n)).unwrap_or_default(),
+        project_id: project_id.into(),
+        database_id: database.map(|d| text(d)).unwrap_or_default().into(),
+        namespace_id: namespace.map(|n| text(n)).unwrap_or_default().into(),
     }
 }
 
@@ -371,7 +371,7 @@ mod tests {
         Key {
             partition: PartitionId {
                 project_id: project.into(),
-                database_id: String::new(),
+                database_id: Default::default(),
                 namespace_id: ns.into(),
             },
             path: path

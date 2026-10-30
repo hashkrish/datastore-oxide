@@ -557,8 +557,8 @@ impl Engine {
                 }
                 *counts
                     .entry((
-                        key.partition.database_id.clone(),
-                        key.partition.namespace_id.clone(),
+                        key.partition.database_id.to_string(),
+                        key.partition.namespace_id.to_string(),
                         kind.to_string(),
                     ))
                     .or_default() += 1;
@@ -680,7 +680,7 @@ impl Engine {
     fn none_group(q: &query::Query) -> Key {
         Key {
             partition: oxide_model::PartitionId {
-                project_id: q.project_id.clone(),
+                project_id: (&q.project_id).into(),
                 ..Default::default()
             },
             path: vec![PathElement::new(NONE_KIND, Some(IdOrName::Id(1)))],

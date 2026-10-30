@@ -152,7 +152,7 @@ pub fn key_from_proto(key: &pb::Key, scope: &Scope, key_use: KeyUse) -> Result<K
             }
         };
         path.push(PathElement {
-            kind: element.kind.clone(),
+            kind: element.kind.as_str().into(),
             id,
         });
     }
@@ -226,9 +226,9 @@ fn partition_from_proto(
         project_id
     };
     Ok(PartitionId {
-        project_id,
-        database_id,
-        namespace_id: namespace.clone(),
+        project_id: project_id.into(),
+        database_id: database_id.into(),
+        namespace_id: namespace.into(),
     })
 }
 
@@ -263,7 +263,7 @@ pub fn entity_from_proto(
             )));
         }
         let value = value_from_proto(name, &entity.properties[name], scope)?;
-        out.properties.insert(name.clone(), value);
+        out.properties.insert(name.into(), value);
     }
     Ok(out)
 }
@@ -497,15 +497,15 @@ pub fn micros_to_timestamp(micros: i64) -> prost_types::Timestamp {
 pub fn key_to_proto(key: &Key) -> pb::Key {
     pb::Key {
         partition_id: Some(pb::PartitionId {
-            project_id: key.partition.project_id.clone(),
-            database_id: key.partition.database_id.clone(),
-            namespace_id: key.partition.namespace_id.clone(),
+            project_id: key.partition.project_id.to_string(),
+            database_id: key.partition.database_id.to_string(),
+            namespace_id: key.partition.namespace_id.to_string(),
         }),
         path: key
             .path
             .iter()
             .map(|e| pb::key::PathElement {
-                kind: e.kind.clone(),
+                kind: e.kind.to_string(),
                 id_type: e.id.as_ref().map(|id| match id {
                     IdOrName::Id(id) => pb::key::path_element::IdType::Id(*id),
                     IdOrName::Name(name) => pb::key::path_element::IdType::Name(name.clone()),
@@ -586,15 +586,15 @@ pub fn stored_key_from_proto(key: &pb::Key) -> Option<Key> {
     let partition = key.partition_id.clone().unwrap_or_default();
     Some(Key {
         partition: PartitionId {
-            project_id: partition.project_id,
-            database_id: partition.database_id,
-            namespace_id: partition.namespace_id,
+            project_id: partition.project_id.into(),
+            database_id: partition.database_id.into(),
+            namespace_id: partition.namespace_id.into(),
         },
         path: key
             .path
             .iter()
             .map(|e| PathElement {
-                kind: e.kind.clone(),
+                kind: e.kind.as_str().into(),
                 id: e.id_type.as_ref().map(|id| match id {
                     pb::key::path_element::IdType::Id(id) => IdOrName::Id(*id),
                     pb::key::path_element::IdType::Name(n) => IdOrName::Name(n.clone()),

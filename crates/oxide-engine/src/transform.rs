@@ -225,10 +225,10 @@ fn set(entity: &mut Entity, path: &[String], value: Value) {
         return;
     };
     if rest.is_empty() {
-        entity.properties.insert(first.clone(), value);
+        entity.properties.insert(first.into(), value);
         return;
     }
-    let slot = entity.properties.get_or_insert_with(first.clone(), || {
+    let slot = entity.properties.get_or_insert_with(first.into(), || {
         Value::new(ValueKind::Entity(Box::default()))
     });
     if !matches!(slot.kind, ValueKind::Entity(_)) {
@@ -277,7 +277,7 @@ mod tests {
     fn entity(props: &[(&str, ValueKind)]) -> Entity {
         let mut e = Entity::default();
         for (n, v) in props {
-            e.properties.insert(n.to_string(), Value::new(v.clone()));
+            e.properties.insert((*n).into(), Value::new(v.clone()));
         }
         e
     }

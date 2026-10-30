@@ -510,7 +510,7 @@ fn normalize_disjunction(q: &Query) -> Result<Plan> {
 /// the project), so keys that differ only in database are equal and keep insertion order.
 fn query_key(key: &Key) -> Key {
     let mut k = key.clone();
-    k.partition.database_id.clear();
+    k.partition.database_id = Default::default();
     k
 }
 

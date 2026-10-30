@@ -37,9 +37,14 @@ fn element_of(e: &os::path::Element) -> PathElement {
 pub fn key_of(r: &os::Reference, project: &str) -> Key {
     Key {
         partition: PartitionId {
-            project_id: project.to_string(),
-            database_id: r.database_id.as_deref().map(text).unwrap_or_default(),
-            namespace_id: r.name_space.as_deref().map(text).unwrap_or_default(),
+            project_id: project.into(),
+            database_id: r
+                .database_id
+                .as_deref()
+                .map(text)
+                .unwrap_or_default()
+                .into(),
+            namespace_id: r.name_space.as_deref().map(text).unwrap_or_default().into(),
         },
         path: r.path.element.iter().map(element_of).collect(),
     }
@@ -50,7 +55,7 @@ pub fn path_of(path: &[PathElement]) -> os::Path {
         element: path
             .iter()
             .map(|e| os::path::Element {
-                r#type: e.kind.clone().into(),
+                r#type: e.kind.to_string().into(),
                 id: match &e.id {
                     Some(IdOrName::Id(id)) => Some(*id),
                     _ => None,
@@ -299,9 +304,14 @@ fn value_of(p: &os::Property, excluded: bool, project: &str) -> Value {
     } else if let Some(r) = &v.referencevalue {
         let key = Key {
             partition: PartitionId {
-                project_id: text(&r.app),
-                database_id: r.database_id.as_deref().map(text).unwrap_or_default(),
-                namespace_id: r.name_space.as_deref().map(text).unwrap_or_default(),
+                project_id: text(&r.app).into(),
+                database_id: r
+                    .database_id
+                    .as_deref()
+                    .map(text)
+                    .unwrap_or_default()
+                    .into(),
+                namespace_id: r.name_space.as_deref().map(text).unwrap_or_default().into(),
             },
             path: r
                 .pathelement

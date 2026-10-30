@@ -29,7 +29,8 @@ pub fn query_namespace(
     };
     Ok(convert::key_from_proto(&probe, scope, KeyUse::Read)?
         .partition
-        .namespace_id)
+        .namespace_id
+        .to_string())
 }
 
 fn property_name(r: Option<&pb::PropertyReference>) -> Result<String, Status> {

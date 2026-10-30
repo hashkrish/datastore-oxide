@@ -238,9 +238,9 @@ fn decode_reference(bytes: &[u8]) -> Result<Key, DecodeError> {
     let mut r = Reader { buf: bytes };
     while let Some((tag, field)) = r.next()? {
         match (tag, field) {
-            (13, Field::Bytes(b)) => key.partition.project_id = utf8(b)?,
-            (20, Field::Bytes(b)) => key.partition.namespace_id = utf8(b)?,
-            (23, Field::Bytes(b)) => key.partition.database_id = utf8(b)?,
+            (13, Field::Bytes(b)) => key.partition.project_id = utf8(b)?.into(),
+            (20, Field::Bytes(b)) => key.partition.namespace_id = utf8(b)?.into(),
+            (23, Field::Bytes(b)) => key.partition.database_id = utf8(b)?.into(),
             (14, Field::Bytes(path)) => {
                 let mut pr = Reader { buf: path };
                 let mut current: Option<PathElement> = None;
@@ -249,7 +249,7 @@ fn decode_reference(bytes: &[u8]) -> Result<Key, DecodeError> {
                         (1, Field::StartGroup) => current = Some(PathElement::new("", None)),
                         (1, Field::EndGroup) => key.path.push(current.take().ok_or(DecodeError)?),
                         (2, Field::Bytes(b)) => {
-                            current.as_mut().ok_or(DecodeError)?.kind = utf8(b)?
+                            current.as_mut().ok_or(DecodeError)?.kind = utf8(b)?.into()
                         }
                         (3, Field::Varint(v)) => {
                             current.as_mut().ok_or(DecodeError)?.id = Some(IdOrName::Id(v as i64))
@@ -294,16 +294,16 @@ fn decode_property_value(bytes: &[u8]) -> Result<IndexValue, DecodeError> {
                 })
             }
             (13, Field::Bytes(b)) => {
-                key.as_mut().ok_or(DecodeError)?.partition.project_id = utf8(b)?
+                key.as_mut().ok_or(DecodeError)?.partition.project_id = utf8(b)?.into()
             }
             (20, Field::Bytes(b)) => {
-                key.as_mut().ok_or(DecodeError)?.partition.namespace_id = utf8(b)?
+                key.as_mut().ok_or(DecodeError)?.partition.namespace_id = utf8(b)?.into()
             }
             (23, Field::Bytes(b)) => {
-                key.as_mut().ok_or(DecodeError)?.partition.database_id = utf8(b)?
+                key.as_mut().ok_or(DecodeError)?.partition.database_id = utf8(b)?.into()
             }
             (14, Field::StartGroup) => element = Some(PathElement::new("", None)),
-            (15, Field::Bytes(b)) => element.as_mut().ok_or(DecodeError)?.kind = utf8(b)?,
+            (15, Field::Bytes(b)) => element.as_mut().ok_or(DecodeError)?.kind = utf8(b)?.into(),
             (16, Field::Varint(v)) => {
                 element.as_mut().ok_or(DecodeError)?.id = Some(IdOrName::Id(v as i64))
             }
@@ -330,7 +330,7 @@ mod tests {
         Key {
             partition: PartitionId {
                 project_id: project.into(),
-                database_id: String::new(),
+                database_id: Default::default(),
                 namespace_id: ns.into(),
             },
             path: vec![PathElement::new(kind, Some(id))],

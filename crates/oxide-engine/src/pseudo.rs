@@ -74,9 +74,9 @@ pub fn entities<'a>(
         )));
     }
     let partition = |namespace: &str| PartitionId {
-        project_id: q.project_id.clone(),
-        database_id: String::new(),
-        namespace_id: namespace.to_string(),
+        project_id: (&q.project_id).into(),
+        database_id: Default::default(),
+        namespace_id: namespace.into(),
     };
     let in_namespace = |k: &&Key| k.partition.namespace_id == q.namespace_id;
     if firestore_kind {
@@ -163,9 +163,9 @@ fn collections_or_documents<'a>(
 ) -> Result<Vec<Entity>> {
     let in_partition = |path: Vec<PathElement>| Key {
         partition: PartitionId {
-            project_id: q.project_id.clone(),
-            database_id: String::new(),
-            namespace_id: q.namespace_id.clone(),
+            project_id: (&q.project_id).into(),
+            database_id: Default::default(),
+            namespace_id: (&q.namespace_id).into(),
         },
         path,
     };

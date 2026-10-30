@@ -265,7 +265,7 @@ mod tests {
         };
         let mut e = Entity::new(key.clone());
         for (name, v) in values {
-            e.properties.insert(name.to_string(), Value::new(v.clone()));
+            e.properties.insert((*name).into(), Value::new(v.clone()));
         }
         QueryResult {
             key,

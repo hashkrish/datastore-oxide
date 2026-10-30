@@ -3,19 +3,21 @@
 //! Values compare and hash doubles by bit pattern (so `NaN == NaN` and `0.0 != -0.0`), matching
 //! how the Java emulator compares stored entity protos.
 
+mod name;
 mod properties;
 
 use std::fmt;
 use std::hash::{Hash, Hasher};
 
+pub use name::Name;
 pub use properties::Properties;
 
 /// Identifies a partition: project, database (`""` is the default database) and namespace.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct PartitionId {
-    pub project_id: String,
-    pub database_id: String,
-    pub namespace_id: String,
+    pub project_id: Name,
+    pub database_id: Name,
+    pub namespace_id: Name,
 }
 
 /// The id or name of a key path element. Ids sort before names.
@@ -27,13 +29,13 @@ pub enum IdOrName {
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct PathElement {
-    pub kind: String,
+    pub kind: Name,
     /// `None` for an incomplete element (id to be allocated).
     pub id: Option<IdOrName>,
 }
 
 impl PathElement {
-    pub fn new(kind: impl Into<String>, id: Option<IdOrName>) -> Self {
+    pub fn new(kind: impl Into<Name>, id: Option<IdOrName>) -> Self {
         Self {
             kind: kind.into(),
             id,
