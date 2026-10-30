@@ -1,12 +1,13 @@
 //! Load generator: runs one workload over gRPC against a running emulator (ours or Java's) and
 //! prints operations per second and latency percentiles.
 //!
-//!     cargo run --release -p bench -- <host:port> <workload> [concurrency] [seconds]
+//!     cargo run --release -p bench -- <host:port> <workload> [concurrency] [seconds] [entities]
 //!
-//! Workloads (project `bench`, kind `K`, entities `e0..e999` with an indexed `n`):
+//! Workloads (project `bench`, kind `K`, entities `e0..e<entities - 1>` (default 1000) with an
+//! indexed `n`, `entities / 10` distinct values):
 //! - `commit`: non-transactional upserts of a random entity;
 //! - `lookup`: lookups of a random entity (the entities are written first);
-//! - `query`: `n = <random>` queries, about 10 results each;
+//! - `query`: `n = <random>` queries, about 10 results each at any entity count;
 //! - `txn`: begin, lookup, upsert, commit of a random entity (contention aborts count as errors).
 
 use std::time::{Duration, Instant};
@@ -17,7 +18,7 @@ use pb::datastore_client::DatastoreClient;
 use tonic::transport::Channel;
 
 const PROJECT: &str = "bench";
-const ENTITIES: u64 = 1000;
+const DEFAULT_ENTITIES: u64 = 1000;
 
 fn key(i: u64) -> pb::Key {
     pb::Key {
@@ -70,15 +71,26 @@ impl Rng {
     }
 }
 
-async fn one(client: &mut DatastoreClient<Channel>, workload: &str, rng: &mut Rng) -> Result<()> {
-    let i = rng.below(ENTITIES);
+/// The `n` of entity `i`: `entities / 10` distinct values, so `n = ?` matches about 10.
+fn n_of(i: u64, entities: u64) -> i64 {
+    (i % (entities / 10).max(1)) as i64
+}
+
+async fn one(
+    client: &mut DatastoreClient<Channel>,
+    workload: &str,
+    entities: u64,
+    rng: &mut Rng,
+) -> Result<()> {
+    let i = rng.below(entities);
+    let n = n_of(i, entities);
     match workload {
         "commit" => {
             client
                 .commit(pb::CommitRequest {
                     project_id: PROJECT.into(),
                     mode: pb::commit_request::Mode::NonTransactional as i32,
-                    mutations: vec![upsert(i, (i % 100) as i64)],
+                    mutations: vec![upsert(i, n)],
                     ..Default::default()
                 })
                 .await?;
@@ -98,7 +110,7 @@ async fn one(client: &mut DatastoreClient<Channel>, workload: &str, rng: &mut Rn
                     property: Some(pb::PropertyReference { name: "n".into() }),
                     op: pb::property_filter::Operator::Equal as i32,
                     value: Some(pb::Value {
-                        value_type: Some(pb::value::ValueType::IntegerValue((i % 100) as i64)),
+                        value_type: Some(pb::value::ValueType::IntegerValue(n)),
                         ..Default::default()
                     }),
                 })),
@@ -143,7 +155,7 @@ async fn one(client: &mut DatastoreClient<Channel>, workload: &str, rng: &mut Rn
                     transaction_selector: Some(
                         pb::commit_request::TransactionSelector::Transaction(txn),
                     ),
-                    mutations: vec![upsert(i, (i % 100) as i64)],
+                    mutations: vec![upsert(i, n)],
                     ..Default::default()
                 })
                 .await?;
@@ -157,10 +169,13 @@ async fn one(client: &mut DatastoreClient<Channel>, workload: &str, rng: &mut Rn
 async fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let [host, workload, rest @ ..] = args.as_slice() else {
-        bail!("usage: bench <host:port> <commit|lookup|query|txn> [concurrency] [seconds]");
+        bail!(
+            "usage: bench <host:port> <commit|lookup|query|txn> [concurrency] [seconds] [entities]"
+        );
     };
     let concurrency: usize = rest.first().map_or(Ok(16), |c| c.parse())?;
     let seconds: u64 = rest.get(1).map_or(Ok(10), |s| s.parse())?;
+    let entities: u64 = rest.get(2).map_or(Ok(DEFAULT_ENTITIES), |e| e.parse())?;
     let channel = Channel::from_shared(format!("http://{host}"))?
         .connect()
         .await
@@ -168,16 +183,27 @@ async fn main() -> Result<()> {
     let mut client = DatastoreClient::new(channel.clone());
 
     // Seed the entities (in batches of 500 mutations).
-    let all: Vec<u64> = (0..ENTITIES).collect();
+    let seeding = Instant::now();
+    let all: Vec<u64> = (0..entities).collect();
     for chunk in all.chunks(500) {
         client
             .commit(pb::CommitRequest {
                 project_id: PROJECT.into(),
                 mode: pb::commit_request::Mode::NonTransactional as i32,
-                mutations: chunk.iter().map(|&i| upsert(i, (i % 100) as i64)).collect(),
+                mutations: chunk
+                    .iter()
+                    .map(|&i| upsert(i, n_of(i, entities)))
+                    .collect(),
                 ..Default::default()
             })
             .await?;
+    }
+
+    if entities > DEFAULT_ENTITIES {
+        eprintln!(
+            "seeded {entities} entities in {:.1} s",
+            seeding.elapsed().as_secs_f64()
+        );
     }
 
     let deadline = Instant::now() + Duration::from_secs(seconds);
@@ -190,7 +216,7 @@ async fn main() -> Result<()> {
             let (mut latencies, mut errors) = (Vec::new(), 0u64);
             while Instant::now() < deadline {
                 let start = Instant::now();
-                match one(&mut client, &workload, &mut rng).await {
+                match one(&mut client, &workload, entities, &mut rng).await {
                     Ok(()) => latencies.push(start.elapsed()),
                     Err(_) => errors += 1,
                 }
@@ -211,8 +237,8 @@ async fn main() -> Result<()> {
             .map_or(0.0, |d| d.as_secs_f64() * 1000.0)
     };
     println!(
-        "{workload}: {:.0} ops/s ({} ok, {errors} errors, concurrency {concurrency}, {seconds}s), \
-         latency p50 {:.2} ms, p99 {:.2} ms",
+        "{workload}: {:.0} ops/s ({} ok, {errors} errors, concurrency {concurrency}, {seconds}s, \
+         {entities} entities), latency p50 {:.2} ms, p99 {:.2} ms",
         latencies.len() as f64 / seconds as f64,
         latencies.len(),
         pct(0.5),

@@ -90,6 +90,25 @@ rootless podman, `--testing`, 16 concurrent gRPC clients for 10 s, 1000 entities
 Natively the binary answers its health check about 20 ms after launch
 (`tools/bench/startup.sh`). Lookups are bound by the container's port forwarding.
 
+### Large datasets
+
+Queries scan every entity of the kind, so their cost grows linearly with the data; lookups and
+commits don't. Measured natively (Intel Core Ultra 7 155H, `--testing`, superset on), 10 s per
+workload, `n = ?` queries matching about 10 entities at every size
+(`cargo run --release -p bench -- <host:port> <workload> <concurrency> 10 <entities>`):
+
+| Entities | Query p50, 1 client | Queries/s, 1 client | Queries/s, 16 clients (p50) | Lookups/s, 16 clients | Commits/s, 16 clients | Memory (RSS) |
+|---|---|---|---|---|---|---|
+| 1,000 | 0.24 ms | 3,639 | 4,866 (3.2 ms) | 40,927 | 38,774 | 41 MB |
+| 10,000 | 1.9 ms | 491 | 526 (30 ms) | 42,550 | 39,591 | 97 MB |
+| 100,000 | 35 ms | 28 | 28 (532 ms) | 40,016 | 37,897 | 665 MB |
+| 1,000,000 | 446 ms | 2 | 3 (5.8 s) | 38,496 | 36,412 | 6.5 GB |
+
+Queries hold the store's single lock while they scan: more clients don't add query throughput,
+and other requests wait. With 4 clients querying 100,000 entities, 16 concurrent lookup clients
+drop from 40,922 to 151 lookups/s (p99 0.7 ms → 286 ms). Datasets up to about 10,000 entities
+per kind behave like small ones.
+
 ## Provenance
 
 Emulator behavior was derived from black-box probes of Google's Cloud Datastore emulator (recorded
